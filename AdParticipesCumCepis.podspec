@@ -28,13 +28,17 @@ TODO: Add long description of the pod here.
   s.source           = { :git => 'https://github.com/tladesignz/AdParticipesCumCepis.git', :tag => s.version.to_s }
   s.social_media_url = 'https://twitter.com/tladesignz'
 
+  s.swift_version = '5.0'
+
   s.ios.deployment_target = '9.0'
 
   s.source_files = 'AdParticipesCumCepis/Classes/**/*'
+
+#  s.resources = ['AdParticipesCumCepis/Assets/**/*']
   
-  # s.resource_bundles = {
-  #   'AdParticipesCumCepis' => ['AdParticipesCumCepis/Assets/*.png']
-  # }
+   s.resource_bundles = {
+     'AdParticipesCumCepis' => ['AdParticipesCumCepis/Assets/**/*']
+   }
 
   # s.public_header_files = 'Pod/Classes/**/*.h'
   # s.frameworks = 'UIKit', 'MapKit'
