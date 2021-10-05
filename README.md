@@ -1,6 +1,5 @@
 # AdParticipesCumCepis
 
-[![CI Status](https://img.shields.io/travis/Benjamin Erhart/AdParticipesCumCepis.svg?style=flat)](https://travis-ci.org/Benjamin Erhart/AdParticipesCumCepis)
 [![Version](https://img.shields.io/cocoapods/v/AdParticipesCumCepis.svg?style=flat)](https://cocoapods.org/pods/AdParticipesCumCepis)
 [![License](https://img.shields.io/cocoapods/l/AdParticipesCumCepis.svg?style=flat)](https://cocoapods.org/pods/AdParticipesCumCepis)
 [![Platform](https://img.shields.io/cocoapods/p/AdParticipesCumCepis.svg?style=flat)](https://cocoapods.org/pods/AdParticipesCumCepis)
@@ -23,6 +22,7 @@ pod 'AdParticipesCumCepis'
 ## Author
 
 Benjamin Erhart, berhart@netzarchitekten.com
+for the [Guardian Project](https://guardianproject.info)
 
 ## License
 

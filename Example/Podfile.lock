@@ -1,0 +1,27 @@
+PODS:
+  - AdParticipesCumCepis (0.1.0)
+  - Nimble (9.2.1)
+  - Quick (4.0.0)
+
+DEPENDENCIES:
+  - AdParticipesCumCepis (from `../`)
+  - Nimble (~> 9.2.1)
+  - Quick (~> 4.0.0)
+
+SPEC REPOS:
+  trunk:
+    - Nimble
+    - Quick
+
+EXTERNAL SOURCES:
+  AdParticipesCumCepis:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  AdParticipesCumCepis: 0b90d6bc22c75c5800caeb8a5f66ac55c04c6477
+  Nimble: e7e615c0335ee4bf5b0d786685451e62746117d5
+  Quick: 6473349e43b9271a8d43839d9ba1c442ed1b7ac4
+
+PODFILE CHECKSUM: 04d2ac7a9ffed9a65a35aab83f550bb2ea4b93e6
+
+COCOAPODS: 1.11.2
