@@ -3,7 +3,7 @@
 //  AdParticipesCumCepis
 //
 //  Created by Benjamin Erhart on 10/05/2021.
-//  Copyright (c) 2021 Benjamin Erhart. All rights reserved.
+//  Copyright © 2021 Guardian Project. All rights reserved.
 //
 
 import UIKit
