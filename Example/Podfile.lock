@@ -1,7 +1,9 @@
 PODS:
   - AdParticipesCumCepis (0.1.0):
+    - MBProgressHUD (~> 1.2)
     - TLPhotoPicker (~> 2.1)
     - Tor (~> 406.7.1)
+  - MBProgressHUD (1.2.0)
   - Nimble (9.2.1)
   - Quick (4.0.0)
   - TLPhotoPicker (2.1.4)
@@ -14,6 +16,7 @@ DEPENDENCIES:
 
 SPEC REPOS:
   https://github.com/CocoaPods/Specs.git:
+    - MBProgressHUD
     - Nimble
     - Quick
     - TLPhotoPicker
@@ -24,7 +27,8 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  AdParticipesCumCepis: 97bcda151a1852c4737eb50171951f92ad922842
+  AdParticipesCumCepis: b615654651107285d87be6eb056cf9e618b3b478
+  MBProgressHUD: 3ee5efcc380f6a79a7cc9b363dd669c5e1ae7406
   Nimble: e7e615c0335ee4bf5b0d786685451e62746117d5
   Quick: 6473349e43b9271a8d43839d9ba1c442ed1b7ac4
   TLPhotoPicker: f486e8499e1c3f464d0e886697635e25a72a52b8

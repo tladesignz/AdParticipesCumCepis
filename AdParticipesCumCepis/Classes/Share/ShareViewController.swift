@@ -9,6 +9,7 @@
 import UIKit
 import TLPhotoPicker
 import Photos
+import MBProgressHUD
 
 open class ShareViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, TLPhotosPickerViewControllerDelegate {
 
@@ -28,7 +29,11 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
         }
     }
 
-    @IBOutlet weak var publicServiceSw: UISwitch!
+    @IBOutlet weak var publicServiceSw: UISwitch! {
+        didSet {
+            publicServiceSw.isOn = false
+        }
+    }
 
     @IBOutlet weak var customTitleTv: UITextField! {
         didSet {
@@ -58,19 +63,28 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
     // MARK: Actions
 
     @IBAction public func start() {
-        print("Start!")
+        let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
+        hud.mode = .determinate
+        hud.label.text = NSLocalizedString("Starting Tor…", comment: "")
 
         TorManager.shared.start { progress in
-            print("Progress: \(progress)")
-        } _: { error in
-            if let error = error {
-                print("Error: \(error)")
+            DispatchQueue.main.async {
+                hud.progress = Float(progress) / 100
             }
-            else {
-                print("Success!")
+        } _: { error in
+            DispatchQueue.main.async {
+                var delay = 0.5
+
+                if let error = error {
+                    hud.mode = .text
+                    hud.label.text = error.localizedDescription
+
+                    delay = 3
+                }
+
+                hud.hide(animated: true, afterDelay: delay)
             }
         }
-
     }
 
     @objc public func add() {
