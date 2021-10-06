@@ -3,6 +3,7 @@
 //  AdParticipesCumCepis
 //
 //  Created by Benjamin Erhart on 05.10.21.
+//  Copyright (c) 2021 Benjamin Erhart. All rights reserved.
 //
 
 import UIKit
@@ -14,7 +15,7 @@ open class MainViewController: UIViewController, UITableViewDataSource, UITableV
     open override func viewDidLoad() {
         super.viewDidLoad()
 
-        navigationItem.title = NSLocalizedString("Cepa Participes", comment: "")
+        navigationItem.title = NSLocalizedString("Ad Participes cum Cepis", comment: "")
     }
 
 
@@ -31,5 +32,14 @@ open class MainViewController: UIViewController, UITableViewDataSource, UITableV
         cell.textLabel?.text = NSLocalizedString("Share Files", comment: "")
 
         return cell
+    }
+
+
+    // MARK: UITableViewDelegate
+
+    public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if indexPath.section == 0 && indexPath.row == 0 {
+            navigationController?.pushViewController(Router.share(), animated: true)
+        }
     }
 }

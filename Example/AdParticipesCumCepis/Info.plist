@@ -34,5 +34,11 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Please allow access to your photo library, if you want to share photos.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Please allow access to your camera, if you want to create photos or videos for direct sharing.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Please allow access to your microphone, if you want to create videos for direct sharing.</string>
 </dict>
 </plist>

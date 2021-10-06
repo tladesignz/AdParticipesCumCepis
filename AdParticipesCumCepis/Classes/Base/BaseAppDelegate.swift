@@ -2,7 +2,7 @@
 //  AppDelegate.swift
 //  AdParticipesCumCepis
 //
-//  Created by Benjamin Erhart on 10/05/2021.
+//  Created by Benjamin Erhart on 05.10.21.
 //  Copyright (c) 2021 Benjamin Erhart. All rights reserved.
 //
 
@@ -12,16 +12,10 @@ open class BaseAppDelegate: UIResponder, UIApplicationDelegate {
 
     public var window: UIWindow? = UIWindow(frame: UIScreen.main.bounds)
 
-    public static let bundle: Bundle = {
-        return Bundle(url: Bundle(for: BaseAppDelegate.self).url(forResource: "AdParticipesCumCepis", withExtension: "bundle")!)!
-    }()
-
 
     public func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool
     {
-        let vc = MainViewController(nibName: String(describing: MainViewController.self), bundle: BaseAppDelegate.bundle)
-
-        window?.rootViewController = UINavigationController(rootViewController: vc)
+        window?.rootViewController = UINavigationController(rootViewController: Router.main())
 
         window?.makeKeyAndVisible()
 

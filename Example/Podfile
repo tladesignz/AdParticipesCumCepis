@@ -1,6 +1,8 @@
 use_frameworks!
 
-platform :ios, '9.0'
+platform :ios, '9.1'
+
+source 'https://github.com/CocoaPods/Specs.git'
 
 target 'AdParticipesCumCepis_Example' do
   pod 'AdParticipesCumCepis', :path => '../'

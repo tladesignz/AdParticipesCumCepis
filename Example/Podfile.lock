@@ -1,7 +1,9 @@
 PODS:
-  - AdParticipesCumCepis (0.1.0)
+  - AdParticipesCumCepis (0.1.0):
+    - TLPhotoPicker (~> 2.1)
   - Nimble (9.2.1)
   - Quick (4.0.0)
+  - TLPhotoPicker (2.1.4)
 
 DEPENDENCIES:
   - AdParticipesCumCepis (from `../`)
@@ -9,19 +11,21 @@ DEPENDENCIES:
   - Quick (~> 4.0.0)
 
 SPEC REPOS:
-  trunk:
+  https://github.com/CocoaPods/Specs.git:
     - Nimble
     - Quick
+    - TLPhotoPicker
 
 EXTERNAL SOURCES:
   AdParticipesCumCepis:
     :path: "../"
 
 SPEC CHECKSUMS:
-  AdParticipesCumCepis: 29ae241882ff7bfa420e1f41572434ea7818ea1a
+  AdParticipesCumCepis: 91b03437d7bca4486ef4e635f49d7e1faf86df74
   Nimble: e7e615c0335ee4bf5b0d786685451e62746117d5
   Quick: 6473349e43b9271a8d43839d9ba1c442ed1b7ac4
+  TLPhotoPicker: f486e8499e1c3f464d0e886697635e25a72a52b8
 
-PODFILE CHECKSUM: 04d2ac7a9ffed9a65a35aab83f550bb2ea4b93e6
+PODFILE CHECKSUM: d49f3c42558f4cb86f80fc1f69260ac17e82384a
 
 COCOAPODS: 1.11.2
