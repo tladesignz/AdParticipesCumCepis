@@ -59,6 +59,18 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
 
     @IBAction public func start() {
         print("Start!")
+
+        TorManager.shared.start { progress in
+            print("Progress: \(progress)")
+        } _: { error in
+            if let error = error {
+                print("Error: \(error)")
+            }
+            else {
+                print("Success!")
+            }
+        }
+
     }
 
     @objc public func add() {

@@ -1,9 +1,11 @@
 PODS:
   - AdParticipesCumCepis (0.1.0):
     - TLPhotoPicker (~> 2.1)
+    - Tor (~> 406.7.1)
   - Nimble (9.2.1)
   - Quick (4.0.0)
   - TLPhotoPicker (2.1.4)
+  - Tor (406.7.1)
 
 DEPENDENCIES:
   - AdParticipesCumCepis (from `../`)
@@ -15,16 +17,18 @@ SPEC REPOS:
     - Nimble
     - Quick
     - TLPhotoPicker
+    - Tor
 
 EXTERNAL SOURCES:
   AdParticipesCumCepis:
     :path: "../"
 
 SPEC CHECKSUMS:
-  AdParticipesCumCepis: 91b03437d7bca4486ef4e635f49d7e1faf86df74
+  AdParticipesCumCepis: 97bcda151a1852c4737eb50171951f92ad922842
   Nimble: e7e615c0335ee4bf5b0d786685451e62746117d5
   Quick: 6473349e43b9271a8d43839d9ba1c442ed1b7ac4
   TLPhotoPicker: f486e8499e1c3f464d0e886697635e25a72a52b8
+  Tor: 2f73dc2da6da10ff3cdc0babe3e5f1e43ccc0fb5
 
 PODFILE CHECKSUM: d49f3c42558f4cb86f80fc1f69260ac17e82384a
 
