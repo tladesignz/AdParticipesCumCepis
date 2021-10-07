@@ -173,19 +173,26 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
         switch sender {
         case copyAddressBt:
             UIPasteboard.general.string = address.text
+
         default:
             UIPasteboard.general.string = key.text
         }
     }
 
     @IBAction public func showQrCode(_ sender: UIButton) {
-        // TODO
+        let vc = Router.showQr()
+
         switch sender {
         case qrAddressBt:
-            break
+            vc.qrCode = address.text ?? ""
+
         default:
-            break
+            vc.qrCode = key.text ?? ""
         }
+
+        let navC = UINavigationController(rootViewController: vc)
+
+        present(navC, animated: true)
     }
 
 
