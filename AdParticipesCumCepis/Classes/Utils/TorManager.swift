@@ -24,6 +24,16 @@ class TorManager {
 
     private static let torControlPort: UInt16 = 39060
 
+    public lazy var onionAuth: TorOnionAuth? = {
+        guard let dir = torConf.options["ClientOnionAuthDir"]
+        else {
+            return nil
+        }
+
+        return TorOnionAuth(dir: dir)
+    }()
+
+
     private var torThread: TorThread?
 
     private lazy var torConf: TorConfiguration = {
@@ -34,7 +44,6 @@ class TorManager {
                         "Log": "notice stdout",
                         "LogMessageDomains": "1",
                         "SafeLogging": "0",
-                        "ClientOnly": "1",
                         "SocksPort": "\(TorManager.localhost):\(TorManager.torProxyPort)",
                         "ControlPort": "\(TorManager.localhost):\(TorManager.torControlPort)",
                         "AvoidDiskWrites": "1"]
