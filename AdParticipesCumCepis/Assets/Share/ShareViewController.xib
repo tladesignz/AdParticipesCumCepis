@@ -81,14 +81,14 @@
                             <textInputTraits key="textInputTraits"/>
                         </textField>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rAF-Bg-zNq">
-                            <rect key="frame" x="153.5" y="170" width="107.5" height="32"/>
+                            <rect key="frame" x="162.5" y="170" width="89" height="32"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="32" id="hWJ-IP-Qob"/>
                             </constraints>
-                            <state key="normal" title="Button"/>
-                            <buttonConfiguration key="configuration" style="plain" title="Start sharing">
-                                <color key="baseForegroundColor" systemColor="systemGreenColor"/>
-                            </buttonConfiguration>
+                            <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                            <state key="normal" title="Start sharing">
+                                <color key="titleColor" systemColor="systemGreenColor"/>
+                            </state>
                             <connections>
                                 <action selector="start" destination="-1" eventType="touchUpInside" id="RkR-2H-mlN"/>
                             </connections>
@@ -160,23 +160,23 @@
                             </userDefinedRuntimeAttributes>
                         </view>
                         <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="YaG-QJ-fCJ">
-                            <rect key="frame" x="314" y="67" width="42" height="38.5"/>
+                            <rect key="frame" x="314" y="74" width="42" height="24.5"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="42" id="OT0-uQ-eby"/>
                             </constraints>
-                            <state key="normal" title="Button"/>
-                            <buttonConfiguration key="configuration" style="plain" image="doc.on.clipboard" title=" "/>
+                            <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                            <state key="normal" title=" " image="doc.on.clipboard"/>
                             <connections>
                                 <action selector="copy2Clipboard:" destination="-1" eventType="touchUpInside" id="5hD-Ge-b90"/>
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="y6x-Mw-fJr">
-                            <rect key="frame" x="364" y="70.5" width="42" height="31"/>
+                            <rect key="frame" x="364" y="77" width="42" height="18"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="42" id="cip-Sq-Duz"/>
                             </constraints>
-                            <state key="normal" title="Button"/>
-                            <buttonConfiguration key="configuration" style="plain" image="qrcode" title=" "/>
+                            <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                            <state key="normal" title=" " image="qrcode"/>
                             <connections>
                                 <action selector="showQrCode:" destination="-1" eventType="touchUpInside" id="TTV-xR-GN5"/>
                             </connections>
@@ -218,30 +218,30 @@
                             </userDefinedRuntimeAttributes>
                         </view>
                         <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="j8D-bh-kWG">
-                            <rect key="frame" x="314" y="153" width="42" height="38.5"/>
-                            <state key="normal" title="Button"/>
-                            <buttonConfiguration key="configuration" style="plain" image="doc.on.clipboard" title=" "/>
+                            <rect key="frame" x="314" y="160" width="42" height="24.5"/>
+                            <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                            <state key="normal" title=" " image="doc.on.clipboard"/>
                             <connections>
                                 <action selector="copy2Clipboard:" destination="-1" eventType="touchUpInside" id="5a8-jM-WNT"/>
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rH4-hZ-551">
-                            <rect key="frame" x="364" y="156.5" width="42" height="31"/>
-                            <state key="normal" title="Button"/>
-                            <buttonConfiguration key="configuration" style="plain" image="qrcode" title=" "/>
+                            <rect key="frame" x="364" y="163" width="42" height="18"/>
+                            <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                            <state key="normal" title=" " image="qrcode"/>
                             <connections>
                                 <action selector="showQrCode:" destination="-1" eventType="touchUpInside" id="HhM-At-yti"/>
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="529-J2-2lR">
-                            <rect key="frame" x="154" y="206" width="106" height="32"/>
+                            <rect key="frame" x="163.5" y="206" width="87" height="32"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="32" id="hBh-dW-3lx"/>
                             </constraints>
-                            <state key="normal" title="Button"/>
-                            <buttonConfiguration key="configuration" style="plain" title="Stop sharing">
-                                <color key="baseForegroundColor" systemColor="systemRedColor"/>
-                            </buttonConfiguration>
+                            <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                            <state key="normal" title="Stop sharing">
+                                <color key="titleColor" systemColor="systemRedColor"/>
+                            </state>
                             <connections>
                                 <action selector="stop" destination="-1" eventType="touchUpInside" id="too-zP-1fd"/>
                             </connections>
