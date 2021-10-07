@@ -27,7 +27,13 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
         }
     }
 
-    @IBOutlet weak var stopSharingSw: UISwitch!
+    @IBOutlet weak var stopSharingSw: UISwitch! {
+        didSet {
+            // TODO: Add support.
+            stopSharingSw.isOn = false
+            stopSharingSw.isEnabled = false
+        }
+    }
 
     @IBOutlet weak var publicServiceLb: UILabel! {
         didSet {
@@ -37,30 +43,33 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
 
     @IBOutlet weak var publicServiceSw: UISwitch! {
         didSet {
-            publicServiceSw.isOn = false
+            // TODO: Add support.
+            publicServiceSw.isOn = true
+            publicServiceSw.isEnabled = false
         }
     }
 
     @IBOutlet weak var customTitleTf: UITextField! {
         didSet {
             customTitleTf.placeholder = NSLocalizedString("Custom title", comment: "")
+
+            // TODO: Add support.
+            customTitleTf.isEnabled = false
         }
     }
 
     @IBOutlet weak var startSharingBt: UIButton! {
         didSet {
             startSharingBt.setTitle(NSLocalizedString("Start sharing", comment: ""), for: .normal)
+
+            // TODO: Add support for actual file sharing.
 //            startSharingBt.isEnabled = false
         }
     }
 
     @IBOutlet weak var stopContainer: UIView!
 
-    @IBOutlet weak var addressLb: UILabel! {
-        didSet {
-            addressLb.text = NSLocalizedString("Anyone with this address and private key can download your files using the Tor Browser:", comment: "")
-        }
-    }
+    @IBOutlet weak var addressLb: UILabel!
 
     @IBOutlet weak var address: UILabel!
 
@@ -121,6 +130,14 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
         navigationItem.rightBarButtonItem = UIBarButtonItem.init(barButtonSystemItem: .add, target: self, action: #selector(add))
     }
 
+    open override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        if webServer.isRunning {
+            stop()
+        }
+    }
+
 
     // MARK: Actions
 
@@ -134,7 +151,18 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
     @IBAction public func start() {
         hud.show(animated: true)
 
-        webServer.start(withPort: TorManager.webServerPort, bonjourName: nil)
+        do {
+            try webServer.start(options: [
+                GCDWebServerOption_Port: TorManager.webServerPort,
+                GCDWebServerOption_AutomaticallySuspendInBackground: false])
+        }
+        catch {
+            hud.label.text = error.localizedDescription
+
+            hud.hide(animated: true, afterDelay: 3)
+
+            return
+        }
 
         TorManager.shared.start { progress in
             DispatchQueue.main.async {
@@ -152,6 +180,21 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
                 }
 
                 self.address.text = TorManager.shared.hostname
+
+                if self.publicServiceSw.isOn {
+                    self.addressLb.text = NSLocalizedString("Anyone with this address can download your files using the Tor Browser:", comment: "")
+                    self.keyLb.isHidden = true
+                    self.key.superview?.isHidden = true
+                    self.copyKeyBt.isHidden = true
+                    self.qrKeyBt.isHidden = true
+                }
+                else {
+                    self.addressLb.text = NSLocalizedString("Anyone with this address and private key can download your files using the Tor Browser:", comment: "")
+                    self.keyLb.isHidden = false
+                    self.key.superview?.isHidden = false
+                    self.copyKeyBt.isHidden = false
+                    self.qrKeyBt.isHidden = false
+                }
 
                 self.hud.hide(animated: true, afterDelay: 0.5)
 

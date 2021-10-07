@@ -18,6 +18,15 @@ open class MainViewController: UIViewController, UITableViewDataSource, UITableV
         navigationItem.title = NSLocalizedString("Ad Participes cum Cepis", comment: "")
     }
 
+    open override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        // Deselect items after return.
+        for indexPath in tableView.indexPathsForSelectedRows ?? [] {
+            tableView.deselectRow(at: indexPath, animated: true)
+        }
+    }
+
 
     // MARK: UITableViewDataSource
 
@@ -30,6 +39,7 @@ open class MainViewController: UIViewController, UITableViewDataSource, UITableV
             ?? UITableViewCell(style: .default, reuseIdentifier: "options")
 
         cell.textLabel?.text = NSLocalizedString("Share Files", comment: "")
+        cell.accessoryType = .disclosureIndicator
 
         return cell
     }
