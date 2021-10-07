@@ -1,8 +1,12 @@
 PODS:
   - AdParticipesCumCepis (0.1.0):
+    - GCDWebServer (~> 3.5)
     - MBProgressHUD (~> 1.2)
     - TLPhotoPicker (~> 2.1)
     - Tor (~> 406.7.1)
+  - GCDWebServer (3.5.4):
+    - GCDWebServer/Core (= 3.5.4)
+  - GCDWebServer/Core (3.5.4)
   - MBProgressHUD (1.2.0)
   - Nimble (9.2.1)
   - Quick (4.0.0)
@@ -16,6 +20,7 @@ DEPENDENCIES:
 
 SPEC REPOS:
   https://github.com/CocoaPods/Specs.git:
+    - GCDWebServer
     - MBProgressHUD
     - Nimble
     - Quick
@@ -27,7 +32,8 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  AdParticipesCumCepis: b615654651107285d87be6eb056cf9e618b3b478
+  AdParticipesCumCepis: 69a53c02ef09f4ed2d91f74c014111be90974aec
+  GCDWebServer: 2c156a56c8226e2d5c0c3f208a3621ccffbe3ce4
   MBProgressHUD: 3ee5efcc380f6a79a7cc9b363dd669c5e1ae7406
   Nimble: e7e615c0335ee4bf5b0d786685451e62746117d5
   Quick: 6473349e43b9271a8d43839d9ba1c442ed1b7ac4

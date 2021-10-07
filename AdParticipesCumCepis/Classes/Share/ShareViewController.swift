@@ -10,6 +10,7 @@ import UIKit
 import TLPhotoPicker
 import Photos
 import MBProgressHUD
+import GCDWebServer
 
 open class ShareViewController: UIViewController, UITableViewDataSource, UITableViewDelegate,
                                     TLPhotosPickerViewControllerDelegate
@@ -101,6 +102,16 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
         return hud
     }()
 
+    private lazy var webServer: GCDWebServer =  {
+        let webServer = GCDWebServer()
+
+        webServer.addDefaultHandler(forMethod: "GET", request: GCDWebServerRequest.self) { _ in
+            return GCDWebServerDataResponse(html: "<html><body><p>Hello World</p></body></html>")
+        }
+
+        return webServer
+    }()
+
 
     open override func viewDidLoad() {
         super.viewDidLoad()
@@ -123,20 +134,24 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
     @IBAction public func start() {
         hud.show(animated: true)
 
-//        TorManager.shared.start { progress in
-//            DispatchQueue.main.async {
-//                self.hud.progress = Float(progress) / 100
-//            }
-//        } _: { error in
+        webServer.start(withPort: TorManager.webServerPort, bonjourName: nil)
+
+        TorManager.shared.start { progress in
             DispatchQueue.main.async {
-//                if let error = error {
-//                    self.hud.mode = .text
-//                    self.hud.label.text = error.localizedDescription
-//
-//                    self.hud.hide(animated: true, afterDelay: 3)
-//
-//                    return
-//                }
+                self.hud.progress = Float(progress) / 100
+            }
+        } _: { error in
+            DispatchQueue.main.async {
+                if let error = error {
+                    self.hud.mode = .text
+                    self.hud.label.text = error.localizedDescription
+
+                    self.hud.hide(animated: true, afterDelay: 3)
+
+                    return
+                }
+
+                self.address.text = TorManager.shared.hostname
 
                 self.hud.hide(animated: true, afterDelay: 0.5)
 
@@ -151,11 +166,13 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
                     self.startContainer.layer.opacity = 1
                 }
             }
-//        }
+        }
     }
 
     @IBAction public func stop() {
         TorManager.shared.stop()
+
+        webServer.stop()
 
         startContainer.layer.opacity = 0
         startContainer.isHidden = false

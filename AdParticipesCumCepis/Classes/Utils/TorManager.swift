@@ -21,16 +21,29 @@ class TorManager {
 
     static let torProxyPort: UInt16 = 39050
     static let dnsPort: UInt16 = 39053
+    static let webServerPort: UInt = 8080
 
     private static let torControlPort: UInt16 = 39060
 
     public lazy var onionAuth: TorOnionAuth? = {
-        guard let dir = torConf.options["ClientOnionAuthDir"]
-        else {
+        guard let dir = torConf.options["ClientOnionAuthDir"], !dir.isEmpty else {
             return nil
         }
 
         return TorOnionAuth(dir: dir)
+    }()
+
+    public lazy var hostname: String? = {
+        guard let idx = torConf.arguments.firstIndex(of: "--HiddenServiceDir"),
+              idx + 1 < torConf.arguments.count
+                && !torConf.arguments[idx + 1].isEmpty
+        else {
+            return nil
+        }
+
+        let url = URL(fileURLWithPath: torConf.arguments[idx + 1]).appendingPathComponent("hostname")
+
+        return try? String(contentsOf: url)
     }()
 
 
@@ -46,6 +59,7 @@ class TorManager {
                         "SafeLogging": "0",
                         "SocksPort": "\(TorManager.localhost):\(TorManager.torProxyPort)",
                         "ControlPort": "\(TorManager.localhost):\(TorManager.torControlPort)",
+                        "HiddenServicePort": "80 \(TorManager.localhost):\(TorManager.webServerPort)",
                         "AvoidDiskWrites": "1"]
 
         conf.cookieAuthentication = true
@@ -69,6 +83,13 @@ class TorManager {
             try? FileManager.default.createDirectory(at: authDir, withIntermediateDirectories: true)
 
             conf.options["ClientOnionAuthDir"] = authDir.path
+
+            // Tor will create that directory by itself.
+            let webDir = dataDir.appendingPathComponent("web", isDirectory: true)
+
+            // Need to use #arguments instead of #options because order is important.
+            conf.arguments.append("--HiddenServiceDir")
+            conf.arguments.append(webDir.path)
         }
 
         conf.arguments += [
