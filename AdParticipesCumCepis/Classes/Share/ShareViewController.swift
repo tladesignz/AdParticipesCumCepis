@@ -130,14 +130,6 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
         navigationItem.rightBarButtonItem = UIBarButtonItem.init(barButtonSystemItem: .add, target: self, action: #selector(add))
     }
 
-    open override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-
-        if webServer.isRunning {
-            stop()
-        }
-    }
-
 
     // MARK: Actions
 
@@ -150,6 +142,9 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
 
     @IBAction public func start() {
         hud.show(animated: true)
+
+        navigationItem.hidesBackButton = true
+        navigationItem.rightBarButtonItem?.isEnabled = false
 
         do {
             try webServer.start(options: [
@@ -216,6 +211,9 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
         TorManager.shared.stop()
 
         webServer.stop()
+
+        navigationItem.hidesBackButton = false
+        navigationItem.rightBarButtonItem?.isEnabled = true
 
         startContainer.layer.opacity = 0
         startContainer.isHidden = false
