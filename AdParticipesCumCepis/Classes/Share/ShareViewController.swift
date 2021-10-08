@@ -174,7 +174,7 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
                     return
                 }
 
-                self.address.text = TorManager.shared.hostname
+                self.address.text = TorManager.shared.serviceUrl?.absoluteString
 
                 if self.publicServiceSw.isOn {
                     self.addressLb.text = NSLocalizedString("Anyone with this address can download your files using the Tor Browser:", comment: "")

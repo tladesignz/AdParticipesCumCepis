@@ -25,25 +25,37 @@ class TorManager {
 
     private static let torControlPort: UInt16 = 39060
 
-    public lazy var onionAuth: TorOnionAuth? = {
-        guard let dir = torConf.options["ClientOnionAuthDir"], !dir.isEmpty else {
-            return nil
-        }
-
-        return TorOnionAuth(dir: dir)
-    }()
-
-    public lazy var hostname: String? = {
-        guard let idx = torConf.arguments.firstIndex(of: "--HiddenServiceDir"),
-              idx + 1 < torConf.arguments.count
-                && !torConf.arguments[idx + 1].isEmpty
+    public lazy var serviceDir: URL? = {
+        guard let args = torConf.arguments,
+              let i = args.firstIndex(of: "--HiddenServiceDir"),
+              i + 1 < args.count && !args[i + 1].isEmpty
         else {
             return nil
         }
 
-        let url = URL(fileURLWithPath: torConf.arguments[idx + 1]).appendingPathComponent("hostname")
+        return URL(fileURLWithPath: args[i + 1])
+    }()
 
-        return try? String(contentsOf: url)
+    public lazy var onionAuth: TorOnionAuth? = {
+        guard let url = serviceDir?.appendingPathComponent("authorized_clients") else {
+            return nil
+        }
+
+        return TorOnionAuth(dirUrl: url)
+    }()
+
+    public lazy var serviceUrl: URL? = {
+        guard let url = serviceDir?.appendingPathComponent("hostname"),
+              let hostname = try? String(contentsOf: url).trimmingCharacters(in: .whitespacesAndNewlines)
+        else {
+            return nil
+        }
+
+        var urlc = URLComponents()
+        urlc.host = hostname
+        urlc.scheme = "http"
+
+        return urlc.url
     }()
 
 
@@ -76,13 +88,6 @@ class TorManager {
             try? FileManager.default.createDirectory(at: dataDir, withIntermediateDirectories: true)
 
             conf.dataDirectory = dataDir
-
-            // Create Tor v3 auth directory if it does not yet exist.
-            let authDir = dataDir.appendingPathComponent("auth", isDirectory: true)
-
-            try? FileManager.default.createDirectory(at: authDir, withIntermediateDirectories: true)
-
-            conf.options["ClientOnionAuthDir"] = authDir.path
 
             // Tor will create that directory by itself.
             let webDir = dataDir.appendingPathComponent("web", isDirectory: true)
