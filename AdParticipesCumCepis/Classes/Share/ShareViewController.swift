@@ -11,6 +11,7 @@ import TLPhotoPicker
 import Photos
 import MBProgressHUD
 import GCDWebServer
+import Tor
 
 open class ShareViewController: UIViewController, UITableViewDataSource, UITableViewDelegate,
                                     TLPhotosPickerViewControllerDelegate
@@ -43,9 +44,7 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
 
     @IBOutlet weak var publicServiceSw: UISwitch! {
         didSet {
-            // TODO: Add support.
-            publicServiceSw.isOn = true
-            publicServiceSw.isEnabled = false
+            publicServiceSw.isOn = false
         }
     }
 
@@ -159,6 +158,30 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
             return
         }
 
+        var privateKey: String? = nil
+
+        if self.publicServiceSw.isOn {
+            // Remove all keys, so Tor doesn't encrypt the rendezvous response.
+            for i in (0 ..< (TorManager.shared.onionAuth?.keys.count ?? 0)).reversed() {
+                TorManager.shared.onionAuth?.removeKey(at: i)
+            }
+        }
+        else if let k = TorManager.shared.onionAuth?.keys.first(where: { $0.isPrivate }) {
+            privateKey = k.key
+        }
+        else {
+            // Create a new key pair.
+            let keypair = TorX25519KeyPair()
+
+            // Private key needs to be shown to the user.
+            privateKey = keypair.privateKey
+
+            // The public key is needed by the onion service, *before* start.
+            if let publicKey = keypair.getPublicAuthKey(withName: "share") {
+                TorManager.shared.onionAuth?.set(publicKey)
+            }
+        }
+
         TorManager.shared.start { progress in
             DispatchQueue.main.async {
                 self.hud.progress = Float(progress) / 100
@@ -176,19 +199,26 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
 
                 self.address.text = TorManager.shared.serviceUrl?.absoluteString
 
-                if self.publicServiceSw.isOn {
+                if let privateKey = privateKey {
+                    // After successful start, we should now have a domain.
+                    // Time to store the private key for later reuse.
+                    if let url = TorManager.shared.serviceUrl {
+                        TorManager.shared.onionAuth?.set(TorAuthKey(private: privateKey, forDomain: url))
+                    }
+
+                    self.addressLb.text = NSLocalizedString("Anyone with this address and private key can download your files using the Tor Browser:", comment: "")
+                    self.key.text = privateKey
+                    self.keyLb.isHidden = false
+                    self.key.superview?.isHidden = false
+                    self.copyKeyBt.isHidden = false
+                    self.qrKeyBt.isHidden = false
+                }
+                else {
                     self.addressLb.text = NSLocalizedString("Anyone with this address can download your files using the Tor Browser:", comment: "")
                     self.keyLb.isHidden = true
                     self.key.superview?.isHidden = true
                     self.copyKeyBt.isHidden = true
                     self.qrKeyBt.isHidden = true
-                }
-                else {
-                    self.addressLb.text = NSLocalizedString("Anyone with this address and private key can download your files using the Tor Browser:", comment: "")
-                    self.keyLb.isHidden = false
-                    self.key.superview?.isHidden = false
-                    self.copyKeyBt.isHidden = false
-                    self.qrKeyBt.isHidden = false
                 }
 
                 self.hud.hide(animated: true, afterDelay: 0.5)

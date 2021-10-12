@@ -3,15 +3,15 @@ PODS:
     - GCDWebServer (~> 3.5)
     - MBProgressHUD (~> 1.2)
     - TLPhotoPicker (~> 2.1)
-    - Tor (~> 406.7.1)
+    - Tor (~> 406.7.2)
   - GCDWebServer (3.5.4):
     - GCDWebServer/Core (= 3.5.4)
   - GCDWebServer/Core (3.5.4)
   - MBProgressHUD (1.2.0)
   - Nimble (9.2.1)
   - Quick (4.0.0)
-  - TLPhotoPicker (2.1.4)
-  - Tor (406.7.1)
+  - TLPhotoPicker (2.1.5)
+  - Tor (406.7.2)
 
 DEPENDENCIES:
   - AdParticipesCumCepis (from `../`)
@@ -32,13 +32,13 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  AdParticipesCumCepis: 69a53c02ef09f4ed2d91f74c014111be90974aec
+  AdParticipesCumCepis: 74a06bcf4d201cd4bf5c187ec45cdd56ae30f15b
   GCDWebServer: 2c156a56c8226e2d5c0c3f208a3621ccffbe3ce4
   MBProgressHUD: 3ee5efcc380f6a79a7cc9b363dd669c5e1ae7406
   Nimble: e7e615c0335ee4bf5b0d786685451e62746117d5
   Quick: 6473349e43b9271a8d43839d9ba1c442ed1b7ac4
-  TLPhotoPicker: f486e8499e1c3f464d0e886697635e25a72a52b8
-  Tor: 2f73dc2da6da10ff3cdc0babe3e5f1e43ccc0fb5
+  TLPhotoPicker: 44ebb15e46b8326d7a12445c2304ac8ee2512e27
+  Tor: 2113eeda30e664c1adf863529a1c970ca254e6fa
 
 PODFILE CHECKSUM: d49f3c42558f4cb86f80fc1f69260ac17e82384a
 

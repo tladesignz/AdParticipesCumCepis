@@ -37,11 +37,20 @@ class TorManager {
     }()
 
     public lazy var onionAuth: TorOnionAuth? = {
-        guard let url = serviceDir?.appendingPathComponent("authorized_clients") else {
+        guard let url = serviceDir else {
             return nil
         }
 
-        return TorOnionAuth(dirUrl: url)
+        let pubKeyDir = url.appendingPathComponent("authorized_clients", isDirectory: true)
+
+        // Try to create the public key directory, if it doesn't exist, yet.
+        // Tor will do that on first start, but then we would need to restart
+        // to make it load the key.
+        // However, we need to be careful with access flags, because
+        // otherwise Tor will complain and reject its use.
+        try? FileManager.default.createSecureDirIfNotExists(at: pubKeyDir)
+
+        return TorOnionAuth(privateDirUrl: url, andPublicDirUrl: url)
     }()
 
     public lazy var serviceUrl: URL? = {

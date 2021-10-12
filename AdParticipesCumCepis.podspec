@@ -42,7 +42,7 @@ TODO: Add long description of the pod here.
   # s.frameworks = 'UIKit', 'MapKit'
 
   s.dependency 'TLPhotoPicker', '~> 2.1'
-  s.dependency 'Tor', '~> 406.7.1'
+  s.dependency 'Tor', '~> 406.7.2'
   s.dependency 'MBProgressHUD', '~> 1.2'
   s.dependency 'GCDWebServer', '~> 3.5'
 
