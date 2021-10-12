@@ -10,11 +10,10 @@ import UIKit
 import TLPhotoPicker
 import Photos
 import MBProgressHUD
-import GCDWebServer
 import Tor
 
 open class ShareViewController: UIViewController, UITableViewDataSource, UITableViewDelegate,
-                                    TLPhotosPickerViewControllerDelegate
+                                TLPhotosPickerViewControllerDelegate, WebServerDelegate
 {
 
     @IBOutlet weak var tableView: UITableView!
@@ -110,16 +109,6 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
         return hud
     }()
 
-    private lazy var webServer: GCDWebServer =  {
-        let webServer = GCDWebServer()
-
-        webServer.addDefaultHandler(forMethod: "GET", request: GCDWebServerRequest.self) { _ in
-            return GCDWebServerDataResponse(html: "<html><body><p>Hello World</p></body></html>")
-        }
-
-        return webServer
-    }()
-
 
     open override func viewDidLoad() {
         super.viewDidLoad()
@@ -146,9 +135,8 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
         navigationItem.rightBarButtonItem?.isEnabled = false
 
         do {
-            try webServer.start(options: [
-                GCDWebServerOption_Port: TorManager.webServerPort,
-                GCDWebServerOption_AutomaticallySuspendInBackground: false])
+            WebServerManager.shared.delegate = self
+            try WebServerManager.shared.start()
         }
         catch {
             hud.label.text = error.localizedDescription
@@ -240,7 +228,8 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
     @IBAction public func stop() {
         TorManager.shared.stop()
 
-        webServer.stop()
+        WebServerManager.shared.stop()
+        WebServerManager.shared.delegate = nil
 
         navigationItem.hidesBackButton = false
         navigationItem.rightBarButtonItem?.isEnabled = true
@@ -327,5 +316,20 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
         startSharingBt.isEnabled = !assets.isEmpty
 
         return true
+    }
+
+
+    // MARK: WebServerDelegate
+
+    var templateName: String {
+        return "send"
+    }
+
+    var statusCode: Int {
+        return 200
+    }
+
+    var data: [String: Any] {
+        return [:]
     }
 }
