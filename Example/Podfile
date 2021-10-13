@@ -7,6 +7,8 @@ source 'https://github.com/CocoaPods/Specs.git'
 target 'AdParticipesCumCepis_Example' do
   pod 'AdParticipesCumCepis', :path => '../'
 
+  pod 'Stencil', '~> 0.14'
+
   target 'AdParticipesCumCepis_Tests' do
     inherit! :search_paths
 

@@ -45,6 +45,5 @@ TODO: Add long description of the pod here.
   s.dependency 'Tor', '~> 406.7.2'
   s.dependency 'MBProgressHUD', '~> 1.2'
   s.dependency 'GCDWebServer', '~> 3.5'
-  s.dependency 'GRMustache.swift', '~> 4.0'
 
 end

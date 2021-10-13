@@ -109,6 +109,10 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
         return hud
     }()
 
+    private var webServer: WebServer? {
+        return (UIApplication.shared.delegate as? BaseAppDelegate)?.webServer
+    }
+
 
     open override func viewDidLoad() {
         super.viewDidLoad()
@@ -135,8 +139,8 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
         navigationItem.rightBarButtonItem?.isEnabled = false
 
         do {
-            WebServerManager.shared.delegate = self
-            try WebServerManager.shared.start()
+            webServer?.delegate = self
+            try webServer?.start()
         }
         catch {
             hud.label.text = error.localizedDescription
@@ -228,8 +232,8 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
     @IBAction public func stop() {
         TorManager.shared.stop()
 
-        WebServerManager.shared.stop()
-        WebServerManager.shared.delegate = nil
+        webServer?.stop()
+        webServer?.delegate = nil
 
         navigationItem.hidesBackButton = false
         navigationItem.rightBarButtonItem?.isEnabled = true
@@ -321,15 +325,15 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
 
     // MARK: WebServerDelegate
 
-    var templateName: String {
+    public var templateName: String {
         return "send"
     }
 
-    var statusCode: Int {
+    public var statusCode: Int {
         return 200
     }
 
-    var data: [String: Any] {
+    public var context: [String: Any] {
         return [:]
     }
 }

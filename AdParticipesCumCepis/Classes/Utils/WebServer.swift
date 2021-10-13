@@ -1,5 +1,5 @@
 //
-//  WebServerManager.swift
+//  WebServer.swift
 //  AdParticipesCumCepis
 //
 //  Created by Benjamin Erhart on 12.10.21.
@@ -7,33 +7,27 @@
 
 import Foundation
 import GCDWebServer
-import Mustache
 
-protocol WebServerDelegate {
+public protocol WebServerDelegate {
 
     var templateName: String { get }
 
     var statusCode: Int { get }
 
-    var data: [String: Any] { get }
+    var context: [String: Any] { get }
 }
 
-class WebServerManager {
-
-    static let shared = WebServerManager()
-
+open class WebServer {
 
     var delegate: WebServerDelegate? = nil
 
 
-    private static let defaultData: [String: Any] = [
-        "static_url_path": ""]
+    private let webServer = GCDWebServer()
 
-    private lazy var webServer: GCDWebServer = {
-        let webServer = GCDWebServer()
 
+    public init(staticPath: String) {
         webServer.addGETHandler(
-            forBasePath: "/", directoryPath: Router.bundle.path(forResource: "static", ofType: nil)!,
+            forBasePath: "/", directoryPath: staticPath,
             indexFilename: nil, cacheAge: 3600, allowRangeRequests: true)
 
         webServer.addHandler(forMethod: "GET", pathRegex: ".*\\.html", request: GCDWebServerRequest.self) { _ in
@@ -41,17 +35,8 @@ class WebServerManager {
             var statusCode = 500
 
             do {
-                let tpl = try Template(named: self.delegate?.templateName ?? "404",
-                                       bundle: Router.bundle,
-                                       templateExtension: "html", encoding: .utf8)
-
-                var data = WebServerManager.defaultData
-
-                if let dData = self.delegate?.data {
-                    data.merge(dData) { $1 }
-                }
-
-                html = try tpl.render(data)
+                html = try self.renderTemplate(name: self.delegate?.templateName ?? "404",
+                                               context: self.delegate?.context ?? [:])
 
                 statusCode = self.delegate?.statusCode ?? 404
             }
@@ -69,17 +54,22 @@ class WebServerManager {
         webServer.addHandler(forMethod: "GET", path: "/", request: GCDWebServerRequest.self) {
             return GCDWebServerResponse(redirect: URL(string: "index.html", relativeTo: $0.url)!, permanent: false)
         }
+    }
 
-        return webServer
-    }()
 
-    func start() throws {
+    // MARK: Public Methods
+
+    open func start() throws {
         try webServer.start(options: [
             GCDWebServerOption_Port: TorManager.webServerPort,
             GCDWebServerOption_AutomaticallySuspendInBackground: false])
     }
 
-    func stop() {
+    open func stop() {
         webServer.stop()
+    }
+
+    open func renderTemplate(name: String, context: [String: Any]) throws -> String {
+        fatalError("Subclasses need to implement the `renderTemplate()` method.")
     }
 }

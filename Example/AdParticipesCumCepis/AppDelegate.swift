@@ -11,5 +11,12 @@ import AdParticipesCumCepis
 
 @UIApplicationMain
 class AppDelegate: BaseAppDelegate {
+
+    override func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]?) -> Bool
+    {
+        webServer = WebServer()
+
+        return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+    }
 }
 

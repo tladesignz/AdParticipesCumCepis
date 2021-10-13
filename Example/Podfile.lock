@@ -1,17 +1,18 @@
 PODS:
   - AdParticipesCumCepis (0.1.0):
     - GCDWebServer (~> 3.5)
-    - GRMustache.swift (~> 4.0)
     - MBProgressHUD (~> 1.2)
     - TLPhotoPicker (~> 2.1)
     - Tor (~> 406.7.2)
   - GCDWebServer (3.5.4):
     - GCDWebServer/Core (= 3.5.4)
   - GCDWebServer/Core (3.5.4)
-  - GRMustache.swift (4.0.1)
   - MBProgressHUD (1.2.0)
   - Nimble (9.2.1)
+  - PathKit (1.0.1)
   - Quick (4.0.0)
+  - Stencil (0.14.1):
+    - PathKit (~> 1.0.0)
   - TLPhotoPicker (2.1.5)
   - Tor (406.7.2)
 
@@ -19,14 +20,16 @@ DEPENDENCIES:
   - AdParticipesCumCepis (from `../`)
   - Nimble (~> 9.2.1)
   - Quick (~> 4.0.0)
+  - Stencil (~> 0.14)
 
 SPEC REPOS:
   https://github.com/CocoaPods/Specs.git:
     - GCDWebServer
-    - GRMustache.swift
     - MBProgressHUD
     - Nimble
+    - PathKit
     - Quick
+    - Stencil
     - TLPhotoPicker
     - Tor
 
@@ -35,15 +38,16 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  AdParticipesCumCepis: 29c9ece698dca762592b88f1436abde271b6f34b
+  AdParticipesCumCepis: 74a06bcf4d201cd4bf5c187ec45cdd56ae30f15b
   GCDWebServer: 2c156a56c8226e2d5c0c3f208a3621ccffbe3ce4
-  GRMustache.swift: a6436504284b22b4b05daf5f46f77bd3fe00a9a2
   MBProgressHUD: 3ee5efcc380f6a79a7cc9b363dd669c5e1ae7406
   Nimble: e7e615c0335ee4bf5b0d786685451e62746117d5
+  PathKit: 83b97c9c61b62e61ecafd598b33b2782575c33e4
   Quick: 6473349e43b9271a8d43839d9ba1c442ed1b7ac4
+  Stencil: ae946a4a73dc4e7c01b4913682474928c93f85dd
   TLPhotoPicker: 44ebb15e46b8326d7a12445c2304ac8ee2512e27
   Tor: 2113eeda30e664c1adf863529a1c970ca254e6fa
 
-PODFILE CHECKSUM: d49f3c42558f4cb86f80fc1f69260ac17e82384a
+PODFILE CHECKSUM: ffcd790c9bf24e978604af285f525f031dc885f4
 
 COCOAPODS: 1.11.2

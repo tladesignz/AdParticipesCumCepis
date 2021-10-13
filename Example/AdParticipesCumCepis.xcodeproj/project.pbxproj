@@ -12,6 +12,9 @@
 		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
 		607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDE1AFB9204008FA782 /* LaunchScreen.xib */; };
 		607FACEC1AFB9204008FA782 /* Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACEB1AFB9204008FA782 /* Tests.swift */; };
+		A03D69E92716E02200CB810B /* static in Resources */ = {isa = PBXBuildFile; fileRef = A03D69E72716E02200CB810B /* static */; };
+		A03D69EA2716E02200CB810B /* templates in Resources */ = {isa = PBXBuildFile; fileRef = A03D69E82716E02200CB810B /* templates */; };
+		A03D69EC2716F22000CB810B /* WebServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A03D69EB2716F22000CB810B /* WebServer.swift */; };
 		A0CB4BEE270C6EE500A41D1D /* Config.m in Sources */ = {isa = PBXBuildFile; fileRef = A0CB4BEA270C6EB400A41D1D /* Config.m */; };
 		A0CB4BF0270C6EF400A41D1D /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0CB4BEB270C6EB400A41D1D /* Config.swift */; };
 		B15D1154A7189880860FF508 /* Pods_AdParticipesCumCepis_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8F76472286B4A6E5DFDFCC95 /* Pods_AdParticipesCumCepis_Example.framework */; };
@@ -40,6 +43,9 @@
 		607FACEB1AFB9204008FA782 /* Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests.swift; sourceTree = "<group>"; };
 		89615B487CA3316090C37F19 /* Pods-AdParticipesCumCepis_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AdParticipesCumCepis_Example.release.xcconfig"; path = "Target Support Files/Pods-AdParticipesCumCepis_Example/Pods-AdParticipesCumCepis_Example.release.xcconfig"; sourceTree = "<group>"; };
 		8F76472286B4A6E5DFDFCC95 /* Pods_AdParticipesCumCepis_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AdParticipesCumCepis_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A03D69E72716E02200CB810B /* static */ = {isa = PBXFileReference; lastKnownFileType = folder; path = static; sourceTree = "<group>"; };
+		A03D69E82716E02200CB810B /* templates */ = {isa = PBXFileReference; lastKnownFileType = folder; path = templates; sourceTree = "<group>"; };
+		A03D69EB2716F22000CB810B /* WebServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebServer.swift; sourceTree = "<group>"; };
 		A0AEAEEE270C73B300E426F0 /* AdParticipesCumCepis-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AdParticipesCumCepis-Bridging-Header.h"; sourceTree = "<group>"; };
 		A0CB4BE5270C6CB600A41D1D /* Podfile.lock */ = {isa = PBXFileReference; lastKnownFileType = text; path = Podfile.lock; sourceTree = "<group>"; };
 		A0CB4BE6270C6CB700A41D1D /* Podfile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
@@ -102,6 +108,7 @@
 				607FACF51AFB993E008FA782 /* Podspec Metadata */,
 				607FACD21AFB9204008FA782 /* Example for AdParticipesCumCepis */,
 				A0CB4BE9270C6E8200A41D1D /* Shared */,
+				A03D69B52716DD4200CB810B /* Resources */,
 				607FACE81AFB9204008FA782 /* Tests */,
 				607FACD11AFB9204008FA782 /* Products */,
 				2C78A097B63A1C73166EC0C6 /* Pods */,
@@ -125,6 +132,7 @@
 				607FACDC1AFB9204008FA782 /* Images.xcassets */,
 				607FACDE1AFB9204008FA782 /* LaunchScreen.xib */,
 				607FACD31AFB9204008FA782 /* Supporting Files */,
+				A03D69EB2716F22000CB810B /* WebServer.swift */,
 			);
 			name = "Example for AdParticipesCumCepis";
 			path = AdParticipesCumCepis;
@@ -167,6 +175,15 @@
 				A0CB4BE8270C6CCF00A41D1D /* .travis.yml */,
 			);
 			name = "Podspec Metadata";
+			sourceTree = "<group>";
+		};
+		A03D69B52716DD4200CB810B /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				A03D69E72716E02200CB810B /* static */,
+				A03D69E82716E02200CB810B /* templates */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 		A0CB4BE9270C6E8200A41D1D /* Shared */ = {
@@ -273,7 +290,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A03D69EA2716E02200CB810B /* templates in Resources */,
 				607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */,
+				A03D69E92716E02200CB810B /* static in Resources */,
 				607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -297,8 +316,9 @@
 				"${PODS_ROOT}/Target Support Files/Pods-AdParticipesCumCepis_Example/Pods-AdParticipesCumCepis_Example-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/AdParticipesCumCepis/AdParticipesCumCepis.framework",
 				"${BUILT_PRODUCTS_DIR}/GCDWebServer/GCDWebServer.framework",
-				"${BUILT_PRODUCTS_DIR}/GRMustache.swift/Mustache.framework",
 				"${BUILT_PRODUCTS_DIR}/MBProgressHUD/MBProgressHUD.framework",
+				"${BUILT_PRODUCTS_DIR}/PathKit/PathKit.framework",
+				"${BUILT_PRODUCTS_DIR}/Stencil/Stencil.framework",
 				"${BUILT_PRODUCTS_DIR}/TLPhotoPicker/TLPhotoPicker.framework",
 				"${PODS_ROOT}/Tor/Build/iOS/Tor.framework",
 			);
@@ -306,8 +326,9 @@
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AdParticipesCumCepis.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GCDWebServer.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Mustache.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MBProgressHUD.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PathKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Stencil.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/TLPhotoPicker.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Tor.framework",
 			);
@@ -390,6 +411,7 @@
 				A0CB4BF0270C6EF400A41D1D /* Config.swift in Sources */,
 				A0CB4BEE270C6EE500A41D1D /* Config.m in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
+				A03D69EC2716F22000CB810B /* WebServer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
