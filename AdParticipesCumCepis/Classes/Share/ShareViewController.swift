@@ -50,9 +50,6 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
     @IBOutlet weak var customTitleTf: UITextField! {
         didSet {
             customTitleTf.placeholder = NSLocalizedString("Custom title", comment: "")
-
-            // TODO: Add support.
-            customTitleTf.isEnabled = false
         }
     }
 
@@ -119,7 +116,9 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
 
         navigationItem.title = NSLocalizedString("Share", comment: "")
 
-        navigationItem.rightBarButtonItem = UIBarButtonItem.init(barButtonSystemItem: .add, target: self, action: #selector(add))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(add))
+
+        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard)))
     }
 
 
@@ -132,11 +131,17 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
         present(vc, animated: true, completion: nil)
     }
 
+    @IBAction public func dismissKeyboard() {
+        customTitleTf.resignFirstResponder()
+    }
+
     @IBAction public func start() {
         hud.show(animated: true)
 
         navigationItem.hidesBackButton = true
         navigationItem.rightBarButtonItem?.isEnabled = false
+
+        context["title"] = customTitleTf.text ?? ""
 
         do {
             webServer?.delegate = self
@@ -333,7 +338,5 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
         return 200
     }
 
-    public var context: [String: Any] {
-        return [:]
-    }
+    public var context: [String: Any] = ["title": ""]
 }
