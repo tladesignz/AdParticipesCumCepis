@@ -8,6 +8,7 @@
 
 import Photos
 import TLPhotoPicker
+import SwiftUTI
 
 open class Asset {
 
@@ -25,6 +26,8 @@ open class Asset {
     }
 
     open var size_human: String?
+
+    open var link: String?
 
     open var tlPhAsset: TLPHAsset?
 
@@ -59,10 +62,32 @@ open class Asset {
         return o
     }()
 
+    private lazy var originalImageOptions: PHImageRequestOptions = {
+        let o = PHImageRequestOptions()
+        o.isNetworkAccessAllowed = true
+        o.isSynchronous = false
+        o.resizeMode = .none
+        o.version = .current
+
+        return o
+    }()
+
+    private lazy var exportVideoOptions: PHVideoRequestOptions = {
+        let o = PHVideoRequestOptions()
+        o.deliveryMode = .automatic
+        o.isNetworkAccessAllowed = true
+        o.version = .current
+
+        return o
+    }()
 
     public init(_ asset: TLPHAsset) {
         tlPhAsset = asset
         basename = asset.originalFileName
+
+        if let name = basename {
+            link = "/assets/\(name)"
+        }
 
         if asset.type == .video {
             asset.videoSize(options: sizeVideoOptions) { size in
@@ -77,14 +102,56 @@ open class Asset {
     }
 
     open func getThumbnail(_ resultHandler: @escaping (UIImage?, [AnyHashable: Any]?) -> Void) {
-        if let phAsset = tlPhAsset?.phAsset {
-            PHImageManager.default().requestImage(
-                for: phAsset, targetSize: CGSize(width: 160, height: 160),
-                   contentMode: .aspectFit, options: thumbnailImageOptions,
-                   resultHandler: resultHandler)
+        guard let phAsset = tlPhAsset?.phAsset else {
+            resultHandler(nil, nil)
+
+            return
         }
+
+        PHCachingImageManager.default().requestImage(
+            for: phAsset, targetSize: CGSize(width: 160, height: 160),
+               contentMode: .aspectFit, options: thumbnailImageOptions,
+               resultHandler: resultHandler)
+    }
+
+    open func getOriginal(_ resultHandler: @escaping (_ data: Data?, _ contentType: String?) -> Void) {
+        guard let tlPhAsset = tlPhAsset,
+              let phAsset = tlPhAsset.phAsset
         else {
             resultHandler(nil, nil)
+
+            return
+        }
+
+        if tlPhAsset.type == .video {
+//            PHCachingImageManager.default().requestPlayerItem(
+//                forVideo: phAsset, options: exportVideoOptions)
+//            { item, info in
+//                item.
+//            }
+//
+//            PHCachingImageManager.default().requestExportSession(
+//                forVideo: phAsset,
+//                options: exportVideoOptions,
+//                exportPreset: AVAssetExportPresetMediumQuality)
+//            { session, info in
+//                session.
+//            }
+
+            resultHandler(nil, nil)
+        }
+        else {
+            PHCachingImageManager.default().requestImageData(
+                for: phAsset, options: originalImageOptions)
+            { (imageData, dataUTI, orientation, info) in
+                var uti = UTI.image
+
+                if let dataUTI = dataUTI {
+                    uti = UTI(rawValue: dataUTI)
+                }
+
+                resultHandler(imageData, uti.mimeType)
+            }
         }
     }
 }

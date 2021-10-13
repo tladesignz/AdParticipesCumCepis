@@ -3,6 +3,7 @@
 //  AdParticipesCumCepis
 //
 //  Created by Benjamin Erhart on 12.10.21.
+//  Copyright © 2021 Guardian Project. All rights reserved.
 //
 
 import Foundation
@@ -15,6 +16,8 @@ public protocol WebServerDelegate {
     var statusCode: Int { get }
 
     var context: [String: Any] { get }
+
+    func renderAsset(name: String, _ completion: @escaping (_ data: Data?, _ contentType: String?) -> Void)
 }
 
 open class WebServer {
@@ -26,11 +29,13 @@ open class WebServer {
 
 
     public init(staticPath: String) {
+        // Static files.
         webServer.addGETHandler(
             forBasePath: "/", directoryPath: staticPath,
             indexFilename: nil, cacheAge: 3600, allowRangeRequests: true)
 
-        webServer.addHandler(forMethod: "GET", pathRegex: ".*\\.html", request: GCDWebServerRequest.self) { _ in
+        // The template, the view controller wants rendered.
+        webServer.addHandler(forMethod: "GET", path: "/index.html", request: GCDWebServerRequest.self) { _ in
             var html = "<html><body><h1>Internal Server Error</h1></body></html>"
             var statusCode = 500
 
@@ -54,6 +59,25 @@ open class WebServer {
         webServer.addHandler(forMethod: "GET", path: "/", request: GCDWebServerRequest.self) {
             return GCDWebServerResponse(redirect: URL(string: "index.html", relativeTo: $0.url)!, permanent: false)
         }
+
+        // Assets provided by the view controller.
+        webServer.addHandler(forMethod: "GET", pathRegex: "/assets/.", request: GCDWebServerRequest.self) { req, completion in
+            guard let delegate = self.delegate else {
+                self.notFound(req, completion)
+
+                return
+            }
+
+            delegate.renderAsset(name: req.url.lastPathComponent) { data, contentType in
+                if let data = data {
+                    completion(GCDWebServerDataResponse(
+                        data: data, contentType: contentType ?? "application/octet-stream"))
+                }
+                else {
+                    self.notFound(req, completion)
+                }
+            }
+        }
     }
 
 
@@ -71,5 +95,29 @@ open class WebServer {
 
     open func renderTemplate(name: String, context: [String: Any]) throws -> String {
         fatalError("Subclasses need to implement the `renderTemplate()` method.")
+    }
+
+
+    // MARK: Private Methods
+
+    private func notFound(_ req: GCDWebServerRequest, _ completion: GCDWebServerCompletionBlock) {
+        var html: String? = nil
+
+        do {
+            html = try self.renderTemplate(name: "404", context: [:])
+        }
+        catch {
+            print("[\(String(describing: type(of: self)))] error: \(error.localizedDescription)")
+        }
+
+        if let html = html {
+            let res = GCDWebServerDataResponse(html: html)
+            res?.statusCode = 404
+
+            completion(res)
+        }
+        else {
+            completion(GCDWebServerDataResponse(statusCode: 404))
+        }
     }
 }

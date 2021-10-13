@@ -331,6 +331,17 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
 
     public var context: [String: Any] = [
         "title": "",
+        "download_individual_files": true,
         "filesize_human": "",
         "files": []]
+
+    public func renderAsset(name: String, _ completion: @escaping (_ data: Data?, _ contentType: String?) -> Void) {
+        guard let asset = assets.first(where: { $0.basename == name }) else {
+            completion(nil, nil)
+
+            return
+        }
+
+        asset.getOriginal(completion)
+    }
 }
