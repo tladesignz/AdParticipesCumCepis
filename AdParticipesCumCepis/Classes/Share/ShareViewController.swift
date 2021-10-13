@@ -8,7 +8,6 @@
 
 import UIKit
 import TLPhotoPicker
-import Photos
 import MBProgressHUD
 import Tor
 
@@ -91,7 +90,7 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
     }
 
 
-    open var assets = [TLPHAsset]()
+    open var assets = [Asset]()
 
 
     private lazy var hud: MBProgressHUD = {
@@ -142,6 +141,9 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
         navigationItem.rightBarButtonItem?.isEnabled = false
 
         context["title"] = customTitleTf.text ?? ""
+        context["files"] = assets
+        context["filesize_human"] = ByteCountFormatter.string(
+            fromByteCount: assets.reduce(0, { $0 + ($1.size ?? 0) }), countStyle: .file)
 
         do {
             webServer?.delegate = self
@@ -294,21 +296,10 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
         let cell = tableView.dequeueReusableCell(withIdentifier: "asset")
             ?? UITableViewCell(style: .default, reuseIdentifier: "asset")
 
-        cell.textLabel?.text = asset.originalFileName
+        cell.textLabel?.text = asset.basename
 
-        if let phAsset = asset.phAsset {
-            let options = PHImageRequestOptions()
-            options.isSynchronous = false
-            options.resizeMode = .fast
-            options.isNetworkAccessAllowed = false
-            options.version = .current
-
-            PHImageManager.default().requestImage(
-                for: phAsset, targetSize: CGSize(width: 160, height: 160),
-                   contentMode: .aspectFit, options: options)
-            { image, info in
-                cell.imageView?.image = image
-            }
+        asset.getThumbnail { image, info in
+            cell.imageView?.image = image
         }
 
         return cell
@@ -318,7 +309,7 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
     // MARK: TLPhotosPickerViewControllerDelegate
 
     public func shouldDismissPhotoPicker(withTLPHAssets: [TLPHAsset]) -> Bool {
-        assets = withTLPHAssets
+        assets = withTLPHAssets.map { Asset($0) }
 
         tableView.reloadData()
 
@@ -338,5 +329,8 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
         return 200
     }
 
-    public var context: [String: Any] = ["title": ""]
+    public var context: [String: Any] = [
+        "title": "",
+        "filesize_human": "",
+        "files": []]
 }
