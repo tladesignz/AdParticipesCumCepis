@@ -119,15 +119,13 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
 
         view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard)))
 
-        guard let docsDir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
-            return
-        }
+        let fm = FileManager.default
 
-        guard let files = try? FileManager.default.contentsOfDirectory(at: docsDir, includingPropertiesForKeys: nil, options: .skipsHiddenFiles) else {
-            return
+        if let docsDir = fm.urls(for: .documentDirectory, in: .userDomainMask).first,
+            let files = try? fm.contentsOfDirectory(at: docsDir, includingPropertiesForKeys: nil, options: .skipsHiddenFiles)
+        {
+            items += files.map { File($0) }
         }
-
-        items += files.map { File($0) }
     }
 
 
@@ -151,9 +149,7 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
         navigationItem.rightBarButtonItem?.isEnabled = false
 
         context["title"] = customTitleTf.text ?? ""
-        context["files"] = items
-        context["filesize_human"] = ByteCountFormatter.string(
-            fromByteCount: items.reduce(0, { $0 + ($1.size ?? 0) }), countStyle: .file)
+        updateItemsForSharing()
 
         do {
             webServer?.delegate = self
@@ -316,10 +312,52 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
     }
 
 
+    // MARK: UITableViewDelegate
+
+    @available(iOS 11.0, *)
+    public func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath)
+    -> UISwipeActionsConfiguration?
+    {
+        let action = UIContextualAction(style: .destructive, title: nil) { (_, _, completion) in
+            do {
+                let item = self.items[indexPath.row]
+
+                if let item = item as? File {
+                    try FileManager.default.removeItem(at: item.url)
+                }
+
+                self.items.remove(at: indexPath.row)
+
+                self.updateItemsForSharing()
+
+                tableView.beginUpdates()
+                tableView.deleteRows(at: [indexPath], with: .automatic)
+                tableView.endUpdates()
+
+                completion(true)
+            }
+            catch {
+                print(error)
+
+                completion(false)
+            }
+        }
+
+        if #available(iOS 13.0, *) {
+            action.image = UIImage(systemName: "trash.fill")
+        }
+        else {
+            action.title = NSLocalizedString("Delete", comment: "")
+        }
+
+        return UISwipeActionsConfiguration(actions: [action])
+    }
+
+
     // MARK: TLPhotosPickerViewControllerDelegate
 
     public func shouldDismissPhotoPicker(withTLPHAssets: [TLPHAsset]) -> Bool {
-        items = withTLPHAssets.map { Asset($0) }
+        items += withTLPHAssets.map { Asset($0) }
 
         tableView.reloadData()
 
@@ -353,5 +391,14 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
         }
 
         item.getOriginal(completion)
+    }
+
+
+    // MARK: Private Methods
+
+    private func updateItemsForSharing() {
+        self.context["files"] = self.items
+        self.context["filesize_human"] = ByteCountFormatter.string(
+            fromByteCount: self.items.reduce(0, { $0 + ($1.size ?? 0) }), countStyle: .file)
     }
 }

@@ -10,7 +10,7 @@ import Foundation
 
 open class File: Item {
 
-    public let url: URL?
+    public let url: URL
 
     public init(_ url: URL) {
         self.url = url
