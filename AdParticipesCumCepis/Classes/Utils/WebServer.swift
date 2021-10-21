@@ -17,7 +17,7 @@ public protocol WebServerDelegate {
 
     var context: [String: Any] { get }
 
-    func renderAsset(name: String, _ completion: @escaping (_ file: URL?, _ data: Data?, _ contentType: String?) -> Void)
+    func getItem(name: String, _ completion: @escaping (_ file: URL?, _ data: Data?, _ contentType: String?) -> Void)
 }
 
 open class WebServer {
@@ -61,14 +61,14 @@ open class WebServer {
         }
 
         // Assets provided by the view controller.
-        webServer.addHandler(forMethod: "GET", pathRegex: "/assets/.", request: GCDWebServerRequest.self) { req, completion in
+        webServer.addHandler(forMethod: "GET", pathRegex: "/items/.", request: GCDWebServerRequest.self) { req, completion in
             guard let delegate = self.delegate else {
                 self.notFound(req, completion)
 
                 return
             }
 
-            delegate.renderAsset(name: req.url.lastPathComponent) { file, data, contentType in
+            delegate.getItem(name: req.url.lastPathComponent) { file, data, contentType in
                 if let file = file {
                     completion(GCDWebServerFileResponse(file: file.path))
                 }

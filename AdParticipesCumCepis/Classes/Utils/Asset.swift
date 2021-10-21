@@ -10,24 +10,7 @@ import Photos
 import TLPhotoPicker
 import SwiftUTI
 
-open class Asset {
-
-    open var basename: String?
-
-    open var size: Int64? {
-        didSet {
-            if let size = size {
-                size_human = ByteCountFormatter.string(fromByteCount: size, countStyle: .file)
-            }
-            else {
-                size_human = nil
-            }
-        }
-    }
-
-    open var size_human: String?
-
-    open var link: String?
+open class Asset: Item {
 
     open var tlPhAsset: TLPHAsset?
 
@@ -85,11 +68,8 @@ open class Asset {
 
     public init(_ asset: TLPHAsset) {
         tlPhAsset = asset
-        basename = asset.originalFileName
 
-        if let name = basename {
-            link = "/assets/\(name)"
-        }
+        super.init(name: asset.originalFileName)
 
         if asset.type == .video {
             asset.videoSize(options: sizeVideoOptions) { size in
@@ -103,7 +83,7 @@ open class Asset {
         }
     }
 
-    open func getThumbnail(_ resultHandler: @escaping (UIImage?, [AnyHashable: Any]?) -> Void) {
+    open override func getThumbnail(_ resultHandler: @escaping (UIImage?, [AnyHashable: Any]?) -> Void) {
         guard let phAsset = tlPhAsset?.phAsset else {
             resultHandler(nil, nil)
 
@@ -116,7 +96,7 @@ open class Asset {
                resultHandler: resultHandler)
     }
 
-    open func getOriginal(_ resultHandler: @escaping (_ file: URL?, _ data: Data?, _ contentType: String?) -> Void) {
+    open override func getOriginal(_ resultHandler: @escaping (_ file: URL?, _ data: Data?, _ contentType: String?) -> Void) {
         guard let tlPhAsset = tlPhAsset,
               let phAsset = tlPhAsset.phAsset
         else {

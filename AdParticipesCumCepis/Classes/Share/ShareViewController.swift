@@ -90,7 +90,7 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
     }
 
 
-    open var assets = [Asset]()
+    open var items = [Item]()
 
 
     private lazy var hud: MBProgressHUD = {
@@ -118,6 +118,16 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(add))
 
         view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard)))
+
+        guard let docsDir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            return
+        }
+
+        guard let files = try? FileManager.default.contentsOfDirectory(at: docsDir, includingPropertiesForKeys: nil, options: .skipsHiddenFiles) else {
+            return
+        }
+
+        items += files.map { File($0) }
     }
 
 
@@ -141,9 +151,9 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
         navigationItem.rightBarButtonItem?.isEnabled = false
 
         context["title"] = customTitleTf.text ?? ""
-        context["files"] = assets
+        context["files"] = items
         context["filesize_human"] = ByteCountFormatter.string(
-            fromByteCount: assets.reduce(0, { $0 + ($1.size ?? 0) }), countStyle: .file)
+            fromByteCount: items.reduce(0, { $0 + ($1.size ?? 0) }), countStyle: .file)
 
         do {
             webServer?.delegate = self
@@ -287,18 +297,18 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
     // MARK: UITableViewDataSource
 
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return assets.count
+        return items.count
     }
 
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let asset = assets[indexPath.row]
+        let item = items[indexPath.row]
 
-        let cell = tableView.dequeueReusableCell(withIdentifier: "asset")
-            ?? UITableViewCell(style: .default, reuseIdentifier: "asset")
+        let cell = tableView.dequeueReusableCell(withIdentifier: "item")
+            ?? UITableViewCell(style: .default, reuseIdentifier: "item")
 
-        cell.textLabel?.text = asset.basename
+        cell.textLabel?.text = item.basename
 
-        asset.getThumbnail { image, info in
+        item.getThumbnail { image, info in
             cell.imageView?.image = image
         }
 
@@ -309,11 +319,11 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
     // MARK: TLPhotosPickerViewControllerDelegate
 
     public func shouldDismissPhotoPicker(withTLPHAssets: [TLPHAsset]) -> Bool {
-        assets = withTLPHAssets.map { Asset($0) }
+        items = withTLPHAssets.map { Asset($0) }
 
         tableView.reloadData()
 
-        startSharingBt.isEnabled = !assets.isEmpty
+        startSharingBt.isEnabled = !items.isEmpty
 
         return true
     }
@@ -335,13 +345,13 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
         "filesize_human": "",
         "files": []]
 
-    public func renderAsset(name: String, _ completion: @escaping (_ url: URL?, _ data: Data?, _ contentType: String?) -> Void) {
-        guard let asset = assets.first(where: { $0.basename == name }) else {
+    public func getItem(name: String, _ completion: @escaping (_ url: URL?, _ data: Data?, _ contentType: String?) -> Void) {
+        guard let item = items.first(where: { $0.basename == name }) else {
             completion(nil, nil, nil)
 
             return
         }
 
-        asset.getOriginal(completion)
+        item.getOriginal(completion)
     }
 }
