@@ -10,9 +10,11 @@ import UIKit
 import TLPhotoPicker
 import MBProgressHUD
 import Tor
+import SwiftUTI
 
 open class ShareViewController: UIViewController, UITableViewDataSource, UITableViewDelegate,
-                                TLPhotosPickerViewControllerDelegate, WebServerDelegate
+                                TLPhotosPickerViewControllerDelegate, WebServerDelegate,
+                                UIDocumentPickerDelegate
 {
 
     @IBOutlet weak var tableView: UITableView!
@@ -115,7 +117,10 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
 
         navigationItem.title = NSLocalizedString("Share", comment: "")
 
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(add))
+        navigationItem.rightBarButtonItems = [
+            UIBarButtonItem(barButtonSystemItem: .camera, target: self, action: #selector(addAsset)),
+            UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addDocument))
+        ]
 
         view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard)))
 
@@ -131,11 +136,18 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
 
     // MARK: Actions
 
-    @objc public func add() {
+    @objc public func addAsset() {
         let vc = TLPhotosPickerViewController()
         vc.delegate = self
 
         present(vc, animated: true, completion: nil)
+    }
+
+    @objc func addDocument() {
+        let vc = UIDocumentPickerViewController(documentTypes: [UTI.item.rawValue], in: .import)
+        vc.delegate = self
+
+        present(vc, animated: true)
     }
 
     @IBAction public func dismissKeyboard() {
@@ -146,7 +158,7 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
         hud.show(animated: true)
 
         navigationItem.hidesBackButton = true
-        navigationItem.rightBarButtonItem?.isEnabled = false
+        navigationItem.rightBarButtonItems?.forEach { $0.isEnabled = false }
 
         context["title"] = customTitleTf.text ?? ""
         updateItemsForSharing()
@@ -249,7 +261,7 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
         webServer?.delegate = nil
 
         navigationItem.hidesBackButton = false
-        navigationItem.rightBarButtonItem?.isEnabled = true
+        navigationItem.rightBarButtonItems?.forEach { $0.isEnabled = true }
 
         startContainer.layer.opacity = 0
         startContainer.isHidden = false
@@ -357,9 +369,12 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
     // MARK: TLPhotosPickerViewControllerDelegate
 
     public func shouldDismissPhotoPicker(withTLPHAssets: [TLPHAsset]) -> Bool {
+        let offset = items.count
+
         items += withTLPHAssets.map { Asset($0) }
 
-        tableView.reloadData()
+        tableView.insertRows(at: withTLPHAssets.indices.map { IndexPath(row: offset + $0, section: 0) },
+                             with: .automatic)
 
         startSharingBt.isEnabled = !items.isEmpty
 
@@ -391,6 +406,26 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
         }
 
         item.getOriginal(completion)
+    }
+
+
+    // MARK: UIDocumentPickerDelegate
+
+    public func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+        guard controller.documentPickerMode == .import &&
+            urls.count > 0
+        else {
+            return
+        }
+
+        let offset = items.count
+
+        items += urls.map { File($0) }
+
+        tableView.insertRows(at: urls.indices.map { IndexPath(row: offset + $0, section: 0) },
+                             with: .automatic)
+
+        startSharingBt.isEnabled = !items.isEmpty
     }
 
 
