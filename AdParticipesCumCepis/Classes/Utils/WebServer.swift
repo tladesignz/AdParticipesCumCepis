@@ -17,7 +17,7 @@ public protocol WebServerDelegate {
 
     var context: [String: Any] { get }
 
-    func renderAsset(name: String, _ completion: @escaping (_ data: Data?, _ contentType: String?) -> Void)
+    func renderAsset(name: String, _ completion: @escaping (_ file: URL?, _ data: Data?, _ contentType: String?) -> Void)
 }
 
 open class WebServer {
@@ -68,8 +68,11 @@ open class WebServer {
                 return
             }
 
-            delegate.renderAsset(name: req.url.lastPathComponent) { data, contentType in
-                if let data = data {
+            delegate.renderAsset(name: req.url.lastPathComponent) { file, data, contentType in
+                if let file = file {
+                    completion(GCDWebServerFileResponse(file: file.path))
+                }
+                else if let data = data {
                     completion(GCDWebServerDataResponse(
                         data: data, contentType: contentType ?? "application/octet-stream"))
                 }

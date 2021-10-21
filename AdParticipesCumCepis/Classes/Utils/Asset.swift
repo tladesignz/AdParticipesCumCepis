@@ -81,6 +81,8 @@ open class Asset {
         return o
     }()
 
+    private lazy var phManager = PHCachingImageManager.default()
+
     public init(_ asset: TLPHAsset) {
         tlPhAsset = asset
         basename = asset.originalFileName
@@ -108,40 +110,84 @@ open class Asset {
             return
         }
 
-        PHCachingImageManager.default().requestImage(
+        phManager.requestImage(
             for: phAsset, targetSize: CGSize(width: 160, height: 160),
                contentMode: .aspectFit, options: thumbnailImageOptions,
                resultHandler: resultHandler)
     }
 
-    open func getOriginal(_ resultHandler: @escaping (_ data: Data?, _ contentType: String?) -> Void) {
+    open func getOriginal(_ resultHandler: @escaping (_ file: URL?, _ data: Data?, _ contentType: String?) -> Void) {
         guard let tlPhAsset = tlPhAsset,
               let phAsset = tlPhAsset.phAsset
         else {
-            resultHandler(nil, nil)
-
-            return
+            return resultHandler(nil, nil, nil)
         }
 
         if tlPhAsset.type == .video {
-//            PHCachingImageManager.default().requestPlayerItem(
-//                forVideo: phAsset, options: exportVideoOptions)
-//            { item, info in
-//                item.
-//            }
-//
-//            PHCachingImageManager.default().requestExportSession(
-//                forVideo: phAsset,
-//                options: exportVideoOptions,
-//                exportPreset: AVAssetExportPresetMediumQuality)
-//            { session, info in
-//                session.
-//            }
+            let fm = FileManager.default
 
-            resultHandler(nil, nil)
+            guard let filename = basename,
+                  var tempFile = fm.urls(for: .cachesDirectory, in: .userDomainMask).first?.appendingPathComponent(filename)
+            else {
+                return resultHandler(nil, nil, nil)
+            }
+
+            tempFile.deletePathExtension()
+            tempFile.appendPathExtension("mp4")
+
+            if fm.fileExists(atPath: tempFile.path) {
+                return resultHandler(tempFile, nil, nil)
+            }
+
+            phManager.requestAVAsset(forVideo: phAsset, options: exportVideoOptions) {
+                avAsset, audioMix, info in
+
+                guard let avAsset = avAsset else {
+                    return resultHandler(nil, nil, nil)
+                }
+
+                let presets = AVAssetExportSession.exportPresets(compatibleWith: avAsset)
+                var preset: String? = presets.first
+
+                // Try to use the medium quality, which should be good enough for now.
+                if presets.contains(AVAssetExportPresetMediumQuality) {
+                    preset = AVAssetExportPresetMediumQuality
+                }
+
+                guard let preset = preset else {
+                    return resultHandler(nil, nil, nil)
+                }
+
+                self.phManager.requestExportSession(forVideo: phAsset, options: self.exportVideoOptions, exportPreset: preset) {
+                    exportSession, info in
+
+                    guard let exportSession = exportSession else {
+                        return resultHandler(nil, nil, nil)
+                    }
+
+                    exportSession.outputURL = tempFile
+                    exportSession.outputFileType = .mp4
+
+                    exportSession.exportAsynchronously {
+                        switch exportSession.status {
+                        case .completed:
+                            return resultHandler(tempFile, nil, nil)
+
+                        case .failed, .cancelled:
+                            try? fm.removeItem(at: tempFile)
+
+                            return resultHandler(nil, nil, nil)
+
+                        default:
+                            break
+                        }
+                    }
+
+                }
+            }
         }
         else {
-            PHCachingImageManager.default().requestImageData(
+            phManager.requestImageData(
                 for: phAsset, options: originalImageOptions)
             { (imageData, dataUTI, orientation, info) in
                 var uti = UTI.image
@@ -150,7 +196,7 @@ open class Asset {
                     uti = UTI(rawValue: dataUTI)
                 }
 
-                resultHandler(imageData, uti.mimeType)
+                resultHandler(nil, imageData, uti.mimeType)
             }
         }
     }
