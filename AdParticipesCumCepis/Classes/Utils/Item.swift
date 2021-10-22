@@ -9,6 +9,8 @@
 import Foundation
 
 open class Item {
+
+    public static let thumbnailSize = 160
     
     public let basename: String?
 

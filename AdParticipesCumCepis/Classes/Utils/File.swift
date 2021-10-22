@@ -10,6 +10,13 @@ import Foundation
 
 open class File: Item {
 
+    private static let cgThumbnailOptions = [
+        kCGImageSourceCreateThumbnailWithTransform: true,
+        kCGImageSourceCreateThumbnailFromImageAlways: true,
+        kCGImageSourceThumbnailMaxPixelSize: Item.thumbnailSize
+        ] as CFDictionary
+
+
     public let url: URL
 
     public init(_ url: URL) {
@@ -22,6 +29,12 @@ open class File: Item {
 
 
     open override func getThumbnail(_ resultHandler: @escaping (UIImage?, [AnyHashable: Any]?) -> Void) {
+        if let source = CGImageSourceCreateWithURL(url as CFURL, nil) {
+            if let cgThumbnail = CGImageSourceCreateThumbnailAtIndex(source, 0, File.cgThumbnailOptions) {
+                return resultHandler(UIImage(cgImage: cgThumbnail), nil)
+            }
+        }
+
         resultHandler(nil, nil)
     }
 

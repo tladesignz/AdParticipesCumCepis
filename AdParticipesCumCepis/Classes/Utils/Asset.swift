@@ -91,7 +91,7 @@ open class Asset: Item {
         }
 
         phManager.requestImage(
-            for: phAsset, targetSize: CGSize(width: 160, height: 160),
+            for: phAsset, targetSize: CGSize(width: Item.thumbnailSize, height: Item.thumbnailSize),
                contentMode: .aspectFit, options: thumbnailImageOptions,
                resultHandler: resultHandler)
     }
@@ -162,7 +162,6 @@ open class Asset: Item {
                             break
                         }
                     }
-
                 }
             }
         }
