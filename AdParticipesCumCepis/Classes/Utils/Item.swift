@@ -30,6 +30,9 @@ open class Item {
     public let link: String?
 
 
+    lazy var fm = FileManager.default
+
+
     public init(name: String?) {
         basename = name
 

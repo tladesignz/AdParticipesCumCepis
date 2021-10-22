@@ -24,7 +24,7 @@ open class File: Item {
 
         super.init(name: url.lastPathComponent)
 
-        size = (try? FileManager.default.attributesOfItem(atPath: url.path))?[.size] as? Int64
+        size = fm.size(of: url)
     }
 
 

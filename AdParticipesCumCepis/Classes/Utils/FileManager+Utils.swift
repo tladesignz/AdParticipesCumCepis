@@ -25,4 +25,8 @@ extension FileManager {
                 attributes: [.posixPermissions: NSNumber(value: 0o700)])
         }
     }
+
+    func size(of url: URL) -> Int64? {
+        return (try? attributesOfItem(atPath: url.path))?[.size] as? Int64
+    }
 }

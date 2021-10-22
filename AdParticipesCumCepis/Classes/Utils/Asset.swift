@@ -66,19 +66,44 @@ open class Asset: Item {
 
     private lazy var phManager = PHCachingImageManager.default()
 
+    private lazy var tempFile: URL? = {
+        guard let filename = basename,
+              let dir = fm.urls(for: .cachesDirectory, in: .userDomainMask).first?.appendingPathComponent("assets")
+        else {
+            return nil
+        }
+
+        // Store in subfolder, otherwise collisions might happen.
+        if !fm.fileExists(atPath: dir.path) {
+            try? fm.createDirectory(at: dir, withIntermediateDirectories: true)
+        }
+
+        return dir.appendingPathComponent(filename)
+            .deletingPathExtension()
+            // Set correct extension, so GCDWebServer can figure out correct MIME type
+            .appendingPathExtension("mp4")
+    }()
+
+
     public init(_ asset: TLPHAsset) {
         tlPhAsset = asset
 
         super.init(name: asset.originalFileName)
 
         if asset.type == .video {
-            asset.videoSize(options: sizeVideoOptions) { size in
-                self.size = Int64(size)
+            if let tempFile = tempFile, fm.fileExists(atPath: tempFile.path) {
+                size = fm.size(of: tempFile)
+            }
+
+            if size == nil {
+                asset.videoSize(options: sizeVideoOptions) { [weak self] size in
+                    self?.size = Int64(size)
+                }
             }
         }
         else {
-            asset.photoSize(options: sizeImageOptions, completion: { size in
-                self.size = Int64(size)
+            asset.photoSize(options: sizeImageOptions, completion: { [weak self] size in
+                self?.size = Int64(size)
             }, livePhotoVideoSize: true)
         }
     }
@@ -104,30 +129,23 @@ open class Asset: Item {
         }
 
         if tlPhAsset.type == .video {
-            let fm = FileManager.default
-
-            guard let filename = basename,
-                  var tempFile = fm.urls(for: .cachesDirectory, in: .userDomainMask).first?.appendingPathComponent(filename)
-            else {
+            guard let tempFile = tempFile else {
                 return resultHandler(nil, nil, nil)
             }
-
-            tempFile.deletePathExtension()
-            tempFile.appendPathExtension("mp4")
 
             if fm.fileExists(atPath: tempFile.path) {
                 return resultHandler(tempFile, nil, nil)
             }
 
             phManager.requestAVAsset(forVideo: phAsset, options: exportVideoOptions) {
-                avAsset, audioMix, info in
+                [weak self] avAsset, audioMix, info in
 
                 guard let avAsset = avAsset else {
                     return resultHandler(nil, nil, nil)
                 }
 
                 let presets = AVAssetExportSession.exportPresets(compatibleWith: avAsset)
-                var preset: String? = presets.first
+                var preset: String? = presets.first // The first one should be a rather low quality.
 
                 // Try to use the medium quality, which should be good enough for now.
                 if presets.contains(AVAssetExportPresetMediumQuality) {
@@ -138,7 +156,7 @@ open class Asset: Item {
                     return resultHandler(nil, nil, nil)
                 }
 
-                self.phManager.requestExportSession(forVideo: phAsset, options: self.exportVideoOptions, exportPreset: preset) {
+                self?.phManager.requestExportSession(forVideo: phAsset, options: self?.exportVideoOptions, exportPreset: preset) {
                     exportSession, info in
 
                     guard let exportSession = exportSession else {
@@ -151,10 +169,13 @@ open class Asset: Item {
                     exportSession.exportAsynchronously {
                         switch exportSession.status {
                         case .completed:
+                            // Update with correct size of export.
+                            self?.size = self?.fm.size(of: tempFile)
+
                             return resultHandler(tempFile, nil, nil)
 
                         case .failed, .cancelled:
-                            try? fm.removeItem(at: tempFile)
+                            try? self?.fm.removeItem(at: tempFile)
 
                             return resultHandler(nil, nil, nil)
 

@@ -114,19 +114,24 @@ open class WebServer {
                 group.enter()
 
                 item.getOriginal { file, data, contentType in
-                    if let file = file {
-                        try? archive.addEntry(with: name,
-                                               relativeTo: file.deletingLastPathComponent(),
-                                               compressionMethod: .deflate)
-                    }
-                    else if let data = data {
-                        try? archive.addEntry(with: name,
-                                               type: .file,
-                                               uncompressedSize: UInt32(data.count),
-                                               compressionMethod: .deflate)
-                        { position, size in
-                            return data.subdata(in: position ..< position + size)
+                    do {
+                        if let file = file {
+                            try archive.addEntry(with: file.lastPathComponent,
+                                                 relativeTo: file.deletingLastPathComponent(),
+                                                 compressionMethod: .deflate)
                         }
+                        else if let data = data {
+                            try archive.addEntry(with: name,
+                                                 type: .file,
+                                                 uncompressedSize: UInt32(data.count),
+                                                 compressionMethod: .deflate)
+                            { position, size in
+                                return data.subdata(in: position ..< position + size)
+                            }
+                        }
+                    }
+                    catch {
+                        print("[\(String(describing: type(of: self)))] error: \(error)")
                     }
 
                     group.leave()
