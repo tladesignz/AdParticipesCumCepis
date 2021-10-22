@@ -74,49 +74,52 @@ open class WebServer {
             }
 
             if items.count == 1 {
-                self.getOriginal(items[0], completion)
+                return self.getOriginal(items[0], completion)
             }
-            else {
-                guard let archive = Archive(accessMode: .create) else {
+
+            guard let archive = Archive(accessMode: .create) else {
+                return self.error(500, completion)
+            }
+
+            let group = DispatchGroup()
+
+            for item in items {
+                guard let name = item.basename, !name.isEmpty else {
+                    continue
+                }
+
+                group.enter()
+
+                item.getOriginal { file, data, contentType in
+                    if let file = file {
+                        try? archive.addEntry(with: name,
+                                               relativeTo: file.deletingLastPathComponent(),
+                                               compressionMethod: .deflate)
+                    }
+                    else if let data = data {
+                        try? archive.addEntry(with: name,
+                                               type: .file,
+                                               uncompressedSize: UInt32(data.count),
+                                               compressionMethod: .deflate)
+                        { position, size in
+                            return data.subdata(in: position ..< position + size)
+                        }
+                    }
+
+                    group.leave()
+                }
+            }
+
+            group.notify(queue: .global(qos: .userInitiated)) {
+                guard let data = archive.data else {
                     return self.error(500, completion)
                 }
 
-                let group = DispatchGroup()
+                let res = GCDWebServerDataResponse(data: data, contentType: "application/zip")
+                res.setValue("attachment; filename=\"\(Bundle.main.displayName).zip\"",
+                             forAdditionalHeader: "Content-Disposition")
 
-                for item in items {
-                    group.enter()
-
-                    item.getOriginal { file, data, contentType in
-                        if let file = file {
-                            try? archive.addEntry(with: item.basename!,
-                                                   relativeTo: file.deletingLastPathComponent(),
-                                                   compressionMethod: .deflate)
-                        }
-                        else if let data = data {
-                            try? archive.addEntry(with: item.basename!,
-                                                   type: .file,
-                                                   uncompressedSize: UInt32(data.count),
-                                                   compressionMethod: .deflate)
-                            { position, size in
-                                return data.subdata(in: position ..< position + size)
-                            }
-                        }
-
-                        group.leave()
-                    }
-                }
-
-                group.notify(queue: .global(qos: .userInitiated)) {
-                    guard let data = archive.data else {
-                        return self.error(500, completion)
-                    }
-
-                    let res = GCDWebServerDataResponse(data: data, contentType: "application/zip")
-                    res.setValue("attachment; filename=\"\(Bundle.main.displayName).zip\"",
-                                 forAdditionalHeader: "Content-Disposition")
-
-                    completion(res)
-                }
+                completion(res)
             }
         }
     }
