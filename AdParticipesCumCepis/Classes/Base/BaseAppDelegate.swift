@@ -10,7 +10,7 @@ import UIKit
 
 open class BaseAppDelegate: UIResponder, UIApplicationDelegate {
 
-    open var window: UIWindow? = UIWindow(frame: UIScreen.main.bounds)
+    open lazy var window: UIWindow? = UIWindow(frame: UIScreen.main.bounds)
 
     open var webServer: WebServer? = nil
 
