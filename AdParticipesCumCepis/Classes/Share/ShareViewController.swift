@@ -398,16 +398,6 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
         "filesize_human": "",
         "files": []]
 
-    public func getItem(name: String, _ completion: @escaping (_ url: URL?, _ data: Data?, _ contentType: String?) -> Void) {
-        guard let item = items.first(where: { $0.basename == name }) else {
-            completion(nil, nil, nil)
-
-            return
-        }
-
-        item.getOriginal(completion)
-    }
-
 
     // MARK: UIDocumentPickerDelegate
 

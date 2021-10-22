@@ -46,5 +46,6 @@ TODO: Add long description of the pod here.
   s.dependency 'MBProgressHUD', '~> 1.2'
   s.dependency 'GCDWebServer', '~> 3.5'
   s.dependency 'SwiftUTI', '~> 1.0'
+  s.dependency 'ZIPFoundation', '~> 0.9'
 
 end

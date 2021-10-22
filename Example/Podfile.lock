@@ -5,6 +5,7 @@ PODS:
     - SwiftUTI (~> 1.0)
     - TLPhotoPicker (~> 2.1)
     - Tor (~> 406.7.2)
+    - ZIPFoundation (~> 0.9)
   - GCDWebServer (3.5.4):
     - GCDWebServer/Core (= 3.5.4)
   - GCDWebServer/Core (3.5.4)
@@ -17,6 +18,7 @@ PODS:
   - SwiftUTI (1.0.6)
   - TLPhotoPicker (2.1.5)
   - Tor (406.7.2)
+  - ZIPFoundation (0.9.11)
 
 DEPENDENCIES:
   - AdParticipesCumCepis (from `../`)
@@ -35,13 +37,14 @@ SPEC REPOS:
     - SwiftUTI
     - TLPhotoPicker
     - Tor
+    - ZIPFoundation
 
 EXTERNAL SOURCES:
   AdParticipesCumCepis:
     :path: "../"
 
 SPEC CHECKSUMS:
-  AdParticipesCumCepis: 3fd87e1761b23e8871583176c77be992e1acda3c
+  AdParticipesCumCepis: 8a2c2bd194f638387679d4c26d426f8d0104be2f
   GCDWebServer: 2c156a56c8226e2d5c0c3f208a3621ccffbe3ce4
   MBProgressHUD: 3ee5efcc380f6a79a7cc9b363dd669c5e1ae7406
   Nimble: e7e615c0335ee4bf5b0d786685451e62746117d5
@@ -51,6 +54,7 @@ SPEC CHECKSUMS:
   SwiftUTI: e83d65dbe9fba0a0ff7cc9031cd30b2d82acebef
   TLPhotoPicker: 44ebb15e46b8326d7a12445c2304ac8ee2512e27
   Tor: 2113eeda30e664c1adf863529a1c970ca254e6fa
+  ZIPFoundation: b1f0de4eed33e74a676f76e12559ab6b75990197
 
 PODFILE CHECKSUM: ffcd790c9bf24e978604af285f525f031dc885f4
 

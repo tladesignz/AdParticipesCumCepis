@@ -8,6 +8,7 @@
 
 import Foundation
 import GCDWebServer
+import ZIPFoundation
 
 public protocol WebServerDelegate {
 
@@ -17,7 +18,7 @@ public protocol WebServerDelegate {
 
     var context: [String: Any] { get }
 
-    func getItem(name: String, _ completion: @escaping (_ file: URL?, _ data: Data?, _ contentType: String?) -> Void)
+    var items: [Item] { get }
 }
 
 open class WebServer {
@@ -62,22 +63,64 @@ open class WebServer {
 
         // Assets provided by the view controller.
         webServer.addHandler(forMethod: "GET", pathRegex: "/items/.", request: GCDWebServerRequest.self) { req, completion in
-            guard let delegate = self.delegate else {
-                self.notFound(req, completion)
-
-                return
+            guard let item = self.delegate?.items.first(where: { $0.basename == req.url.lastPathComponent }) else {
+                return self.error(404, completion)
             }
 
-            delegate.getItem(name: req.url.lastPathComponent) { file, data, contentType in
-                if let file = file {
-                    completion(GCDWebServerFileResponse(file: file.path))
+            self.getOriginal(item, completion)
+
+        }
+
+        webServer.addHandler(forMethod: "GET", path: "/download", request: GCDWebServerRequest.self) { req, completion in
+            guard let items = self.delegate?.items,
+                  items.count > 0
+            else {
+                return self.error(404, completion)
+            }
+
+            if items.count == 1 {
+                self.getOriginal(items[0], completion)
+            }
+            else {
+                guard let archive = Archive(accessMode: .create) else {
+                    return self.error(500, completion)
                 }
-                else if let data = data {
-                    completion(GCDWebServerDataResponse(
-                        data: data, contentType: contentType ?? "application/octet-stream"))
+
+                let group = DispatchGroup()
+
+                for item in items {
+                    group.enter()
+
+                    item.getOriginal { file, data, contentType in
+                        if let file = file {
+                            try? archive.addEntry(with: item.basename!,
+                                                   relativeTo: file.deletingLastPathComponent(),
+                                                   compressionMethod: .deflate)
+                        }
+                        else if let data = data {
+                            try? archive.addEntry(with: item.basename!,
+                                                   type: .file,
+                                                   uncompressedSize: UInt32(data.count),
+                                                   compressionMethod: .deflate)
+                            { position, size in
+                                return data.subdata(in: position ..< position + size)
+                            }
+                        }
+
+                        group.leave()
+                    }
                 }
-                else {
-                    self.notFound(req, completion)
+
+                group.notify(queue: .global(qos: .userInitiated)) {
+                    guard let data = archive.data else {
+                        return self.error(500, completion)
+                    }
+
+                    let res = GCDWebServerDataResponse(data: data, contentType: "application/zip")
+                    res.setValue("attachment; filename=\"\(Bundle.main.displayName).zip\"",
+                                 forAdditionalHeader: "Content-Disposition")
+
+                    completion(res)
                 }
             }
         }
@@ -103,11 +146,11 @@ open class WebServer {
 
     // MARK: Private Methods
 
-    private func notFound(_ req: GCDWebServerRequest, _ completion: GCDWebServerCompletionBlock) {
+    private func error(_ statusCode: Int, _ completion: GCDWebServerCompletionBlock) {
         var html: String? = nil
 
         do {
-            html = try self.renderTemplate(name: "404", context: [:])
+            html = try self.renderTemplate(name: String(statusCode), context: [:])
         }
         catch {
             print("[\(String(describing: type(of: self)))] error: \(error.localizedDescription)")
@@ -115,12 +158,27 @@ open class WebServer {
 
         if let html = html {
             let res = GCDWebServerDataResponse(html: html)
-            res?.statusCode = 404
+            res?.statusCode = statusCode
 
             completion(res)
         }
         else {
-            completion(GCDWebServerDataResponse(statusCode: 404))
+            completion(GCDWebServerDataResponse(statusCode: statusCode))
+        }
+    }
+
+    private func getOriginal(_ item: Item, _ completion: @escaping GCDWebServerCompletionBlock) {
+        item.getOriginal { file, data, contentType in
+            if let file = file {
+                completion(GCDWebServerFileResponse(file: file.path))
+            }
+            else if let data = data {
+                completion(GCDWebServerDataResponse(
+                    data: data, contentType: contentType ?? "application/octet-stream"))
+            }
+            else {
+                self.error(404, completion)
+            }
         }
     }
 }
