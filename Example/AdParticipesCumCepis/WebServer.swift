@@ -14,7 +14,7 @@ import PathKit
 class WebServer: AdParticipesCumCepis.WebServer {
 
     private static let defaultContext: [String: Any] = [
-        "static_url_path": ""]
+        "static_url_path": "/static"]
 
 
     private let renderer: Environment

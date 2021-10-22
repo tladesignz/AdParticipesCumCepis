@@ -29,9 +29,32 @@ open class WebServer {
 
     public init(staticPath: String) {
         // Static files.
-        webServer.addGETHandler(
-            forBasePath: "/", directoryPath: staticPath,
-            indexFilename: nil, cacheAge: 3600, allowRangeRequests: true)
+        webServer.addHandler(forMethod: "GET", pathRegex: "^/static/.*$", request: GCDWebServerRequest.self) { req, completion in
+            var pc = req.url.pathComponents
+
+            // First component is the root ("/"). Remove.
+            pc.removeFirst()
+
+            // Second component should be the "static" pseudo-folder. Remove that, too.
+            pc.removeFirst()
+
+            var url = URL(fileURLWithPath: staticPath)
+
+            // Put rest of the path onto our internal file-system path.
+            pc.forEach { url.appendPathComponent($0) }
+
+            // Clean the path.
+            url = URL(fileURLWithPath: GCDWebServerNormalizePath(url.path))
+
+            guard FileManager.default.isReadableFile(atPath: url.path) else {
+                return self.error(404, completion)
+            }
+
+            let res = self.respond(file: url)
+            res.cacheControlMaxAge = 12 * 60 * 60
+
+            completion(res)
+        }
 
         // The template, the view controller wants rendered.
         webServer.addHandler(forMethod: "GET", path: "/index.html", request: GCDWebServerRequest.self) { req, completion in
@@ -42,7 +65,7 @@ open class WebServer {
             do {
                 let html = try self.renderTemplate(name: delegate.templateName, context: delegate.context)
 
-                return completion(GCDWebServerDataResponse(html: html))
+                return completion(self.respond(html: html))
             }
             catch {
                 print("[\(String(describing: type(of: self)))] error: \(error)")
@@ -53,11 +76,11 @@ open class WebServer {
 
         // Redirect request to root directory to "index.html".
         webServer.addHandler(forMethod: "GET", path: "/", request: GCDWebServerRequest.self) {
-            return GCDWebServerResponse(redirect: URL(string: "index.html", relativeTo: $0.url)!, permanent: false)
+            return self.respond(redirect: URL(string: "index.html", relativeTo: $0.url))
         }
 
         // Items provided by the view controller.
-        webServer.addHandler(forMethod: "GET", pathRegex: "/items/.", request: GCDWebServerRequest.self) { req, completion in
+        webServer.addHandler(forMethod: "GET", pathRegex: "^/items/.+$", request: GCDWebServerRequest.self) { req, completion in
             guard let item = self.delegate?.items.first(where: { $0.basename == req.url.lastPathComponent }) else {
                 return self.error(404, completion)
             }
@@ -115,7 +138,7 @@ open class WebServer {
                     return self.error(500, completion)
                 }
 
-                let res = GCDWebServerDataResponse(data: data, contentType: "application/zip")
+                let res = self.respond(data, "application/zip")
                 res.setValue("attachment; filename=\"\(Bundle.main.displayName).zip\"",
                              forAdditionalHeader: "Content-Disposition")
 
@@ -130,7 +153,8 @@ open class WebServer {
     open func start() throws {
         try webServer.start(options: [
             GCDWebServerOption_Port: TorManager.webServerPort,
-            GCDWebServerOption_AutomaticallySuspendInBackground: false])
+            GCDWebServerOption_AutomaticallySuspendInBackground: false,
+            GCDWebServerOption_ServerName: Bundle.main.displayName])
     }
 
     open func stop() {
@@ -155,28 +179,66 @@ open class WebServer {
         }
 
         if let html = html {
-            let res = GCDWebServerDataResponse(html: html)
-            res?.statusCode = statusCode
-
-            completion(res)
+            completion(self.respond(html: html, statusCode: statusCode))
         }
         else {
-            completion(GCDWebServerDataResponse(statusCode: statusCode))
+            completion(self.respond(statusCode: statusCode))
         }
     }
 
     private func getOriginal(_ item: Item, _ completion: @escaping GCDWebServerCompletionBlock) {
         item.getOriginal { file, data, contentType in
             if let file = file {
-                completion(GCDWebServerFileResponse(file: file.path))
+                completion(self.respond(file: file))
             }
             else if let data = data {
-                completion(GCDWebServerDataResponse(
-                    data: data, contentType: contentType ?? "application/octet-stream"))
+                completion(self.respond(data, contentType ?? "application/octet-stream"))
             }
             else {
                 self.error(404, completion)
             }
         }
+    }
+
+    private func respond(html: String? = nil, _ data: Data? = nil, _ contentType: String? = nil,
+                         file: URL? = nil, redirect: URL? = nil, statusCode: Int? = nil)
+    -> GCDWebServerResponse
+    {
+        let res: GCDWebServerResponse
+
+        if let html = html {
+            res = GCDWebServerDataResponse(html: html) ?? GCDWebServerResponse()
+        }
+        else if let data = data, let contentType = contentType {
+            res = GCDWebServerDataResponse(data: data, contentType: contentType)
+        }
+        else if let file = file {
+            res = GCDWebServerFileResponse(file: file.path) ?? GCDWebServerResponse()
+        }
+        else if let redirect = redirect {
+            res = GCDWebServerResponse(redirect: redirect, permanent: false)
+        }
+        else {
+            res = GCDWebServerResponse()
+        }
+
+        if let statusCode = statusCode {
+            res.statusCode = statusCode
+        }
+
+
+        res.setValue("default-src 'self'; frame-ancestors 'none'; form-action 'self'; base-uri 'self'; img-src 'self' data:;",
+                     forAdditionalHeader: "Content-Security-Policy")
+
+        res.setValue("no-referrer", forAdditionalHeader: "Referrer-Policy")
+
+        res.setValue("nosniff", forAdditionalHeader: "X-Content-Type-Options")
+
+        res.setValue("DENY", forAdditionalHeader: "X-Frame-Options")
+
+        res.setValue(" 1; mode=block", forAdditionalHeader: "X-Xss-Protection")
+
+
+        return res
     }
 }
