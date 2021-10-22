@@ -157,8 +157,9 @@ open class WebServer {
 
     open func start() throws {
         try webServer.start(options: [
-            GCDWebServerOption_Port: TorManager.webServerPort,
             GCDWebServerOption_AutomaticallySuspendInBackground: false,
+            GCDWebServerOption_BindToLocalhost: true,
+            GCDWebServerOption_Port: TorManager.webServerPort,
             GCDWebServerOption_ServerName: Bundle.main.displayName])
     }
 
