@@ -2,7 +2,7 @@
 <html>
 
 <head>
-  <title>OnionShare is closed</title>
+  <title>{{ app_name }} is closed</title>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="{{ static_url_path }}/img/favicon.ico" rel="icon" type="image/x-icon">
@@ -11,14 +11,14 @@
 
 <body>
   <header class="clearfix">
-    <img class="logo" src="{{ static_url_path }}/img/logo.png" title="OnionShare">
-    <h1>{% if title %}{{ title }}{% else %}OnionShare{% endif %}</h1>
+    <img class="logo" src="{{ static_url_path }}/img/logo.png" title="{{ app_name }}">
+    <h1>{% if title %}{{ title }}{% else %}{{ app_name }}{% endif %}</h1>
   </header>
 
   <div class="info-wrapper">
     <div class="info">
-      <p><img class="logo" src="{{ static_url_path }}/img/logo_large.png" title="OnionShare"></p>
-      <p class="info-header">Thank you for using OnionShare</p>
+      <p><img class="logo" src="{{ static_url_path }}/img/logo_large.png" title="{{ app_name }}"></p>
+      <p class="info-header">Thank you for using {{ app_name }}</p>
       <p class="info-description">You may now close this window.</p>
     </div>
   </div>

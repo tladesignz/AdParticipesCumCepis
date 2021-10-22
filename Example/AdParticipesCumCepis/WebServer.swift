@@ -14,6 +14,7 @@ import PathKit
 class WebServer: AdParticipesCumCepis.WebServer {
 
     private static let defaultContext: [String: Any] = [
+        "app_name": Bundle.main.displayName,
         "static_url_path": "/static"]
 
 
