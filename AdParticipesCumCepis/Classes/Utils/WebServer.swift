@@ -14,8 +14,6 @@ public protocol WebServerDelegate {
 
     var templateName: String { get }
 
-    var statusCode: Int { get }
-
     var context: [String: Any] { get }
 
     var items: [Item] { get }
@@ -36,24 +34,21 @@ open class WebServer {
             indexFilename: nil, cacheAge: 3600, allowRangeRequests: true)
 
         // The template, the view controller wants rendered.
-        webServer.addHandler(forMethod: "GET", path: "/index.html", request: GCDWebServerRequest.self) { _ in
-            var html = "<html><body><h1>Internal Server Error</h1></body></html>"
-            var statusCode = 500
+        webServer.addHandler(forMethod: "GET", path: "/index.html", request: GCDWebServerRequest.self) { req, completion in
+            guard let delegate = self.delegate else {
+                return self.error(404, completion)
+            }
 
             do {
-                html = try self.renderTemplate(name: self.delegate?.templateName ?? "404",
-                                               context: self.delegate?.context ?? [:])
+                let html = try self.renderTemplate(name: delegate.templateName, context: delegate.context)
 
-                statusCode = self.delegate?.statusCode ?? 404
+                return completion(GCDWebServerDataResponse(html: html))
             }
             catch {
-                print("[\(String(describing: type(of: self)))] error: \(error.localizedDescription)")
+                print("[\(String(describing: type(of: self)))] error: \(error)")
             }
 
-            let res = GCDWebServerDataResponse(html: html)
-            res?.statusCode = statusCode
-
-            return res
+            self.error(500, completion)
         }
 
         // Redirect request to root directory to "index.html".
@@ -61,16 +56,16 @@ open class WebServer {
             return GCDWebServerResponse(redirect: URL(string: "index.html", relativeTo: $0.url)!, permanent: false)
         }
 
-        // Assets provided by the view controller.
+        // Items provided by the view controller.
         webServer.addHandler(forMethod: "GET", pathRegex: "/items/.", request: GCDWebServerRequest.self) { req, completion in
             guard let item = self.delegate?.items.first(where: { $0.basename == req.url.lastPathComponent }) else {
                 return self.error(404, completion)
             }
 
             self.getOriginal(item, completion)
-
         }
 
+        // All items as a ZIP file or the single item, if only one.
         webServer.addHandler(forMethod: "GET", path: "/download", request: GCDWebServerRequest.self) { req, completion in
             guard let items = self.delegate?.items,
                   items.count > 0

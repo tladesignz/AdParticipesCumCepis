@@ -388,10 +388,6 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
         return "send"
     }
 
-    public var statusCode: Int {
-        return 200
-    }
-
     public var context: [String: Any] = [
         "title": "",
         "download_individual_files": true,
