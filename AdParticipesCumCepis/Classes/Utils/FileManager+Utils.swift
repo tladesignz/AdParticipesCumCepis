@@ -7,7 +7,15 @@
 
 import Foundation
 
-extension FileManager {
+public extension FileManager {
+
+    var cacheDir: URL? {
+        return urls(for: .cachesDirectory, in: .userDomainMask).first
+    }
+
+    var docsDir: URL? {
+        return urls(for: .documentDirectory, in: .userDomainMask).first
+    }
 
     func createSecureDirIfNotExists(at url: URL) throws {
         // Try to remove it, if it is *not* a directory.
@@ -28,5 +36,15 @@ extension FileManager {
 
     func size(of url: URL) -> Int64? {
         return (try? attributesOfItem(atPath: url.path))?[.size] as? Int64
+    }
+
+    func contentsOfDirectory(at url: URL?) -> [URL] {
+        guard let url = url else {
+            return []
+        }
+
+        return (try? contentsOfDirectory(
+            at: url, includingPropertiesForKeys: nil,
+            options: .skipsHiddenFiles)) ?? []
     }
 }

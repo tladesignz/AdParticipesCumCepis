@@ -125,12 +125,7 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
         view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard)))
 
         let fm = FileManager.default
-
-        if let docsDir = fm.urls(for: .documentDirectory, in: .userDomainMask).first,
-            let files = try? fm.contentsOfDirectory(at: docsDir, includingPropertiesForKeys: nil, options: .skipsHiddenFiles)
-        {
-            items += files.map { File($0) }
-        }
+        items += fm.contentsOfDirectory(at: fm.docsDir).map { File($0, relativeTo: fm.docsDir) }
     }
 
 

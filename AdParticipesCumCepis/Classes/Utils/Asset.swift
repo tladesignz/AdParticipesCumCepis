@@ -68,7 +68,7 @@ open class Asset: Item {
 
     private lazy var tempFile: URL? = {
         guard let filename = basename,
-              let dir = fm.urls(for: .cachesDirectory, in: .userDomainMask).first?.appendingPathComponent("assets")
+              let dir = fm.cacheDir?.appendingPathComponent("assets", isDirectory: true)
         else {
             return nil
         }
