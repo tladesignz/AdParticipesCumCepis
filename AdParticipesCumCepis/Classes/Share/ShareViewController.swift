@@ -150,6 +150,7 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
     }
 
     @IBAction public func start() {
+        hud.progress = 0
         hud.show(animated: true)
 
         navigationItem.hidesBackButton = true
