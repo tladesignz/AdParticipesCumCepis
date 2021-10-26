@@ -13,7 +13,7 @@ import PathKit
 
 class WebServer: AdParticipesCumCepis.WebServer {
 
-    private static let defaultContext: [String: Any] = [
+    private static var defaultContext: [String: Any] = [
         "app_name": Bundle.main.displayName,
         "static_url_path": "/static"]
 
@@ -26,6 +26,8 @@ class WebServer: AdParticipesCumCepis.WebServer {
             Path(Bundle.main.path(forResource: "templates", ofType: nil)!)]))
 
         super.init(staticPath: Bundle.main.path(forResource: "static", ofType: nil)!)
+
+        WebServer.defaultContext["static_url_path"] = staticPath.dropLast()
     }
 
 

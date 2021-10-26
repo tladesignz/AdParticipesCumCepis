@@ -17,14 +17,45 @@ open class File: Item {
         ] as CFDictionary
 
 
-    public let url: URL
+    public let base: URL
 
-    public init(_ url: URL) {
-        self.url = url
+    public var url: URL {
+        if let rp = relativePath ?? basename {
+            return base.appendingPathComponent(rp)
+        }
 
-        super.init(name: url.lastPathComponent)
+        return base
+    }
 
-        size = fm.size(of: url)
+    public override var isDir: Bool {
+        return url.hasDirectoryPath
+    }
+
+
+    public init(_ url: URL, relativeTo base: URL? = nil) {
+        let name = url.lastPathComponent
+        let relativePath: String?
+
+        if let base = base {
+            self.base = base
+
+            let path = url.path
+            relativePath = String(path[path.index(path.startIndex, offsetBy: base.path.count + 1)...])
+        }
+        else {
+            self.base = url.deletingLastPathComponent()
+
+            relativePath = nil
+        }
+
+        super.init(name: name, relativePath: relativePath)
+
+        if isDir {
+            size = children().reduce(0, { $0 + ($1.size ?? 0) })
+        }
+        else {
+            size = fm.size(of: url)
+        }
     }
 
 
@@ -38,7 +69,11 @@ open class File: Item {
         resultHandler(nil, nil)
     }
 
-    open override func getOriginal(_ resultHandler: @escaping (_ file: URL?, _ data: Data?, _ contentType: String?) -> Void) {
+    open override func original(_ resultHandler: @escaping (_ file: URL?, _ data: Data?, _ contentType: String?) -> Void) {
         resultHandler(url, nil, nil)
+    }
+
+    open override func children() -> [Item] {
+        return FileManager.default.contentsOfDirectory(at: url).map { File($0, relativeTo: base) }
     }
 }

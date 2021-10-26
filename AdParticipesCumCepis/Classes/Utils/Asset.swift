@@ -121,7 +121,7 @@ open class Asset: Item {
                resultHandler: resultHandler)
     }
 
-    open override func getOriginal(_ resultHandler: @escaping (_ file: URL?, _ data: Data?, _ contentType: String?) -> Void) {
+    open override func original(_ resultHandler: @escaping (_ file: URL?, _ data: Data?, _ contentType: String?) -> Void) {
         guard let tlPhAsset = tlPhAsset,
               let phAsset = tlPhAsset.phAsset
         else {

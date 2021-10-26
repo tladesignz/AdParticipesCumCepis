@@ -108,7 +108,7 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
     }()
 
     private var webServer: WebServer? {
-        return (UIApplication.shared.delegate as? BaseAppDelegate)?.webServer
+        return BaseAppDelegate.shared?.webServer
     }
 
 
@@ -154,9 +154,6 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
 
         navigationItem.hidesBackButton = true
         navigationItem.rightBarButtonItems?.forEach { $0.isEnabled = false }
-
-        context["title"] = customTitleTf.text ?? ""
-        updateItemsForSharing()
 
         do {
             webServer?.delegate = self
@@ -335,8 +332,6 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
 
                 self.items.remove(at: indexPath.row)
 
-                self.updateItemsForSharing()
-
                 tableView.beginUpdates()
                 tableView.deleteRows(at: [indexPath], with: .automatic)
                 tableView.endUpdates()
@@ -383,11 +378,44 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
         return "send"
     }
 
-    public var context: [String: Any] = [
-        "title": "",
-        "download_individual_files": true,
-        "filesize_human": "",
-        "files": []]
+    public func context(for item: Item?) -> [String : Any] {
+        var items = items
+        var breadcrumbs = [[String]]()
+        var breadcrumbs_leaf = "/"
+
+        if let dir = item as? File, dir.isDir {
+            items = dir.children()
+
+            if var pc = dir.relativePath?.components(separatedBy: "/") {
+                breadcrumbs_leaf = pc.removeLast()
+
+                breadcrumbs.append(["home", "/"])
+
+                let prefix = webServer?.itemsPath ?? "/items/"
+
+                for i in 0 ..< pc.count {
+                    breadcrumbs.append([pc[i], "\(prefix)\(pc[0...i].joined(separator: "/"))"])
+                }
+            }
+        }
+
+        var context: [String: Any] = [
+            "download_individual_files": true,
+            "breadcrumbs": breadcrumbs,
+            "breadcrumbs_leaf": breadcrumbs_leaf,
+            // Always show the total size of *all* files, because *all* files end up in the ZIP file!
+            "filesize_human": ByteCountFormatter.string(
+                fromByteCount: self.items.reduce(0, { $0 + ($1.size ?? 0) }), countStyle: .file),
+            "dirs": items.filter({ $0.isDir }),
+            "files": items.filter({ !$0.isDir }),
+        ]
+
+        DispatchQueue.main.sync {
+            context["title"] = customTitleTf.text ?? ""
+        }
+
+        return context
+    }
 
 
     // MARK: UIDocumentPickerDelegate
@@ -407,14 +435,5 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
                              with: .automatic)
 
         startSharingBt.isEnabled = !items.isEmpty
-    }
-
-
-    // MARK: Private Methods
-
-    private func updateItemsForSharing() {
-        self.context["files"] = self.items
-        self.context["filesize_human"] = ByteCountFormatter.string(
-            fromByteCount: self.items.reduce(0, { $0 + ($1.size ?? 0) }), countStyle: .file)
     }
 }

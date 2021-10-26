@@ -14,6 +14,16 @@ open class BaseAppDelegate: UIResponder, UIApplicationDelegate {
 
     open var webServer: WebServer? = nil
 
+    open class var shared: BaseAppDelegate? {
+        if Thread.isMainThread {
+            return UIApplication.shared.delegate as? BaseAppDelegate
+        }
+
+        return DispatchQueue.main.sync {
+            return UIApplication.shared.delegate as? BaseAppDelegate
+        }
+    }
+
 
     open func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool
     {

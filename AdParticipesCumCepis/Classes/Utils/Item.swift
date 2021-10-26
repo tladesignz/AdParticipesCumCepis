@@ -14,6 +14,8 @@ open class Item {
     
     public let basename: String?
 
+    public let relativePath: String?
+
     open var size: Int64? {
         didSet {
             if let size = size {
@@ -29,15 +31,19 @@ open class Item {
 
     public let link: String?
 
+    public var isDir: Bool {
+        return false
+    }
 
     lazy var fm = FileManager.default
 
 
-    public init(name: String?) {
+    public init(name: String?, relativePath: String? = nil) {
         basename = name
+        self.relativePath = relativePath
 
-        if let name = basename, !name.isEmpty {
-            link = "/items/\(name)"
+        if let rp = relativePath ?? name, !rp.isEmpty {
+            link = "\(BaseAppDelegate.shared?.webServer?.itemsPath ?? "/items/")\(rp)"
         }
         else {
             link = nil
@@ -46,10 +52,19 @@ open class Item {
 
 
     open func getThumbnail(_ resultHandler: @escaping (UIImage?, [AnyHashable: Any]?) -> Void) {
-        assertionFailure("Implement in subclass!")
+        preconditionFailure("Implement in subclass!")
     }
 
-    open func getOriginal(_ resultHandler: @escaping (_ file: URL?, _ data: Data?, _ contentType: String?) -> Void) {
-        assertionFailure("Implement in subclass!")
+    open func original(_ resultHandler: @escaping (_ file: URL?, _ data: Data?, _ contentType: String?) -> Void) {
+        preconditionFailure("Implement in subclass!")
+    }
+
+    /**
+     Return all children of this item.
+
+     You only need to implement this, if `isDir` can be `true`!
+     */
+    open func children() -> [Item] {
+        preconditionFailure("Implement in subclass!")
     }
 }
