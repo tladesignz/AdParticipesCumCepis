@@ -25,7 +25,7 @@ class WebServer: AdParticipesCumCepis.WebServer {
         renderer = Environment(loader: FileSystemLoader(paths: [
             Path(Bundle.main.path(forResource: "templates", ofType: nil)!)]))
 
-        super.init(staticPath: Bundle.main.path(forResource: "static", ofType: nil)!)
+        super.init(localStaticPath: Bundle.main.path(forResource: "static", ofType: nil)!)
 
         WebServer.defaultContext["static_url_path"] = staticPath.dropLast()
     }

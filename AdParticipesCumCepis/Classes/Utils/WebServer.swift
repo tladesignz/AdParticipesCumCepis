@@ -12,21 +12,26 @@ import ZIPFoundation
 
 public protocol WebServerDelegate {
 
+    var mode: WebServer.Mode { get }
+
     var templateName: String { get }
 
     var items: [Item] { get }
+
+    var useCsp: Bool { get }
 
     func context(for item: Item?) -> [String: Any]
 }
 
 open class WebServer {
 
-    public var staticPath: String {
-        return "/static/"
+    public enum Mode {
+        case share
+        case host
     }
 
-    public var itemsPath: String {
-        return "/items/"
+    public var staticPath: String {
+        return randomizedStaticPath
     }
 
     public var downloadPath: String {
@@ -38,13 +43,84 @@ open class WebServer {
 
     private let webServer = GCDWebServer()
 
+    private lazy var randomizedStaticPath: String = {
+        return "/static_\(UUID().uuidString)/"
+    }()
 
-    public init(staticPath: String) {
-        // Static files.
-        webServer.addHandler(forMethod: "GET", pathRegex: "^\(self.staticPath).*$", request: GCDWebServerRequest.self) { req, completion in
-            let pc = self.pathComponents(from: req.url)
+    private let localStaticPath: String
 
-            var url = URL(fileURLWithPath: staticPath)
+
+    public init(localStaticPath: String) {
+        self.localStaticPath = localStaticPath
+    }
+
+
+    // MARK: Public Methods
+
+    open func start() throws {
+        webServer.removeAllHandlers()
+
+        // Items provided by the view controller.
+        webServer.addHandler(forMethod: "GET", pathRegex: "^/.*$", request: GCDWebServerRequest.self) { req, completion in
+            var pc = req.url.pathComponents
+
+            // First component is the root ("/"). Remove.
+            pc.removeFirst()
+
+            var items = self.delegate?.items
+
+            // Render root.
+            if pc.isEmpty {
+                // If we're in host mode and there's and index.html file,
+                // render that for the root folder. Else render the template
+                // as defined by the delegate.
+                if self.delegate?.mode == .host, let index = items?.first(where: { $0.basename == "index.html" }) {
+                    return self.render(index, completion)
+                }
+                else {
+                    return self.renderTemplate(for: nil, completion)
+                }
+            }
+
+            repeat {
+                guard let item = items?.first(where: { $0.basename == pc.first }) else {
+                    return self.error(404, completion)
+                }
+
+                if item.isDir {
+                    if pc.count > 1 {
+                        items = item.children()
+                        pc.removeFirst()
+                    }
+                    else {
+                        // If we're in host mode and there's and index.html file,
+                        // render that for the folder. Else render the template
+                        // as defined by the delegate.
+                        if self.delegate?.mode == .host, let index = item.children().first(where: { $0.basename == "index.html" }) {
+                            return self.render(index, completion)
+                        }
+                        else {
+                            return self.renderTemplate(for: item, completion)
+                        }
+                    }
+                }
+                else {
+                    return self.render(item, completion)
+                }
+            } while (true)
+        }
+
+        // Built-in static files.
+        webServer.addHandler(forMethod: "GET", pathRegex: "^\(staticPath).*$", request: GCDWebServerRequest.self) { req, completion in
+            var pc = req.url.pathComponents
+
+            // First component is the root ("/"). Remove.
+            pc.removeFirst()
+
+            // Second component is `staticPath`. Remove that, too.
+            pc.removeFirst()
+
+            var url = URL(fileURLWithPath: self.localStaticPath)
 
             // Put rest of the path onto our internal file-system path.
             pc.forEach { url.appendPathComponent($0) }
@@ -62,80 +138,41 @@ open class WebServer {
             completion(res)
         }
 
-        // The template, the view controller wants rendered.
-        webServer.addHandler(forMethod: "GET", path: "/index.html", request: GCDWebServerRequest.self) { req, completion in
-            self.renderTemplate(for: nil, completion)
-        }
-
-        // Redirect request to root directory to "index.html".
-        webServer.addHandler(forMethod: "GET", path: "/", request: GCDWebServerRequest.self) {
-            return self.respond(redirect: URL(string: "index.html", relativeTo: $0.url))
-        }
-
-        // Items provided by the view controller.
-        webServer.addHandler(forMethod: "GET", pathRegex: "^\(itemsPath).+$", request: GCDWebServerRequest.self) { req, completion in
-            var pc = self.pathComponents(from: req.url)
-
-            var items = self.delegate?.items
-
-            repeat {
-                guard let item = items?.first(where: { $0.basename == pc.first }) else {
+        if delegate?.mode == .share {
+            // All items as a ZIP file or the single item, if only one.
+            webServer.addHandler(forMethod: "GET", path: downloadPath, request: GCDWebServerRequest.self) { req, completion in
+                guard let items = self.delegate?.items,
+                      items.count > 0
+                else {
                     return self.error(404, completion)
                 }
 
-                if item.isDir {
-                    if pc.count > 1 {
-                        items = item.children()
-                        pc.removeFirst()
-                    }
-                    else {
-                        return self.renderTemplate(for: item, completion)
-                    }
+                if items.count == 1 && !items.first!.isDir {
+                    return self.render(items[0], completion)
                 }
-                else {
-                    return self.render(item, completion)
-                }
-            } while (true)
-        }
 
-        // All items as a ZIP file or the single item, if only one.
-        webServer.addHandler(forMethod: "GET", path: downloadPath, request: GCDWebServerRequest.self) { req, completion in
-            guard let items = self.delegate?.items,
-                  items.count > 0
-            else {
-                return self.error(404, completion)
-            }
-
-            if items.count == 1 && !items.first!.isDir {
-                return self.render(items[0], completion)
-            }
-
-            guard let archive = Archive(accessMode: .create) else {
-                return self.error(500, completion)
-            }
-
-            let group = DispatchGroup()
-
-            self.add(items, to: archive, in: group)
-
-            group.notify(queue: .global(qos: .userInitiated)) {
-                guard let data = archive.data else {
+                guard let archive = Archive(accessMode: .create) else {
                     return self.error(500, completion)
                 }
 
-                let res = self.respond(data, "application/zip")
-                res.setValue("attachment; filename=\"\(Bundle.main.displayName).zip\"",
-                             forAdditionalHeader: "Content-Disposition")
+                let group = DispatchGroup()
 
-                completion(res)
+                self.add(items, to: archive, in: group)
+
+                group.notify(queue: .global(qos: .userInitiated)) {
+                    guard let data = archive.data else {
+                        return self.error(500, completion)
+                    }
+
+                    let res = self.respond(data, "application/zip")
+                    res.setValue("attachment; filename=\"\(Bundle.main.displayName).zip\"",
+                                 forAdditionalHeader: "Content-Disposition")
+
+                    completion(res)
+                }
             }
         }
-    }
 
-
-    // MARK: Public Methods
-
-    open func start() throws {
         try webServer.start(options: [
             GCDWebServerOption_AutomaticallySuspendInBackground: false,
             GCDWebServerOption_BindToLocalhost: true,
@@ -229,9 +266,10 @@ open class WebServer {
             res.statusCode = statusCode
         }
 
-
-        res.setValue("default-src 'self'; frame-ancestors 'none'; form-action 'self'; base-uri 'self'; img-src 'self' data:;",
-                     forAdditionalHeader: "Content-Security-Policy")
+        if delegate?.useCsp ?? true {
+            res.setValue("default-src 'self'; frame-ancestors 'none'; form-action 'self'; base-uri 'self'; img-src 'self' data:;",
+                         forAdditionalHeader: "Content-Security-Policy")
+        }
 
         res.setValue("no-referrer", forAdditionalHeader: "Referrer-Policy")
 
@@ -239,23 +277,10 @@ open class WebServer {
 
         res.setValue("DENY", forAdditionalHeader: "X-Frame-Options")
 
-        res.setValue(" 1; mode=block", forAdditionalHeader: "X-Xss-Protection")
+        res.setValue("1; mode=block", forAdditionalHeader: "X-Xss-Protection")
 
 
         return res
-    }
-
-    private func pathComponents(from url: URL) -> [String] {
-        var pc = url.pathComponents
-
-        // First component is the root ("/"). Remove.
-        pc.removeFirst()
-
-        // Second component should be the pseudo-folder which determines the route.
-        // Remove that, too.
-        pc.removeFirst()
-
-        return pc
     }
 
     private func add(_ items: [Item], to archive: Archive, in group: DispatchGroup) {

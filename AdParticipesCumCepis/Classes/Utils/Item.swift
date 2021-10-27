@@ -29,7 +29,7 @@ open class Item {
 
     open var size_human: String?
 
-    public let link: String?
+    public private(set) var link: String?
 
     public var isDir: Bool {
         return false
@@ -43,10 +43,11 @@ open class Item {
         self.relativePath = relativePath
 
         if let rp = relativePath ?? name, !rp.isEmpty {
-            link = "\(BaseAppDelegate.shared?.webServer?.itemsPath ?? "/items/")\(rp)"
-        }
-        else {
-            link = nil
+            link = "/\(rp)"
+
+            if isDir && link?.suffix(1) != "/" {
+                link! += "/"
+            }
         }
     }
 

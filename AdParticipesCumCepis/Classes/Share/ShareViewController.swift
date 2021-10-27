@@ -57,9 +57,6 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
     @IBOutlet weak var startSharingBt: UIButton! {
         didSet {
             startSharingBt.setTitle(NSLocalizedString("Start sharing", comment: ""), for: .normal)
-
-            // TODO: Add support for actual file sharing.
-//            startSharingBt.isEnabled = false
         }
     }
 
@@ -91,6 +88,14 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
         }
     }
 
+
+    open var addressLbTextWithPrivateKey = NSLocalizedString(
+        "Anyone with this address and private key can download your files using the Tor Browser:",
+        comment: "")
+
+    open var addressLbTextNoPrivateKey = NSLocalizedString(
+        "Anyone with this address can download your files using the Tor Browser:",
+        comment: "")
 
     open var items = [Item]()
 
@@ -170,7 +175,7 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
 
         var privateKey: String? = nil
 
-        if self.publicServiceSw.isOn {
+        if publicServiceSw.isOn {
             // Remove all keys, so Tor doesn't encrypt the rendezvous response.
             for i in (0 ..< (TorManager.shared.onionAuth?.keys.count ?? 0)).reversed() {
                 TorManager.shared.onionAuth?.removeKey(at: i)
@@ -216,7 +221,7 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
                         TorManager.shared.onionAuth?.set(TorAuthKey(private: privateKey, forDomain: url))
                     }
 
-                    self.addressLb.text = NSLocalizedString("Anyone with this address and private key can download your files using the Tor Browser:", comment: "")
+                    self.addressLb.text = self.addressLbTextWithPrivateKey
                     self.key.text = privateKey
                     self.keyLb.isHidden = false
                     self.key.superview?.isHidden = false
@@ -224,7 +229,7 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
                     self.qrKeyBt.isHidden = false
                 }
                 else {
-                    self.addressLb.text = NSLocalizedString("Anyone with this address can download your files using the Tor Browser:", comment: "")
+                    self.addressLb.text = self.addressLbTextNoPrivateKey
                     self.keyLb.isHidden = true
                     self.key.superview?.isHidden = true
                     self.copyKeyBt.isHidden = true
@@ -375,8 +380,16 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
 
     // MARK: WebServerDelegate
 
+    public var mode: WebServer.Mode {
+        return .share
+    }
+
     public var templateName: String {
         return "send"
+    }
+
+    public var useCsp: Bool {
+        return true
     }
 
     public func context(for item: Item?) -> [String : Any] {
@@ -392,10 +405,8 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
 
                 breadcrumbs.append(["home", "/"])
 
-                let prefix = webServer?.itemsPath ?? "/items/"
-
                 for i in 0 ..< pc.count {
-                    breadcrumbs.append([pc[i], "\(prefix)\(pc[0...i].joined(separator: "/"))"])
+                    breadcrumbs.append([pc[i], "/\(pc[0...i].joined(separator: "/"))/"])
                 }
             }
         }
