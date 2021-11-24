@@ -201,7 +201,7 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
             DispatchQueue.main.async {
                 self.hud.progress = Float(progress) / 100
             }
-        } _: { error in
+        } _: { error, socksAddr in
             DispatchQueue.main.async {
                 if let error = error {
                     self.hud.mode = .text

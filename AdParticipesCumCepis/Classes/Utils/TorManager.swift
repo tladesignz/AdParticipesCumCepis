@@ -13,17 +13,14 @@ class TorManager {
 
     private enum Errors: Error {
         case cookieUnreadable
+        case noSocksAddr
     }
 
     static let shared = TorManager()
 
     static let localhost = "127.0.0.1"
 
-    static let torProxyPort: UInt16 = 39050
-    static let dnsPort: UInt16 = 39053
     static let webServerPort: UInt = 8080
-
-    private static let torControlPort: UInt16 = 39060
 
     public lazy var serviceDir: URL? = {
         guard let args = torConf.arguments,
@@ -50,7 +47,7 @@ class TorManager {
         // otherwise Tor will complain and reject its use.
         try? FileManager.default.createSecureDirIfNotExists(at: pubKeyDir)
 
-        return TorOnionAuth(privateDirUrl: url, andPublicDirUrl: url)
+        return TorOnionAuth(withPrivateDir: nil, andPublicDir: url)
     }()
 
     public lazy var serviceUrl: URL? = {
@@ -72,18 +69,16 @@ class TorManager {
 
     private lazy var torConf: TorConfiguration = {
         let conf = TorConfiguration()
+        conf.ignoreMissingTorrc = true
+        conf.cookieAuthentication = true
+        conf.autoControlPort = true
 
-        conf.options = ["DNSPort": "\(TorManager.localhost):\(TorManager.dnsPort)",
-                        "AutomapHostsOnResolve": "1",
-                        "Log": "notice stdout",
+        conf.options = ["Log": "notice stdout",
                         "LogMessageDomains": "1",
                         "SafeLogging": "0",
-                        "SocksPort": "\(TorManager.localhost):\(TorManager.torProxyPort)",
-                        "ControlPort": "\(TorManager.localhost):\(TorManager.torControlPort)",
+                        "SocksPort": "auto",
                         "HiddenServicePort": "80 \(TorManager.localhost):\(TorManager.webServerPort)",
                         "AvoidDiskWrites": "1"]
-
-        conf.cookieAuthentication = true
 
         // Store data in <appdir>/Library/Caches/tor (Library/Caches/ is for things that can persist between
         // launches -- which we'd like so we keep descriptors & etc -- but don't need to be backed up because
@@ -101,14 +96,8 @@ class TorManager {
             let webDir = dataDir.appendingPathComponent("web", isDirectory: true)
 
             // Need to use #arguments instead of #options because order is important.
-            conf.arguments.append("--HiddenServiceDir")
-            conf.arguments.append(webDir.path)
+            conf.arguments += ["--HiddenServiceDir", webDir.path]
         }
-
-        conf.arguments += [
-            "--allow-missing-torrc",
-            "--ignore-missing-torrc",
-        ]
 
         return conf
     }()
@@ -127,14 +116,6 @@ class TorManager {
         return false
     }
 
-    private var cookie: Data? {
-        if let cookieUrl = torConf.dataDirectory?.appendingPathComponent("control_auth_cookie") {
-            return try? Data(contentsOf: cookieUrl)
-        }
-
-        return nil
-    }
-
     private lazy var controllerQueue = DispatchQueue.global(qos: .userInitiated)
 
 
@@ -142,7 +123,7 @@ class TorManager {
     }
 
     func start(_ progressCallback: @escaping (Int) -> Void,
-               _ completion: @escaping (Error?) -> Void)
+               _ completion: @escaping (Error?, _ socksAddr: String?) -> Void)
     {
         if !torRunning {
             torThread = TorThread(configuration: self.torConf)
@@ -150,10 +131,8 @@ class TorManager {
         }
 
         controllerQueue.asyncAfter(deadline: .now() + 0.65) {
-            if self.torController == nil {
-                self.torController = TorController(
-                    socketHost: TorManager.localhost,
-                    port: TorManager.torControlPort)
+            if self.torController == nil, let cpf = self.torConf.controlPortFile {
+                self.torController = TorController(controlPortFile: cpf)
             }
 
             if !(self.torController?.isConnected ?? false) {
@@ -161,17 +140,17 @@ class TorManager {
                     try self.torController?.connect()
                 }
                 catch let error {
-                    return completion(error)
+                    return completion(error, nil)
                 }
             }
 
-            guard let cookie = self.cookie else {
-                return completion(Errors.cookieUnreadable)
+            guard let cookie = self.torConf.cookie else {
+                return completion(Errors.cookieUnreadable, nil)
             }
 
             self.torController?.authenticate(with: cookie) { success, error in
                 if let error = error {
-                    return completion(error)
+                    return completion(error, nil)
                 }
 
                 var progressObs: Any?
@@ -201,7 +180,13 @@ class TorManager {
 
                     self.torController?.removeObserver(observer)
 
-                    completion(nil)
+                    self.torController?.getInfoForKeys(["net/listeners/socks"]) { response in
+                        guard let socksAddr = response.first, !socksAddr.isEmpty else {
+                            return completion(Errors.noSocksAddr, nil)
+                        }
+
+                        completion(nil, socksAddr)
+                    }
                 })
             }
         }
