@@ -155,9 +155,6 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
     }
 
     @IBAction public func start() {
-        // Don't allow the system to go to sleep, while we're serving stuff.
-        UIApplication.shared.isIdleTimerDisabled = true
-
         hud.progress = 0
         hud.show(animated: true)
 
@@ -274,9 +271,6 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
             self.stopContainer.isHidden = true
             self.stopContainer.layer.opacity = 1
         }
-
-        // Ok, we're not serving anyhting any longer. Let the system go to sleep again.
-        UIApplication.shared.isIdleTimerDisabled = false
     }
 
     @IBAction public func copy2Clipboard(_ sender: UIButton) {

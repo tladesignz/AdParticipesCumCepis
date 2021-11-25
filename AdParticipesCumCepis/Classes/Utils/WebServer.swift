@@ -23,7 +23,7 @@ public protocol WebServerDelegate {
     func context(for item: Item?) -> [String: Any]
 }
 
-open class WebServer {
+open class WebServer: NSObject, GCDWebServerDelegate {
 
     public enum Mode {
         case share
@@ -41,7 +41,12 @@ open class WebServer {
     var delegate: WebServerDelegate? = nil
 
 
-    private let webServer = GCDWebServer()
+    private lazy var webServer: GCDWebServer = {
+        let webServer = GCDWebServer()
+        webServer.delegate = self
+
+        return webServer
+    }()
 
     private lazy var randomizedStaticPath: String = {
         return "/static_\(UUID().uuidString)/"
@@ -186,6 +191,19 @@ open class WebServer {
 
     open func renderTemplate(name: String, context: [String: Any]) throws -> String {
         fatalError("Subclasses need to implement the `renderTemplate()` method.")
+    }
+
+
+    // MARK: GCDWebServerDelegate
+
+    public func webServerDidStart(_ server: GCDWebServer) {
+        // Don't allow the system to go to sleep, while we're serving stuff.
+        UIApplication.shared.isIdleTimerDisabled = true
+    }
+
+    public func webServerDidStop(_ server: GCDWebServer) {
+        // Ok, we're not serving anyhting any longer. Let the system go to sleep again.
+        UIApplication.shared.isIdleTimerDisabled = false
     }
 
 
