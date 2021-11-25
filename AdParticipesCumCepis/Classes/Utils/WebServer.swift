@@ -180,6 +180,7 @@ open class WebServer: NSObject, GCDWebServerDelegate {
 
         try webServer.start(options: [
             GCDWebServerOption_AutomaticallySuspendInBackground: false,
+            GCDWebServerOption_ConnectedStateCoalescingInterval: 10,
             GCDWebServerOption_BindToLocalhost: true,
             GCDWebServerOption_Port: TorManager.webServerPort,
             GCDWebServerOption_ServerName: Bundle.main.displayName])

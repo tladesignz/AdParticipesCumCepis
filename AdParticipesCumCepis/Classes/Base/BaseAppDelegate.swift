@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import UserNotifications
 
 open class BaseAppDelegate: UIResponder, UIApplicationDelegate {
 
@@ -25,11 +26,43 @@ open class BaseAppDelegate: UIResponder, UIApplicationDelegate {
     }
 
 
+    private var backgroundTaskId = UIBackgroundTaskIdentifier.invalid
+
+    @available(iOS 10.0, *)
+    public static let unWarningId = "warning-return-to-app"
+
+    @available(iOS 10.0, *)
+    private var unCenter: UNUserNotificationCenter {
+        UNUserNotificationCenter.current()
+    }
+
+    @available(iOS 10.0, *)
+    open lazy var warningNotificationContent: UNMutableNotificationContent = {
+        let content = UNMutableNotificationContent()
+
+        content.title = String(
+            format: NSLocalizedString("%@ will be stopped shortly", comment: ""),
+            Bundle.main.displayName)
+
+        content.body = String(
+            format: NSLocalizedString("Please return to %@ immediately to continue sharing your content!", comment: ""),
+            Bundle.main.displayName)
+
+        content.sound = .default
+
+        return content
+    }()
+
+
     open func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool
     {
         window?.rootViewController = UINavigationController(rootViewController: Router.main())
 
         window?.makeKeyAndVisible()
+
+        if #available(iOS 10.0, *) {
+            askNotifications()
+        }
 
         return true
     }
@@ -37,6 +70,14 @@ open class BaseAppDelegate: UIResponder, UIApplicationDelegate {
     open func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
         // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
+
+        backgroundTaskId = UIApplication.shared.beginBackgroundTask { [weak self] in
+            self?.endBackgroundTask()
+        }
+
+        if #available(iOS 10.0, *) {
+            notifyUserBeforeEnd()
+        }
     }
 
     open func applicationDidEnterBackground(_ application: UIApplication) {
@@ -46,13 +87,89 @@ open class BaseAppDelegate: UIResponder, UIApplicationDelegate {
 
     open func applicationWillEnterForeground(_ application: UIApplication) {
         // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
+
+        endBackgroundTask()
     }
 
     open func applicationDidBecomeActive(_ application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+
+        if #available(iOS 10.0, *) {
+            unCenter.removeDeliveredNotifications(withIdentifiers: [Self.unWarningId])
+            unCenter.removePendingNotificationRequests(withIdentifiers: [Self.unWarningId])
+        }
+
+        endBackgroundTask()
     }
 
     open func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+    }
+
+    private func endBackgroundTask() {
+        guard backgroundTaskId != .invalid else {
+            return
+        }
+
+        UIApplication.shared.endBackgroundTask(backgroundTaskId)
+        backgroundTaskId = .invalid
+    }
+
+    /**
+     Ask the user for permission to show notifications after a delay of 2 seconds.
+     */
+    @available(iOS 10.0, *)
+    private func askNotifications() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
+            var options: UNAuthorizationOptions = [.alert, .sound]
+
+            if #available(iOS 12.0, *) {
+                options.update(with: .criticalAlert)
+            }
+
+            self?.unCenter.requestAuthorization(options: options) { granted, error in
+                print("[\(String(describing: type(of: self)))] UNUserNotificationCenter#requestAuthorization granted=\(granted), error=\(String(describing: error))")
+            }
+        }
+    }
+
+    /**
+     Wait until 60 seconds before our background time runs out and notify the user that they should return immediately.
+
+     Do nothing, when the `backgroundTaskId == .invalid` as that means the user already returned.
+     */
+    @available(iOS 10.0, *)
+    private func notifyUserBeforeEnd() {
+        DispatchQueue.global(qos: .default).async { [weak self] in
+            while (self?.backgroundTaskId ?? .invalid) != .invalid && UIApplication.shared.backgroundTimeRemaining > 60 {
+                print("[\(String(describing: type(of: self)))] backgroundTimeRemaining=\(UIApplication.shared.backgroundTimeRemaining)")
+
+                sleep(1)
+            }
+
+            print("[\(String(describing: type(of: self)))] backgroundTaskId=\(String(describing: self?.backgroundTaskId)), backgroundTimeRemaining=\(UIApplication.shared.backgroundTimeRemaining)")
+
+            guard (self?.backgroundTaskId ?? .invalid) != .invalid else {
+                return
+            }
+
+            print("[\(String(describing: type(of: self)))] schedule notification")
+
+            guard let content = self?.warningNotificationContent else {
+                return
+            }
+
+            if #available(iOS 12.0, *) {
+                content.sound = .defaultCritical
+            }
+
+            if #available(iOS 15.0, *) {
+                content.relevanceScore = 1
+                content.interruptionLevel = .timeSensitive
+            }
+
+            self?.unCenter.add(UNNotificationRequest(
+                identifier: Self.unWarningId, content: content, trigger: nil))
+        }
     }
 }
