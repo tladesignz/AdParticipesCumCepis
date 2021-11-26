@@ -29,6 +29,7 @@ open class WebServer: NSObject, GCDWebServerDelegate {
 
     public enum Mode {
         case share
+        case receive
         case host
     }
 

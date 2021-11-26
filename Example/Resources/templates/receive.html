@@ -38,13 +38,13 @@
 
     <div>
       <ul id="flashes" class="flashes">
-        {% with messages = get_flashed_messages(with_categories=true) %}
+        <!-- with messages = get_flashed_messages(with_categories=true) -->
         {% if messages %}
         {% for category, message in messages %}
         <li class="{{ category }}">{{ message }}</li>
         {% endfor %}
         {% endif %}
-        {% endwith %}
+        <!-- endwith -->
       </ul>
     </div>
 

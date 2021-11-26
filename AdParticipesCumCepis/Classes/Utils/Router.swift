@@ -27,6 +27,10 @@ open class Router {
         return ShowQrViewController(nibName: String(describing: ShowQrViewController.self), bundle: bundle)
     }
 
+    open class func receive() -> ReceiveViewController {
+        return ReceiveViewController(nibName: String(describing: ShareViewController.self), bundle: bundle)
+    }
+
     open class func host() -> HostViewController {
         return HostViewController(nibName: String(describing: ShareViewController.self), bundle: bundle)
     }

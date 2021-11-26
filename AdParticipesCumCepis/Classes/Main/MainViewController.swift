@@ -31,7 +31,7 @@ open class MainViewController: UIViewController, UITableViewDataSource, UITableV
     // MARK: UITableViewDataSource
 
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 2
+        return 3
     }
 
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -40,6 +40,9 @@ open class MainViewController: UIViewController, UITableViewDataSource, UITableV
 
         switch indexPath.row {
         case 1:
+            cell.textLabel?.text = NSLocalizedString("Receive Files", comment: "")
+
+        case 2:
             cell.textLabel?.text = NSLocalizedString("Host a Website", comment: "")
 
         default:
@@ -63,6 +66,9 @@ open class MainViewController: UIViewController, UITableViewDataSource, UITableV
 
         switch indexPath.row {
         case 1:
+            vc = Router.receive()
+
+        case 2:
             vc = Router.host()
 
         default:
