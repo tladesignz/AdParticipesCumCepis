@@ -16,7 +16,7 @@ PODS:
   - Stencil (0.14.2):
     - PathKit (~> 1.0.0)
   - SwiftUTI (1.0.6)
-  - TLPhotoPicker (2.1.6)
+  - TLPhotoPicker (2.1.7)
   - Tor (406.8.1)
   - ZIPFoundation (0.9.11)
 
@@ -52,7 +52,7 @@ SPEC CHECKSUMS:
   Quick: 6473349e43b9271a8d43839d9ba1c442ed1b7ac4
   Stencil: f2dbb5c83f226454e413be27da3f3ba0fef8b996
   SwiftUTI: e83d65dbe9fba0a0ff7cc9031cd30b2d82acebef
-  TLPhotoPicker: 57ad6b54a9cf8c9ec60107be0864d42f3dbe7175
+  TLPhotoPicker: ffddcfc335e1475e769b2cdd37af5bbe42ddf0cb
   Tor: 60f6c9067ded259d2dce2020f04c045dee96e8f8
   ZIPFoundation: b1f0de4eed33e74a676f76e12559ab6b75990197
 
