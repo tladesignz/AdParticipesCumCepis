@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19162" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19455" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_0" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19144"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19454"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -13,15 +13,13 @@
             <connections>
                 <outlet property="address" destination="Mlw-nq-CYm" id="hdz-Ri-IQn"/>
                 <outlet property="addressLb" destination="A3H-ML-8Ml" id="ppk-1d-jXI"/>
-                <outlet property="copyAddressBt" destination="YaG-QJ-fCJ" id="sj9-sE-naF"/>
-                <outlet property="copyKeyBt" destination="j8D-bh-kWG" id="bdD-we-pXn"/>
                 <outlet property="customTitleTf" destination="55B-vD-sk0" id="FMB-e8-DqJ"/>
                 <outlet property="key" destination="LnS-Ls-a9d" id="zqa-Xg-hAZ"/>
                 <outlet property="keyLb" destination="Qix-rn-plp" id="EFG-Gn-57H"/>
                 <outlet property="publicServiceLb" destination="dhZ-Tk-bxS" id="kmn-CM-pvq"/>
                 <outlet property="publicServiceSw" destination="DTI-z7-nqW" id="CZK-wT-EuD"/>
-                <outlet property="qrAddressBt" destination="y6x-Mw-fJr" id="Qol-gl-ZdT"/>
-                <outlet property="qrKeyBt" destination="rH4-hZ-551" id="fDV-o5-p1b"/>
+                <outlet property="shareAddressBt" destination="Q3k-ne-ket" id="WZw-71-MKo"/>
+                <outlet property="shareKeyBt" destination="CY3-sK-ytG" id="zyZ-TF-ZUB"/>
                 <outlet property="startContainer" destination="FaQ-sy-I07" id="No7-qn-ocw"/>
                 <outlet property="startSharingBt" destination="rAF-Bg-zNq" id="oZJ-yu-WfV"/>
                 <outlet property="stopContainer" destination="hJa-KQ-z6J" id="QOV-Ic-WgY"/>
@@ -132,10 +130,10 @@
                             <nil key="highlightedColor"/>
                         </label>
                         <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="iwU-Ea-rkf">
-                            <rect key="frame" x="8" y="68" width="204" height="36"/>
+                            <rect key="frame" x="8" y="68" width="246" height="36"/>
                             <subviews>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" text="http://457fgklfdsgkl54lkfgjsdg98dfg.onion" textAlignment="natural" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" adjustsLetterSpacingToFitWidth="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Mlw-nq-CYm">
-                                    <rect key="frame" x="8" y="8" width="188" height="20"/>
+                                    <rect key="frame" x="8" y="8" width="230" height="20"/>
                                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                     <fontDescription key="fontDescription" name="CourierNewPS-BoldMT" family="Courier New" pointSize="17"/>
                                     <nil key="textColor"/>
@@ -162,26 +160,15 @@
                                 </userDefinedRuntimeAttribute>
                             </userDefinedRuntimeAttributes>
                         </view>
-                        <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="YaG-QJ-fCJ">
-                            <rect key="frame" x="220" y="74" width="42" height="24.5"/>
+                        <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Q3k-ne-ket">
+                            <rect key="frame" x="262" y="75" width="42" height="22"/>
                             <constraints>
-                                <constraint firstAttribute="width" constant="42" id="OT0-uQ-eby"/>
+                                <constraint firstAttribute="width" constant="42" id="niq-7D-NB7"/>
                             </constraints>
                             <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                            <state key="normal" title=" " image="doc.on.clipboard"/>
+                            <state key="normal" title=" " image="square.and.arrow.up" catalog="system"/>
                             <connections>
-                                <action selector="copy2Clipboard:" destination="-1" eventType="touchUpInside" id="5hD-Ge-b90"/>
-                            </connections>
-                        </button>
-                        <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="y6x-Mw-fJr">
-                            <rect key="frame" x="270" y="77" width="42" height="18"/>
-                            <constraints>
-                                <constraint firstAttribute="width" constant="42" id="cip-Sq-Duz"/>
-                            </constraints>
-                            <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                            <state key="normal" title=" " image="qrcode"/>
-                            <connections>
-                                <action selector="showQrCode:" destination="-1" eventType="touchUpInside" id="TTV-xR-GN5"/>
+                                <action selector="share:" destination="-1" eventType="touchUpInside" id="3jB-O0-I8U"/>
                             </connections>
                         </button>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Private key:" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" minimumFontSize="8" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Qix-rn-plp">
@@ -191,10 +178,10 @@
                             <nil key="highlightedColor"/>
                         </label>
                         <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dGp-JO-jca">
-                            <rect key="frame" x="8" y="154" width="204" height="36"/>
+                            <rect key="frame" x="8" y="154" width="246" height="36"/>
                             <subviews>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" text="ASLDFGJFGKJSDFGL45TETASDKFJHASKDJFKASD" textAlignment="natural" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" adjustsLetterSpacingToFitWidth="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LnS-Ls-a9d">
-                                    <rect key="frame" x="8" y="8" width="188" height="20"/>
+                                    <rect key="frame" x="8" y="8" width="230" height="20"/>
                                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                     <fontDescription key="fontDescription" name="CourierNewPS-BoldMT" family="Courier New" pointSize="17"/>
                                     <nil key="textColor"/>
@@ -220,20 +207,15 @@
                                 </userDefinedRuntimeAttribute>
                             </userDefinedRuntimeAttributes>
                         </view>
-                        <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="j8D-bh-kWG">
-                            <rect key="frame" x="220" y="160" width="42" height="24.5"/>
+                        <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CY3-sK-ytG">
+                            <rect key="frame" x="262" y="161" width="42" height="22"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="42" id="Ibb-2d-PsN"/>
+                            </constraints>
                             <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                            <state key="normal" title=" " image="doc.on.clipboard"/>
+                            <state key="normal" title=" " image="square.and.arrow.up" catalog="system"/>
                             <connections>
-                                <action selector="copy2Clipboard:" destination="-1" eventType="touchUpInside" id="5a8-jM-WNT"/>
-                            </connections>
-                        </button>
-                        <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rH4-hZ-551">
-                            <rect key="frame" x="270" y="163" width="42" height="18"/>
-                            <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                            <state key="normal" title=" " image="qrcode"/>
-                            <connections>
-                                <action selector="showQrCode:" destination="-1" eventType="touchUpInside" id="HhM-At-yti"/>
+                                <action selector="share:" destination="-1" eventType="touchUpInside" id="CQG-6v-ftj"/>
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="529-J2-2lR">
@@ -252,32 +234,27 @@
                     </subviews>
                     <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
                     <constraints>
-                        <constraint firstItem="y6x-Mw-fJr" firstAttribute="leading" secondItem="YaG-QJ-fCJ" secondAttribute="trailing" constant="8" symbolic="YES" id="0gF-fb-Dx7"/>
-                        <constraint firstItem="rH4-hZ-551" firstAttribute="leading" secondItem="j8D-bh-kWG" secondAttribute="trailing" constant="8" symbolic="YES" id="7Gg-17-MbB"/>
-                        <constraint firstItem="rH4-hZ-551" firstAttribute="centerY" secondItem="j8D-bh-kWG" secondAttribute="centerY" id="8pA-h7-I7y"/>
-                        <constraint firstItem="y6x-Mw-fJr" firstAttribute="centerY" secondItem="YaG-QJ-fCJ" secondAttribute="centerY" id="BXg-uC-uhT"/>
-                        <constraint firstItem="j8D-bh-kWG" firstAttribute="centerY" secondItem="dGp-JO-jca" secondAttribute="centerY" id="BZO-KL-DDW"/>
+                        <constraint firstItem="CY3-sK-ytG" firstAttribute="width" secondItem="Q3k-ne-ket" secondAttribute="width" id="0vU-x3-USD"/>
+                        <constraint firstItem="CY3-sK-ytG" firstAttribute="leading" secondItem="dGp-JO-jca" secondAttribute="trailing" constant="8" symbolic="YES" id="5yH-lf-AUO"/>
+                        <constraint firstItem="Q3k-ne-ket" firstAttribute="leading" secondItem="iwU-Ea-rkf" secondAttribute="trailing" constant="8" symbolic="YES" id="EEs-fZ-BoI"/>
                         <constraint firstItem="iwU-Ea-rkf" firstAttribute="leading" secondItem="hJa-KQ-z6J" secondAttribute="leading" constant="8" id="Fsm-PO-rML"/>
                         <constraint firstItem="A3H-ML-8Ml" firstAttribute="leading" secondItem="hJa-KQ-z6J" secondAttribute="leading" constant="8" id="JAm-XI-DRB"/>
                         <constraint firstItem="529-J2-2lR" firstAttribute="centerX" secondItem="hJa-KQ-z6J" secondAttribute="centerX" id="Jfg-Jq-n06"/>
-                        <constraint firstItem="YaG-QJ-fCJ" firstAttribute="centerY" secondItem="iwU-Ea-rkf" secondAttribute="centerY" id="LCA-iu-GWd"/>
                         <constraint firstItem="iwU-Ea-rkf" firstAttribute="top" secondItem="A3H-ML-8Ml" secondAttribute="bottom" constant="16" id="LPz-IZ-Pdj"/>
-                        <constraint firstAttribute="trailing" secondItem="rH4-hZ-551" secondAttribute="trailing" constant="8" id="LZt-S3-Ynd"/>
                         <constraint firstItem="Qix-rn-plp" firstAttribute="leading" secondItem="hJa-KQ-z6J" secondAttribute="leading" constant="8" id="MIW-7K-SmH"/>
                         <constraint firstItem="dGp-JO-jca" firstAttribute="height" secondItem="iwU-Ea-rkf" secondAttribute="height" id="Mvx-2B-KAb"/>
-                        <constraint firstItem="rH4-hZ-551" firstAttribute="width" secondItem="y6x-Mw-fJr" secondAttribute="width" id="P5Q-Vp-oal"/>
                         <constraint firstItem="Qix-rn-plp" firstAttribute="height" secondItem="A3H-ML-8Ml" secondAttribute="height" multiplier="0.5" id="Ubc-jR-FaV"/>
-                        <constraint firstAttribute="trailing" secondItem="y6x-Mw-fJr" secondAttribute="trailing" constant="8" id="VH9-6W-cAe"/>
                         <constraint firstItem="dGp-JO-jca" firstAttribute="leading" secondItem="hJa-KQ-z6J" secondAttribute="leading" constant="8" id="Y2d-2L-FM3"/>
                         <constraint firstAttribute="trailing" secondItem="Qix-rn-plp" secondAttribute="trailing" constant="8" id="Zpi-Hz-lKx"/>
+                        <constraint firstAttribute="trailingMargin" secondItem="CY3-sK-ytG" secondAttribute="trailing" constant="8" id="cVa-Ux-5R0"/>
                         <constraint firstItem="dGp-JO-jca" firstAttribute="top" secondItem="Qix-rn-plp" secondAttribute="bottom" constant="16" id="huu-4Z-4tk"/>
-                        <constraint firstItem="j8D-bh-kWG" firstAttribute="leading" secondItem="dGp-JO-jca" secondAttribute="trailing" constant="8" symbolic="YES" id="mLx-aq-Ueb"/>
-                        <constraint firstItem="YaG-QJ-fCJ" firstAttribute="leading" secondItem="iwU-Ea-rkf" secondAttribute="trailing" constant="8" symbolic="YES" id="nrY-2I-Iyt"/>
+                        <constraint firstItem="Q3k-ne-ket" firstAttribute="centerY" secondItem="iwU-Ea-rkf" secondAttribute="centerY" id="lxe-9s-1PX"/>
+                        <constraint firstItem="CY3-sK-ytG" firstAttribute="centerY" secondItem="dGp-JO-jca" secondAttribute="centerY" id="q5v-lf-I0L"/>
                         <constraint firstItem="A3H-ML-8Ml" firstAttribute="top" secondItem="hJa-KQ-z6J" secondAttribute="top" constant="16" id="u5H-id-aA9"/>
+                        <constraint firstAttribute="trailingMargin" secondItem="Q3k-ne-ket" secondAttribute="trailing" constant="8" id="vM6-oE-5Bm"/>
                         <constraint firstItem="Qix-rn-plp" firstAttribute="top" secondItem="iwU-Ea-rkf" secondAttribute="bottom" constant="16" id="vjq-L6-XAH"/>
                         <constraint firstAttribute="trailing" secondItem="A3H-ML-8Ml" secondAttribute="trailing" constant="8" id="x2m-NZ-Xpu"/>
                         <constraint firstAttribute="bottom" secondItem="529-J2-2lR" secondAttribute="bottom" constant="16" id="x4Z-fK-Bqw"/>
-                        <constraint firstItem="j8D-bh-kWG" firstAttribute="width" secondItem="YaG-QJ-fCJ" secondAttribute="width" id="xRy-Ey-ocM"/>
                         <constraint firstItem="529-J2-2lR" firstAttribute="top" secondItem="dGp-JO-jca" secondAttribute="bottom" constant="16" id="yad-aR-tSC"/>
                     </constraints>
                 </view>
@@ -302,8 +279,7 @@
         </view>
     </objects>
     <resources>
-        <image name="doc.on.clipboard" width="19.970699310302734" height="24.599599838256836"/>
-        <image name="qrcode" width="17.978500366210938" height="17.99799919128418"/>
+        <image name="square.and.arrow.up" catalog="system" width="115" height="128"/>
         <systemColor name="secondarySystemBackgroundColor">
             <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>

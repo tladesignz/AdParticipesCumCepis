@@ -66,9 +66,7 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
 
     @IBOutlet weak var address: UILabel!
 
-    @IBOutlet weak var copyAddressBt: UIButton!
-
-    @IBOutlet weak var qrAddressBt: UIButton!
+    @IBOutlet weak var shareAddressBt: UIButton!
 
     @IBOutlet weak var keyLb: UILabel! {
         didSet {
@@ -78,9 +76,7 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
 
     @IBOutlet weak var key: UILabel!
 
-    @IBOutlet weak var copyKeyBt: UIButton!
-
-    @IBOutlet weak var qrKeyBt: UIButton!
+    @IBOutlet weak var shareKeyBt: UIButton!
 
     @IBOutlet weak var stopSharingBt: UIButton! {
         didSet {
@@ -225,15 +221,14 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
                     self.key.text = privateKey
                     self.keyLb.isHidden = false
                     self.key.superview?.isHidden = false
-                    self.copyKeyBt.isHidden = false
-                    self.qrKeyBt.isHidden = false
+                    self.shareKeyBt.isHidden = false
                 }
                 else {
                     self.addressLb.text = self.addressLbTextNoPrivateKey
+                    self.key.text = nil
                     self.keyLb.isHidden = true
                     self.key.superview?.isHidden = true
-                    self.copyKeyBt.isHidden = true
-                    self.qrKeyBt.isHidden = true
+                    self.shareKeyBt.isHidden = true
                 }
 
                 self.hud.hide(animated: true, afterDelay: 0.5)
@@ -273,30 +268,34 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
         }
     }
 
-    @IBAction public func copy2Clipboard(_ sender: UIButton) {
-        switch sender {
-        case copyAddressBt:
-            UIPasteboard.general.string = address.text
+    @IBAction public func share(_ sender: UIButton) {
+        var items = [Any]()
 
-        default:
-            UIPasteboard.general.string = key.text
-        }
-    }
-
-    @IBAction public func showQrCode(_ sender: UIButton) {
-        let vc = Router.showQr()
-
-        switch sender {
-        case qrAddressBt:
-            vc.qrCode = address.text ?? ""
-
-        default:
-            vc.qrCode = key.text ?? ""
+        if let link = address.text, !link.isEmpty {
+            // Don't share as URL. Some share extensions (e.g. WhatsApp!) will
+            // show the key text before the link.
+            items.append(link)
         }
 
-        let navC = UINavigationController(rootViewController: vc)
+        if let key = self.key.text, !key.isEmpty {
+            items.append(key)
+        }
 
-        present(navC, animated: true)
+        // The `ShowQrViewController` can only show the first item.
+        // So, if the user uses the share button on the key, put that first,
+        // so the QR code for the key is shown instead of the URL.
+        if sender == shareKeyBt {
+            items.reverse()
+        }
+
+        guard !items.isEmpty else {
+            return
+        }
+
+        let vc = UIActivityViewController(activityItems: items, applicationActivities: [ShowQrActivity()])
+        vc.popoverPresentationController?.sourceView = sender
+
+        present(vc, animated: true)
     }
 
 
