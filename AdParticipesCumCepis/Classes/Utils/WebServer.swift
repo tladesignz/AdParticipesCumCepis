@@ -68,6 +68,7 @@ open class WebServer: NSObject, GCDWebServerDelegate {
         // Items provided by the view controller.
         webServer.addHandler(forMethod: "GET", pathRegex: "^/.*$", request: GCDWebServerRequest.self) { req, completion in
             var pc = req.url.pathComponents
+            let gzip = req.acceptsGzipContentEncoding
 
             // First component is the root ("/"). Remove.
             pc.removeFirst()
@@ -80,16 +81,16 @@ open class WebServer: NSObject, GCDWebServerDelegate {
                 // render that for the root folder. Else render the template
                 // as defined by the delegate.
                 if self.delegate?.mode == .host, let index = items?.first(where: { $0.basename == "index.html" }) {
-                    return self.render(index, completion)
+                    return self.render(index, gzip: gzip, completion)
                 }
                 else {
-                    return self.renderTemplate(for: nil, completion)
+                    return self.renderTemplate(for: nil, gzip: gzip, completion)
                 }
             }
 
             repeat {
                 guard let item = items?.first(where: { $0.basename == pc.first }) else {
-                    return self.error(404, completion)
+                    return self.error(404, gzip: gzip, completion)
                 }
 
                 if item.isDir {
@@ -102,15 +103,15 @@ open class WebServer: NSObject, GCDWebServerDelegate {
                         // render that for the folder. Else render the template
                         // as defined by the delegate.
                         if self.delegate?.mode == .host, let index = item.children().first(where: { $0.basename == "index.html" }) {
-                            return self.render(index, completion)
+                            return self.render(index, gzip: gzip, completion)
                         }
                         else {
-                            return self.renderTemplate(for: item, completion)
+                            return self.renderTemplate(for: item, gzip: gzip, completion)
                         }
                     }
                 }
                 else {
-                    return self.render(item, completion)
+                    return self.render(item, gzip: gzip, completion)
                 }
             } while (true)
         }
@@ -118,6 +119,7 @@ open class WebServer: NSObject, GCDWebServerDelegate {
         // Built-in static files.
         webServer.addHandler(forMethod: "GET", pathRegex: "^\(staticPath).*$", request: GCDWebServerRequest.self) { req, completion in
             var pc = req.url.pathComponents
+            let gzip = req.acceptsGzipContentEncoding
 
             // First component is the root ("/"). Remove.
             pc.removeFirst()
@@ -134,10 +136,10 @@ open class WebServer: NSObject, GCDWebServerDelegate {
             url = URL(fileURLWithPath: GCDWebServerNormalizePath(url.path))
 
             guard FileManager.default.isReadableFile(atPath: url.path) else {
-                return self.error(404, completion)
+                return self.error(404, gzip: gzip, completion)
             }
 
-            let res = self.respond(file: url)
+            let res = self.respond(file: url, gzip: gzip)
             res.cacheControlMaxAge = 12 * 60 * 60
 
             completion(res)
@@ -146,18 +148,20 @@ open class WebServer: NSObject, GCDWebServerDelegate {
         if delegate?.mode == .share {
             // All items as a ZIP file or the single item, if only one.
             webServer.addHandler(forMethod: "GET", path: downloadPath, request: GCDWebServerRequest.self) { req, completion in
+                let gzip = req.acceptsGzipContentEncoding
+
                 guard let items = self.delegate?.items,
                       items.count > 0
                 else {
-                    return self.error(404, completion)
+                    return self.error(404, gzip: gzip, completion)
                 }
 
                 if items.count == 1 && !items.first!.isDir {
-                    return self.render(items[0], completion)
+                    return self.render(items[0], gzip: gzip, completion)
                 }
 
                 guard let archive = Archive(accessMode: .create) else {
-                    return self.error(500, completion)
+                    return self.error(500, gzip: gzip, completion)
                 }
 
                 let group = DispatchGroup()
@@ -166,7 +170,7 @@ open class WebServer: NSObject, GCDWebServerDelegate {
 
                 group.notify(queue: .global(qos: .userInitiated)) {
                     guard let data = archive.data else {
-                        return self.error(500, completion)
+                        return self.error(500, gzip: gzip, completion)
                     }
 
                     let res = self.respond(data, "application/zip")
@@ -210,24 +214,24 @@ open class WebServer: NSObject, GCDWebServerDelegate {
 
     // MARK: Private Methods
 
-    private func renderTemplate(for item: Item?, _ completion: GCDWebServerCompletionBlock) {
+    private func renderTemplate(for item: Item?, gzip: Bool, _ completion: GCDWebServerCompletionBlock) {
         guard let delegate = self.delegate else {
-            return self.error(404, completion)
+            return self.error(404, gzip: gzip, completion)
         }
 
         do {
             let html = try self.renderTemplate(name: delegate.templateName, context: delegate.context(for: item))
 
-            return completion(self.respond(html: html))
+            return completion(self.respond(html: html, gzip: gzip))
         }
         catch {
             print("[\(String(describing: type(of: self)))] error: \(error)")
         }
 
-        self.error(500, completion)
+        self.error(500, gzip: gzip, completion)
     }
 
-    private func error(_ statusCode: Int, _ completion: GCDWebServerCompletionBlock) {
+    private func error(_ statusCode: Int, gzip: Bool, _ completion: GCDWebServerCompletionBlock) {
         var html: String? = nil
 
         do {
@@ -238,29 +242,31 @@ open class WebServer: NSObject, GCDWebServerDelegate {
         }
 
         if let html = html {
-            completion(self.respond(html: html, statusCode: statusCode))
+            completion(self.respond(html: html, statusCode: statusCode, gzip: gzip))
         }
         else {
             completion(self.respond(statusCode: statusCode))
         }
     }
 
-    private func render(_ item: Item, _ completion: @escaping GCDWebServerCompletionBlock) {
+    private func render(_ item: Item, gzip: Bool, _ completion: @escaping GCDWebServerCompletionBlock) {
         item.original { file, data, contentType in
             if let file = file {
-                completion(self.respond(file: file))
+                completion(self.respond(file: file, gzip: gzip))
             }
             else if let data = data {
-                completion(self.respond(data, contentType ?? "application/octet-stream"))
+                completion(self.respond(data, contentType ?? "application/octet-stream", gzip: gzip))
             }
             else {
-                self.error(404, completion)
+                self.error(404, gzip: gzip, completion)
             }
         }
     }
 
-    private func respond(html: String? = nil, _ data: Data? = nil, _ contentType: String? = nil,
-                         file: URL? = nil, redirect: URL? = nil, statusCode: Int? = nil)
+    private func respond(html: String? = nil,
+                         _ data: Data? = nil, _ contentType: String? = nil,
+                         file: URL? = nil, redirect: URL? = nil, statusCode: Int? = nil,
+                         gzip: Bool = false)
     -> GCDWebServerResponse
     {
         let res: GCDWebServerResponse
@@ -280,6 +286,9 @@ open class WebServer: NSObject, GCDWebServerDelegate {
         else {
             res = GCDWebServerResponse()
         }
+
+        res.isGZipContentEncodingEnabled = gzip
+
 
         if let statusCode = statusCode {
             res.statusCode = statusCode
