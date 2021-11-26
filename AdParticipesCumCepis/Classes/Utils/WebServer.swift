@@ -40,6 +40,10 @@ open class WebServer: NSObject, GCDWebServerDelegate {
         return "/download"
     }
 
+    public var running: Bool {
+        return webServer.isRunning
+    }
+
     var delegate: WebServerDelegate? = nil
 
 

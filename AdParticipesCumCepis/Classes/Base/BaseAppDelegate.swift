@@ -71,12 +71,27 @@ open class BaseAppDelegate: UIResponder, UIApplicationDelegate {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
         // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
 
+        guard webServer?.running ?? false else {
+            return
+        }
+
         backgroundTaskId = UIApplication.shared.beginBackgroundTask { [weak self] in
             self?.endBackgroundTask()
         }
 
-        if #available(iOS 10.0, *) {
-            notifyUserBeforeEnd()
+        DispatchQueue.global(qos: .default).async { [weak self] in
+            while self?.backgroundTaskId ?? .invalid != .invalid && UIApplication.shared.backgroundTimeRemaining > 15 {
+                Thread.sleep(forTimeInterval: 5)
+            }
+
+            // Do nothing, when `backgroundTaskId == .invalid`, as that means the user already returned.
+            guard (self?.backgroundTaskId ?? .invalid) != .invalid else {
+                return
+            }
+
+            if #available(iOS 10.0, *) {
+                self?.notifyUserBeforeEnd()
+            }
         }
     }
 
@@ -94,21 +109,23 @@ open class BaseAppDelegate: UIResponder, UIApplicationDelegate {
     open func applicationDidBecomeActive(_ application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
 
-        if #available(iOS 10.0, *) {
-            unCenter.removeDeliveredNotifications(withIdentifiers: [Self.unWarningId])
-            unCenter.removePendingNotificationRequests(withIdentifiers: [Self.unWarningId])
-        }
-
         endBackgroundTask()
     }
 
     open func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+
+        endBackgroundTask()
     }
 
     private func endBackgroundTask() {
         guard backgroundTaskId != .invalid else {
             return
+        }
+
+        if #available(iOS 10.0, *) {
+            unCenter.removeDeliveredNotifications(withIdentifiers: [Self.unWarningId])
+            unCenter.removePendingNotificationRequests(withIdentifiers: [Self.unWarningId])
         }
 
         UIApplication.shared.endBackgroundTask(backgroundTaskId)
@@ -134,42 +151,22 @@ open class BaseAppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     /**
-     Wait until 60 seconds before our background time runs out and notify the user that they should return immediately.
-
-     Do nothing, when the `backgroundTaskId == .invalid` as that means the user already returned.
+     Notify the user that they should return to the app immediately.
      */
     @available(iOS 10.0, *)
     private func notifyUserBeforeEnd() {
-        DispatchQueue.global(qos: .default).async { [weak self] in
-            while (self?.backgroundTaskId ?? .invalid) != .invalid && UIApplication.shared.backgroundTimeRemaining > 60 {
-                print("[\(String(describing: type(of: self)))] backgroundTimeRemaining=\(UIApplication.shared.backgroundTimeRemaining)")
+        let content = warningNotificationContent
 
-                sleep(1)
-            }
-
-            print("[\(String(describing: type(of: self)))] backgroundTaskId=\(String(describing: self?.backgroundTaskId)), backgroundTimeRemaining=\(UIApplication.shared.backgroundTimeRemaining)")
-
-            guard (self?.backgroundTaskId ?? .invalid) != .invalid else {
-                return
-            }
-
-            print("[\(String(describing: type(of: self)))] schedule notification")
-
-            guard let content = self?.warningNotificationContent else {
-                return
-            }
-
-            if #available(iOS 12.0, *) {
-                content.sound = .defaultCritical
-            }
-
-            if #available(iOS 15.0, *) {
-                content.relevanceScore = 1
-                content.interruptionLevel = .timeSensitive
-            }
-
-            self?.unCenter.add(UNNotificationRequest(
-                identifier: Self.unWarningId, content: content, trigger: nil))
+        if #available(iOS 12.0, *) {
+            content.sound = .defaultCritical
         }
+
+        if #available(iOS 15.0, *) {
+            content.relevanceScore = 1
+            content.interruptionLevel = .timeSensitive
+        }
+
+        unCenter.add(UNNotificationRequest(
+            identifier: Self.unWarningId, content: content, trigger: nil))
     }
 }
