@@ -21,6 +21,8 @@ public protocol WebServerDelegate {
     var useCsp: Bool { get }
 
     func context(for item: Item?) -> [String: Any]
+
+    func downloadFinished()
 }
 
 open class WebServer: NSObject, GCDWebServerDelegate {
@@ -53,6 +55,8 @@ open class WebServer: NSObject, GCDWebServerDelegate {
     }()
 
     private let localStaticPath: String
+
+    private var downloadStarted = false
 
 
     public init(localStaticPath: String) {
@@ -150,6 +154,8 @@ open class WebServer: NSObject, GCDWebServerDelegate {
             webServer.addHandler(forMethod: "GET", path: downloadPath, request: GCDWebServerRequest.self) { req, completion in
                 let gzip = req.acceptsGzipContentEncoding
 
+                self.downloadStarted = true
+
                 guard let items = self.delegate?.items,
                       items.count > 0
                 else {
@@ -204,6 +210,13 @@ open class WebServer: NSObject, GCDWebServerDelegate {
     public func webServerDidStart(_ server: GCDWebServer) {
         // Don't allow the system to go to sleep, while we're serving stuff.
         UIApplication.shared.isIdleTimerDisabled = true
+    }
+
+    public func webServerDidDisconnect(_ server: GCDWebServer) {
+        if downloadStarted {
+            delegate?.downloadFinished()
+            downloadStarted = false
+        }
     }
 
     public func webServerDidStop(_ server: GCDWebServer) {

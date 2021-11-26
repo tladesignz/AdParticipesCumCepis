@@ -28,13 +28,7 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
         }
     }
 
-    @IBOutlet weak var stopSharingSw: UISwitch! {
-        didSet {
-            // TODO: Add support.
-            stopSharingSw.isOn = false
-            stopSharingSw.isEnabled = false
-        }
-    }
+    @IBOutlet weak var stopSharingSw: UISwitch!
 
     @IBOutlet weak var publicServiceLb: UILabel! {
         didSet {
@@ -411,7 +405,6 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
         }
 
         var context: [String: Any] = [
-            "download_individual_files": true,
             "breadcrumbs": breadcrumbs,
             "breadcrumbs_leaf": breadcrumbs_leaf,
             // Always show the total size of *all* files, because *all* files end up in the ZIP file!
@@ -422,10 +415,19 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
         ]
 
         DispatchQueue.main.sync {
+            context["download_individual_files"] = !stopSharingSw.isOn
             context["title"] = customTitleTf.text ?? ""
         }
 
         return context
+    }
+
+    public func downloadFinished() {
+        DispatchQueue.main.async { [weak self] in
+            if self?.stopSharingSw.isOn ?? false {
+                self?.stop()
+            }
+        }
     }
 
 
