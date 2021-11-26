@@ -47,7 +47,7 @@ class TorManager {
         // otherwise Tor will complain and reject its use.
         try? FileManager.default.createSecureDirIfNotExists(at: pubKeyDir)
 
-        return TorOnionAuth(withPrivateDir: nil, andPublicDir: url)
+        return TorOnionAuth(withPrivateDir: nil, andPublicDir: pubKeyDir)
     }()
 
     public lazy var serviceUrl: URL? = {
