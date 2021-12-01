@@ -7,15 +7,21 @@
 //
 
 import UIKit
+import IPtProxyUI
 
-open class MainViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
-
+open class MainViewController: UIViewController, UITableViewDataSource, UITableViewDelegate,
+                                BridgesConfDelegate
+{
     @IBOutlet weak var tableView: UITableView!
 
     open override func viewDidLoad() {
         super.viewDidLoad()
 
         navigationItem.title = NSLocalizedString("Ad Participes cum Cepis", comment: "")
+
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            image: UIImage(named: "network.badge.shield.half.filled", in: Bundle.adParticipesCumCepis, compatibleWith: nil),
+            style: .plain, target: self, action: #selector(changeBridges))
     }
 
     open override func viewDidAppear(_ animated: Bool) {
@@ -70,5 +76,45 @@ open class MainViewController: UIViewController, UITableViewDataSource, UITableV
         }
 
         navigationController?.pushViewController(vc, animated: true)
+    }
+
+
+    // MARK: BridgesConfDelegate
+
+    open var transport: Transport {
+        get {
+            Settings.transport
+        }
+        set {
+            Settings.transport = newValue
+        }
+    }
+
+    open var customBridges: [String]? {
+        get {
+            Settings.customBridges
+        }
+        set {
+            Settings.customBridges = newValue
+        }
+    }
+
+    open func save() {
+        // Nothing to do. No Tor currently running here and config already stored.
+    }
+
+
+    // MARK: Actions
+
+    @objc
+    open func changeBridges() {
+        let vc = BridgesConfViewController()
+        vc.delegate = self
+
+        let navC = UINavigationController(rootViewController: vc)
+        navC.modalPresentationStyle = .popover
+        navC.popoverPresentationController?.barButtonItem = navigationItem.rightBarButtonItem
+
+        present(navC, animated: true)
     }
 }

@@ -1,14 +1,23 @@
 PODS:
   - AdParticipesCumCepis (0.1.0):
     - GCDWebServer (~> 3.5)
-    - MBProgressHUD (~> 1.2)
+    - IPtProxyUI (~> 1.3)
     - SwiftUTI (~> 1.0)
     - TLPhotoPicker (~> 2.1)
     - Tor (~> 406.8.1)
     - ZIPFoundation (~> 0.9)
+  - Eureka (5.3.4)
   - GCDWebServer (3.5.4):
     - GCDWebServer/Core (= 3.5.4)
   - GCDWebServer/Core (3.5.4)
+  - ImageRow (4.0.0):
+    - Eureka (~> 5.0)
+  - IPtProxy (1.2.0)
+  - IPtProxyUI (1.3.0):
+    - Eureka (~> 5.3)
+    - ImageRow (~> 4.0)
+    - IPtProxy (~> 1.2)
+    - MBProgressHUD (~> 1.2)
   - MBProgressHUD (1.2.0)
   - Nimble (9.2.1)
   - PathKit (1.0.1)
@@ -28,7 +37,11 @@ DEPENDENCIES:
 
 SPEC REPOS:
   https://github.com/CocoaPods/Specs.git:
+    - Eureka
     - GCDWebServer
+    - ImageRow
+    - IPtProxy
+    - IPtProxyUI
     - MBProgressHUD
     - Nimble
     - PathKit
@@ -44,8 +57,12 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  AdParticipesCumCepis: 28619d657ad8e004069420892c4dcb0f05492a3b
+  AdParticipesCumCepis: 585f83f8ec6ed5a5b70af1a00e2c1864fca9e324
+  Eureka: 60cf058f86a8fb3ed26165ba5292b9850361b0a6
   GCDWebServer: 2c156a56c8226e2d5c0c3f208a3621ccffbe3ce4
+  ImageRow: e65b2e1a33f89062bf2a553a2aad61d975eb7428
+  IPtProxy: ab3cbf127f2e34e9c54ad5c5e818cf8cf93e0a7d
+  IPtProxyUI: 3dc6f74077670ed2a8c5e63701298947f7153820
   MBProgressHUD: 3ee5efcc380f6a79a7cc9b363dd669c5e1ae7406
   Nimble: e7e615c0335ee4bf5b0d786685451e62746117d5
   PathKit: 83b97c9c61b62e61ecafd598b33b2782575c33e4
@@ -56,6 +73,6 @@ SPEC CHECKSUMS:
   Tor: 60f6c9067ded259d2dce2020f04c045dee96e8f8
   ZIPFoundation: b1f0de4eed33e74a676f76e12559ab6b75990197
 
-PODFILE CHECKSUM: ffcd790c9bf24e978604af285f525f031dc885f4
+PODFILE CHECKSUM: 89e2b1f0d99c8986ef627203d098e2f3aa25e76f
 
 COCOAPODS: 1.11.2

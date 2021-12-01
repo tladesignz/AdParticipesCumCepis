@@ -30,7 +30,9 @@ TODO: Add long description of the pod here.
 
   s.swift_version = '5.0'
 
-  s.ios.deployment_target = '9.1'
+  s.ios.deployment_target = '11.0'
+
+  s.static_framework = true
 
   s.source_files = 'AdParticipesCumCepis/Classes/**/*'
 
@@ -43,9 +45,9 @@ TODO: Add long description of the pod here.
 
   s.dependency 'TLPhotoPicker', '~> 2.1'
   s.dependency 'Tor', '~> 406.8.1'
-  s.dependency 'MBProgressHUD', '~> 1.2'
   s.dependency 'GCDWebServer', '~> 3.5'
   s.dependency 'SwiftUTI', '~> 1.0'
   s.dependency 'ZIPFoundation', '~> 0.9'
+  s.dependency 'IPtProxyUI', '~> 1.3'
 
 end

@@ -9,6 +9,11 @@ import Foundation
 
 public extension Bundle {
 
+    class var adParticipesCumCepis: Bundle {
+        Bundle(url: Bundle(for: MainViewController.self)
+                .url(forResource: "AdParticipesCumCepis", withExtension: "bundle")!)!
+    }
+
     var displayName: String {
         return object(forInfoDictionaryKey: "CFBundleDisplayName") as? String
             ?? object(forInfoDictionaryKey: kCFBundleNameKey as String) as? String
