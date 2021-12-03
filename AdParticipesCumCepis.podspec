@@ -44,10 +44,10 @@ TODO: Add long description of the pod here.
   # s.frameworks = 'UIKit', 'MapKit'
 
   s.dependency 'TLPhotoPicker', '~> 2.1'
-  s.dependency 'Tor', '~> 406.8.1'
+  s.dependency 'Tor', '~> 406.8'
   s.dependency 'GCDWebServer', '~> 3.5'
   s.dependency 'SwiftUTI', '~> 1.0'
   s.dependency 'ZIPFoundation', '~> 0.9'
-  s.dependency 'IPtProxyUI', '~> 1.3'
+  s.dependency 'IPtProxyUI', '~> 1.4'
 
 end

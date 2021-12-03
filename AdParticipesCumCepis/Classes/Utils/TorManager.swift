@@ -53,21 +53,29 @@ class TorManager {
     private var torController: TorController?
 
     private var torRunning: Bool {
-        guard torThread?.isExecuting ?? false else {
-            return false
-        }
-
-        if let lock = FileManager.default.torDir?.appendingPathComponent("lock") {
-            return FileManager.default.fileExists(atPath: lock.path)
-        }
-
-        return false
+        (torThread?.isExecuting ?? false) && (torConf?.isLocked ?? false)
     }
 
     private lazy var controllerQueue = DispatchQueue.global(qos: .userInitiated)
 
+    private var ipStatus = IpSupport.Status.unavailable
+
 
     private init() {
+        IpSupport.shared.start({ [weak self] status in
+            self?.ipStatus = status
+
+            if (self?.torRunning ?? false) && (self?.torController?.isConnected ?? false) {
+                self?.torController?.setConfs(status.torConf(Settings.transport, Transport.asConf))
+                { success, error in
+                    if let error = error {
+                        print("[\(String(describing: type(of: self)))] error: \(error)")
+                    }
+
+                    self?.torController?.resetConnection()
+                }
+            }
+        })
     }
 
     func start(_ progressCallback: @escaping (Int) -> Void,
@@ -169,25 +177,22 @@ class TorManager {
         conf.ignoreMissingTorrc = true
         conf.cookieAuthentication = true
         conf.autoControlPort = true
+        conf.avoidDiskWrites = true
+        conf.dataDirectory = FileManager.default.torDir
+        conf.hiddenServiceDirectory = FileManager.default.serviceDir
 
         let transport = Settings.transport
+
+        conf.arguments += transport.torConf(Transport.asArguments).joined()
+
+        conf.arguments += ipStatus.torConf(transport, Transport.asArguments).joined()
 
         conf.options = ["Log": "notice stdout",
                         "LogMessageDomains": "1",
                         "SafeLogging": "0",
                         "SocksPort": "auto",
                         "HiddenServicePort": "80 \(TorManager.localhost):\(TorManager.webServerPort)",
-                        "AvoidDiskWrites": "1",
                         "UseBridges": transport == .none ? "0" : "1"]
-
-        conf.arguments += transport.torConf(Transport.asArguments).joined()
-
-        if let torDir = FileManager.default.torDir {
-            conf.dataDirectory = torDir
-
-            // Need to use #arguments instead of #options because order is important.
-            conf.arguments += ["--HiddenServiceDir", FileManager.default.serviceDir?.path ?? ""]
-        }
 
         return conf
     }
