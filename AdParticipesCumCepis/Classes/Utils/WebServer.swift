@@ -198,10 +198,14 @@ open class WebServer: NSObject, GCDWebServerDelegate {
             GCDWebServerOption_BindToLocalhost: true,
             GCDWebServerOption_Port: TorManager.webServerPort,
             GCDWebServerOption_ServerName: Bundle.main.displayName])
+
+        Dimmer.shared.start()
     }
 
     open func stop() {
         webServer.stop()
+
+        Dimmer.shared.stop()
     }
 
     open func renderTemplate(name: String, context: [String: Any]) throws -> String {

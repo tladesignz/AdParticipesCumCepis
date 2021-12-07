@@ -14,7 +14,7 @@ import SwiftUTI
 
 open class ShareViewController: UIViewController, UITableViewDataSource, UITableViewDelegate,
                                 TLPhotosPickerViewControllerDelegate, WebServerDelegate,
-                                UIDocumentPickerDelegate
+                                UIDocumentPickerDelegate, UIAdaptivePresentationControllerDelegate
 {
 
     @IBOutlet weak var tableView: UITableView!
@@ -276,6 +276,8 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
     }
 
     @IBAction public func share(_ sender: UIButton) {
+        Dimmer.shared.stop()
+
         var items = [Any]()
 
         if let link = address.text, !link.isEmpty {
@@ -301,6 +303,7 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
 
         let vc = UIActivityViewController(activityItems: items, applicationActivities: [ShowQrActivity()])
         vc.popoverPresentationController?.sourceView = sender
+        vc.presentationController?.delegate = self
 
         present(vc, animated: true)
     }
@@ -461,5 +464,15 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
                              with: .automatic)
 
         startSharingBt.isEnabled = !items.isEmpty
+    }
+
+
+    // MARK: UIAdaptivePresentationControllerDelegate
+
+    public func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+        // User returned from the share sheet. Need to start the dimmer again.
+        if webServer?.running ?? false {
+            Dimmer.shared.start()
+        }
     }
 }

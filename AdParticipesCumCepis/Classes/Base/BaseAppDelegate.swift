@@ -75,6 +75,9 @@ open class BaseAppDelegate: UIResponder, UIApplicationDelegate {
             return
         }
 
+        // Set back to normal, if it is currently active.
+        Dimmer.shared.stop(animated: false)
+
         backgroundTaskId = UIApplication.shared.beginBackgroundTask { [weak self] in
             self?.endBackgroundTask()
         }
@@ -110,6 +113,10 @@ open class BaseAppDelegate: UIResponder, UIApplicationDelegate {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
 
         endBackgroundTask()
+
+        if webServer?.running ?? false {
+            Dimmer.shared.start()
+        }
     }
 
     open func applicationWillTerminate(_ application: UIApplication) {
