@@ -161,12 +161,12 @@
                             </userDefinedRuntimeAttributes>
                         </view>
                         <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Q3k-ne-ket">
-                            <rect key="frame" x="262" y="75" width="42" height="22"/>
+                            <rect key="frame" x="262" y="74.5" width="42" height="23"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="42" id="niq-7D-NB7"/>
                             </constraints>
                             <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                            <state key="normal" title=" " image="square.and.arrow.up" catalog="system"/>
+                            <state key="normal" title=" " image="square.and.arrow.up"/>
                             <connections>
                                 <action selector="share:" destination="-1" eventType="touchUpInside" id="3jB-O0-I8U"/>
                             </connections>
@@ -208,12 +208,12 @@
                             </userDefinedRuntimeAttributes>
                         </view>
                         <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CY3-sK-ytG">
-                            <rect key="frame" x="262" y="161" width="42" height="22"/>
+                            <rect key="frame" x="262" y="160.5" width="42" height="23"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="42" id="Ibb-2d-PsN"/>
                             </constraints>
                             <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                            <state key="normal" title=" " image="square.and.arrow.up" catalog="system"/>
+                            <state key="normal" title=" " image="square.and.arrow.up"/>
                             <connections>
                                 <action selector="share:" destination="-1" eventType="touchUpInside" id="CQG-6v-ftj"/>
                             </connections>
@@ -279,7 +279,7 @@
         </view>
     </objects>
     <resources>
-        <image name="square.and.arrow.up" catalog="system" width="115" height="128"/>
+        <image name="square.and.arrow.up" width="17.333999633789062" height="23.486299514770508"/>
         <systemColor name="secondarySystemBackgroundColor">
             <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
