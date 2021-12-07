@@ -38,7 +38,7 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
 
     @IBOutlet weak var publicServiceSw: UISwitch! {
         didSet {
-            publicServiceSw.isOn = false
+            publicServiceSw.isOn = true
         }
     }
 
@@ -275,15 +275,15 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
             items.append(key)
         }
 
+        guard !items.isEmpty else {
+            return
+        }
+
         // The `ShowQrViewController` can only show the first item.
         // So, if the user uses the share button on the key, put that first,
         // so the QR code for the key is shown instead of the URL.
         if sender == shareKeyBt {
             items.reverse()
-        }
-
-        guard !items.isEmpty else {
-            return
         }
 
         let vc = UIActivityViewController(activityItems: items, applicationActivities: [ShowQrActivity()])
