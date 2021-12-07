@@ -163,18 +163,30 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
             return
         }
 
-        var privateKey: String? = nil
+        // Remove all existing keys.
+        for i in (0 ..< (TorManager.shared.onionAuth?.keys.count ?? 0)).reversed() {
+            TorManager.shared.onionAuth?.removeKey(at: i)
+        }
 
-        if publicServiceSw.isOn {
-            // Remove all keys, so Tor doesn't encrypt the rendezvous response.
-            for i in (0 ..< (TorManager.shared.onionAuth?.keys.count ?? 0)).reversed() {
-                TorManager.shared.onionAuth?.removeKey(at: i)
+        // Remove the service dir, in order to make Tor create a new service with a new address.
+        if let serviceDir = FileManager.default.serviceDir,
+           FileManager.default.fileExists(atPath: serviceDir.path)
+        {
+            do {
+                try FileManager.default.removeItem(at: serviceDir)
+            }
+            catch {
+                print("[\(String(describing: type(of: self)))] Can't remove service dir: \(error)")
             }
         }
-        else if let k = TorManager.shared.onionAuth?.keys.first(where: { $0.isPrivate }) {
-            privateKey = k.key
-        }
-        else {
+
+
+        // Trigger (re-)creation of directories.
+        _ = FileManager.default.pubKeyDir
+
+        var privateKey: String? = nil
+
+        if !publicServiceSw.isOn {
             // Create a new key pair.
             let keypair = TorX25519KeyPair()
 
@@ -202,12 +214,13 @@ open class ShareViewController: UIViewController, UITableViewDataSource, UITable
                     return
                 }
 
-                self.address.text = TorManager.shared.serviceUrl?.absoluteString
+                let url = TorManager.shared.serviceUrl
+                self.address.text = url?.absoluteString
 
                 if let privateKey = privateKey {
                     // After successful start, we should now have a domain.
                     // Time to store the private key for later reuse.
-                    if let url = TorManager.shared.serviceUrl {
+                    if let url = url {
                         TorManager.shared.onionAuth?.set(TorAuthKey(private: privateKey, forDomain: url))
                     }
 

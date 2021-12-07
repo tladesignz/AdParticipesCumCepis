@@ -31,7 +31,7 @@ class TorManager {
         return TorOnionAuth(withPrivateDir: nil, andPublicDir: url)
     }()
 
-    public lazy var serviceUrl: URL? = {
+    public var serviceUrl: URL? {
         guard let url = FileManager.default.serviceDir?.appendingPathComponent("hostname"),
               let hostname = try? String(contentsOf: url).trimmingCharacters(in: .whitespacesAndNewlines)
         else {
@@ -43,7 +43,7 @@ class TorManager {
         urlc.scheme = "http"
 
         return urlc.url
-    }()
+    }
 
 
     private var torThread: TorThread?
