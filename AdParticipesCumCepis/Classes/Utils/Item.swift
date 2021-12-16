@@ -8,7 +8,7 @@
 
 import Foundation
 
-open class Item {
+open class Item: Identifiable {
 
     public static let thumbnailSize = 160
     

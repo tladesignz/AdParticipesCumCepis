@@ -45,16 +45,16 @@ class TorManager {
         return urlc.url
     }
 
+    public var running: Bool {
+        (torThread?.isExecuting ?? false) && (torConf?.isLocked ?? false)
+    }
+
 
     private var torThread: TorThread?
 
     private var torConf: TorConfiguration?
 
     private var torController: TorController?
-
-    private var torRunning: Bool {
-        (torThread?.isExecuting ?? false) && (torConf?.isLocked ?? false)
-    }
 
     private lazy var controllerQueue = DispatchQueue.global(qos: .userInitiated)
 
@@ -65,7 +65,7 @@ class TorManager {
         IpSupport.shared.start({ [weak self] status in
             self?.ipStatus = status
 
-            if (self?.torRunning ?? false) && (self?.torController?.isConnected ?? false) {
+            if (self?.running ?? false) && (self?.torController?.isConnected ?? false) {
                 self?.torController?.setConfs(status.torConf(Settings.transport, Transport.asConf))
                 { success, error in
                     if let error = error {
@@ -83,7 +83,7 @@ class TorManager {
     {
         Settings.transport.start()
 
-        if !torRunning {
+        if !running {
             // Create fresh - transport ports may have changed.
             torConf = createTorConf()
 //            print(torConf!.compile())

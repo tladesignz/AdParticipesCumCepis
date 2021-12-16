@@ -363,12 +363,13 @@ open class WebServer: NSObject, GCDWebServerDelegate {
                     }
                     else if let data = data, let name = item.basename, !name.isEmpty {
                         try archive.addEntry(with: name,
-                                             type: .file,
-                                             uncompressedSize: UInt32(data.count),
-                                             compressionMethod: .deflate)
+                                         type: .file,
+                                         uncompressedSize: Int64(data.count),
+                                         compressionMethod: .deflate)
                         { position, size in
-                            return data.subdata(in: position ..< position + size)
+                            return data.subdata(in: Int(position) ..< Int(position) + size)
                         }
+
                     }
                 }
                 catch {

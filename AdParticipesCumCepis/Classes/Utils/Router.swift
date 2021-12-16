@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 open class Router {
 
@@ -19,15 +20,15 @@ open class Router {
         return MainViewController(nibName: String(describing: MainViewController.self), bundle: bundle)
     }
 
-    open class func share() -> ShareViewController {
-        return ShareViewController(nibName: String(describing: ShareViewController.self), bundle: bundle)
+    open class func share() -> UIHostingController<ShareView> {
+        return UIHostingController(rootView: ShareView(ShareModel()))
     }
 
     open class func showQr() -> ShowQrViewController {
         return ShowQrViewController(nibName: String(describing: ShowQrViewController.self), bundle: bundle)
     }
 
-    open class func host() -> HostViewController {
-        return HostViewController(nibName: String(describing: ShareViewController.self), bundle: bundle)
+    open class func host() -> UIHostingController<ShareView> {
+        return UIHostingController(rootView: ShareView(HostModel()))
     }
 }

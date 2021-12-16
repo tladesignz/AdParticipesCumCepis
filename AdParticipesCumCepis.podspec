@@ -30,7 +30,7 @@ TODO: Add long description of the pod here.
 
   s.swift_version = '5.0'
 
-  s.ios.deployment_target = '11.0'
+  s.ios.deployment_target = '14.0'
 
   s.static_framework = true
 
@@ -46,8 +46,7 @@ TODO: Add long description of the pod here.
   s.dependency 'TLPhotoPicker', '~> 2.1'
   s.dependency 'Tor', '~> 406.8'
   s.dependency 'GCDWebServer', '~> 3.5'
-  s.dependency 'SwiftUTI', '~> 1.0'
   s.dependency 'ZIPFoundation', '~> 0.9'
-  s.dependency 'IPtProxyUI', '~> 1.4'
+  s.dependency 'IPtProxyUI', '~> 1.5'
 
 end

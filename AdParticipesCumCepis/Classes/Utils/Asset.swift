@@ -8,7 +8,7 @@
 
 import Photos
 import TLPhotoPicker
-import SwiftUTI
+import UniformTypeIdentifiers
 
 open class Asset: Item {
 
@@ -187,16 +187,16 @@ open class Asset: Item {
             }
         }
         else {
-            phManager.requestImageData(
+            phManager.requestImageDataAndOrientation(
                 for: phAsset, options: originalImageOptions)
-            { (imageData, dataUTI, orientation, info) in
-                var uti = UTI.image
+            { imageData, dataUTI, orientation, info in
+                var uti: UTType?
 
                 if let dataUTI = dataUTI {
-                    uti = UTI(rawValue: dataUTI)
+                    uti = UTType(dataUTI)
                 }
 
-                resultHandler(nil, imageData, uti.mimeType)
+                resultHandler(nil, imageData, (uti ?? UTType.image).preferredMIMEType)
             }
         }
     }

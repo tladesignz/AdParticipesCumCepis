@@ -1,8 +1,7 @@
 PODS:
   - AdParticipesCumCepis (0.1.0):
     - GCDWebServer (~> 3.5)
-    - IPtProxyUI (~> 1.4)
-    - SwiftUTI (~> 1.0)
+    - IPtProxyUI (~> 1.5)
     - TLPhotoPicker (~> 2.1)
     - Tor (~> 406.8)
     - ZIPFoundation (~> 0.9)
@@ -12,11 +11,11 @@ PODS:
   - GCDWebServer/Core (3.5.4)
   - ImageRow (4.0.0):
     - Eureka (~> 5.0)
-  - IPtProxy (1.2.0)
-  - IPtProxyUI (1.4.0):
+  - IPtProxy (1.3.0)
+  - IPtProxyUI (1.5.0):
     - Eureka (~> 5.3)
     - ImageRow (~> 4.0)
-    - IPtProxy (~> 1.2)
+    - IPtProxy (~> 1.3)
     - MBProgressHUD (~> 1.2)
     - ReachabilitySwift (~> 5.0)
   - MBProgressHUD (1.2.0)
@@ -26,12 +25,11 @@ PODS:
   - ReachabilitySwift (5.0.0)
   - Stencil (0.14.2):
     - PathKit (~> 1.0.0)
-  - SwiftUTI (1.0.6)
   - TLPhotoPicker (2.1.7)
   - Tor (406.8.2):
     - Tor/Core (= 406.8.2)
   - Tor/Core (406.8.2)
-  - ZIPFoundation (0.9.11)
+  - ZIPFoundation (0.9.13)
 
 DEPENDENCIES:
   - AdParticipesCumCepis (from `../`)
@@ -52,7 +50,6 @@ SPEC REPOS:
     - Quick
     - ReachabilitySwift
     - Stencil
-    - SwiftUTI
     - TLPhotoPicker
     - Tor
     - ZIPFoundation
@@ -62,23 +59,22 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  AdParticipesCumCepis: 79d2c225d71217416c958f1539841ca7b8623baf
+  AdParticipesCumCepis: de270ed9618f6e4fa1243eac3bc8faf69024fa71
   Eureka: 60cf058f86a8fb3ed26165ba5292b9850361b0a6
   GCDWebServer: 2c156a56c8226e2d5c0c3f208a3621ccffbe3ce4
   ImageRow: e65b2e1a33f89062bf2a553a2aad61d975eb7428
-  IPtProxy: ab3cbf127f2e34e9c54ad5c5e818cf8cf93e0a7d
-  IPtProxyUI: 4237411339f577fc9249546bbc2d4ed694d56bc5
+  IPtProxy: dfedd11a62c1428c67b2fa7cb0d272ae432cfc5f
+  IPtProxyUI: 02bd19a6ecd28bae38d90dfa9d2f6e08a6f74b09
   MBProgressHUD: 3ee5efcc380f6a79a7cc9b363dd669c5e1ae7406
   Nimble: e7e615c0335ee4bf5b0d786685451e62746117d5
   PathKit: 83b97c9c61b62e61ecafd598b33b2782575c33e4
   Quick: 6473349e43b9271a8d43839d9ba1c442ed1b7ac4
   ReachabilitySwift: 985039c6f7b23a1da463388634119492ff86c825
   Stencil: f2dbb5c83f226454e413be27da3f3ba0fef8b996
-  SwiftUTI: e83d65dbe9fba0a0ff7cc9031cd30b2d82acebef
   TLPhotoPicker: ffddcfc335e1475e769b2cdd37af5bbe42ddf0cb
   Tor: a1bab7ff724cce3621f0a840b0291c48f9888d6c
-  ZIPFoundation: b1f0de4eed33e74a676f76e12559ab6b75990197
+  ZIPFoundation: ae5b4b813d216d3bf0a148773267fff14bd51d37
 
-PODFILE CHECKSUM: 89e2b1f0d99c8986ef627203d098e2f3aa25e76f
+PODFILE CHECKSUM: 23097d961cc247ca7fb8fc0001661c920a9d9d11
 
 COCOAPODS: 1.11.2
