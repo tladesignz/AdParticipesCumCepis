@@ -12,35 +12,10 @@ public struct ShareSheet: UIViewControllerRepresentable {
 
     public let activityItems: [Any]
 
-    public let completed: (() -> Void)?
-
     public func makeUIViewController(context: Context) -> some UIViewController {
-        let vc = UIActivityViewController(activityItems: activityItems, applicationActivities: [ShowQrActivity()])
-
-        vc.presentationController?.delegate = makeCoordinator()
-
-        return vc
+        return UIActivityViewController(activityItems: activityItems, applicationActivities: [ShowQrActivity()])
     }
 
     public func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {
-    }
-
-    public func makeCoordinator() -> Coordinator {
-        Coordinator(completed ?? {})
-    }
-
-    public class Coordinator: NSObject, UIAdaptivePresentationControllerDelegate {
-
-        let completed: () -> Void
-
-        public init(_ completed: @escaping () -> Void) {
-            self.completed = completed
-
-            super.init()
-        }
-
-        public func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
-            completed()
-        }
     }
 }

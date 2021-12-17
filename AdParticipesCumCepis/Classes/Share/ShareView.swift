@@ -77,16 +77,13 @@ public struct ShareView: View {
                                 }
                             }
                             .padding(.bottom, 8)
-                            .sheet(isPresented: $presentAddressShareSheet) {
-                                ShareSheet(activityItems: shareItems()) {
-                                    print("completed")
-                                    // TODO: Not working.
-
-                                    // User returned from the share sheet. Need to start the dimmer again.
-                                    if model.state != .stopped {
-                                        Dimmer.shared.start()
-                                    }
+                            .sheet(isPresented: $presentAddressShareSheet, onDismiss: {
+                                // User returned from the share sheet. Need to start the dimmer again.
+                                if model.state != .stopped {
+                                    Dimmer.shared.start()
                                 }
+                            }) {
+                                ShareSheet(activityItems: shareItems())
                             }
 
                             if let key = model.key, !key.isEmpty {
@@ -105,16 +102,13 @@ public struct ShareView: View {
                                         Image(systemName: "square.and.arrow.up")
                                     }
                                 }
-                                .sheet(isPresented: $presentKeyShareSheet) {
-                                    ShareSheet(activityItems: shareItems(reversed: true)) {
-                                        print("completed")
-                                        // TODO: Not working.
-
-                                        // User returned from the share sheet. Need to start the dimmer again.
-                                        if model.state != .stopped {
-                                            Dimmer.shared.start()
-                                        }
+                                .sheet(isPresented: $presentKeyShareSheet, onDismiss: {
+                                    // User returned from the share sheet. Need to start the dimmer again.
+                                    if model.state != .stopped {
+                                        Dimmer.shared.start()
                                     }
+                                }) {
+                                    ShareSheet(activityItems: shareItems(reversed: true))
                                 }
                             }
                         }
