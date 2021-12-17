@@ -22,7 +22,7 @@ public struct ShareView: View {
 
     @State private var stopSharingAfterSend = true
 
-    @State private var publicService = false
+    @State private var publicService = true
 
     @State private var customTitle = ""
 
@@ -33,15 +33,25 @@ public struct ShareView: View {
 
     public var body: some View {
         GeometryReader { geometry in
-            List(model.items) { item in
-                HStack {
-                    AsyncImage(item)
-                        .frame(minWidth: 64, idealWidth: 64, maxWidth: 64, maxHeight: 64)
+            List {
+                ForEach(model.items) { item in
+                    HStack {
+                        AsyncImage(item)
+                            .frame(minWidth: 64, idealWidth: 64, maxWidth: 64, maxHeight: 64)
 
-                    Text(item.basename ?? item.id.debugDescription)
+                        Text(item.basename ?? item.id.debugDescription)
+                    }
+                }
+                .onDelete { offsets in
+                    for i in offsets {
+                        if let file = model.items[i] as? File {
+                            try? FileManager.default.removeItem(at: file.url)
+                        }
+                    }
+
+                    model.items.remove(atOffsets: offsets)
                 }
             }
-            // TODO: Missing delete
 
             if !model.items.isEmpty {
                 Drawer(open: $drawerOpen, minHeight: 80, maxHeight: 400) {
