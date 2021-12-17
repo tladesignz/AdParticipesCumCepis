@@ -19,12 +19,11 @@ struct AdPerticipesCumCepisApp: App {
     }
 
     @UIApplicationDelegateAdaptor(BaseAppDelegate.self)
-    var appDelegate: BaseAppDelegate
+    var appDelegate
 
 
     init() {
-        // TODO: This is not working.
-        appDelegate.webServer = WebServer()
+        Router.webServer = WebServer()
 
         print("[\(String(describing: type(of: self)))] cacheDir=\(FileManager.default.cacheDir?.path ?? "nil")")
 

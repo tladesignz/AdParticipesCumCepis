@@ -11,26 +11,15 @@ import UserNotifications
 
 open class BaseAppDelegate: UIResponder, UIApplicationDelegate {
 
-    open var webServer: WebServer? = nil
-
-    open class var shared: BaseAppDelegate? {
-        if Thread.isMainThread {
-            return UIApplication.shared.delegate as? BaseAppDelegate
-        }
-
-        return DispatchQueue.main.sync {
-            return UIApplication.shared.delegate as? BaseAppDelegate
-        }
-    }
+    public static let unWarningId = "warning-return-to-app"
 
 
     private var backgroundTaskId = UIBackgroundTaskIdentifier.invalid
 
-    public static let unWarningId = "warning-return-to-app"
-
     private var unCenter: UNUserNotificationCenter {
         UNUserNotificationCenter.current()
     }
+
 
     open lazy var warningNotificationContent: UNMutableNotificationContent = {
         let content = UNMutableNotificationContent()
@@ -60,7 +49,7 @@ open class BaseAppDelegate: UIResponder, UIApplicationDelegate {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
         // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
 
-        guard webServer?.running ?? false else {
+        guard Router.webServer?.running ?? false else {
             return
         }
 
@@ -101,7 +90,7 @@ open class BaseAppDelegate: UIResponder, UIApplicationDelegate {
 
         endBackgroundTask()
 
-        if webServer?.running ?? false {
+        if Router.webServer?.running ?? false {
             Dimmer.shared.start()
         }
     }

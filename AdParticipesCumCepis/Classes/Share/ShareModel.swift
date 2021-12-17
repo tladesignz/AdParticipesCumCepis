@@ -62,11 +62,6 @@ open class ShareModel: ObservableObject, WebServerDelegate {
     private var customTitle = ""
 
 
-    private var webServer: WebServer? {
-        return BaseAppDelegate.shared?.webServer
-    }
-
-
     public init() {
         let fm = FileManager.default
         items += fm.contentsOfDirectory(at: fm.docsDir).map { File($0, relativeTo: fm.docsDir) }
@@ -88,8 +83,8 @@ open class ShareModel: ObservableObject, WebServerDelegate {
         self.customTitle = customTitle
 
         do {
-            webServer?.delegate = self
-            try webServer?.start()
+            Router.webServer?.delegate = self
+            try Router.webServer?.start()
         }
         catch {
             return stop(error)
@@ -163,11 +158,11 @@ open class ShareModel: ObservableObject, WebServerDelegate {
     public func stop(_ error: Error? = nil) {
         TorManager.shared.stop()
 
-        if webServer?.running ?? false {
-            webServer?.stop()
+        if Router.webServer?.running ?? false {
+            Router.webServer?.stop()
         }
 
-        webServer?.delegate = nil
+        Router.webServer?.delegate = nil
 
         state = .stopped
         progress = 0

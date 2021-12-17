@@ -16,6 +16,8 @@ open class Router {
                         .url(forResource: "AdParticipesCumCepis", withExtension: "bundle")!)!
     }()
 
+    public static var webServer: WebServer?
+
 
     open class func main() -> MainView {
         return MainView()

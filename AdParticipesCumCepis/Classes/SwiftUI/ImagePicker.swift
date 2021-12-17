@@ -13,6 +13,8 @@ public struct ImagePicker: UIViewControllerRepresentable {
 
     public let vc = TLPhotosPickerViewController()
 
+//    public let sourceView: some View
+
     public let add: ([Asset]) -> Void
 
     public func makeUIViewController(context: Context) -> some UIViewController {
@@ -34,6 +36,7 @@ public struct ImagePicker: UIViewControllerRepresentable {
             self.add = add
 
             vc.delegate = self
+//            vc.popoverPresentationController?.sourceRect = sourceView
         }
 
         public func shouldDismissPhotoPicker(withTLPHAssets: [TLPHAsset]) -> Bool {
