@@ -10,7 +10,7 @@ import Foundation
 public extension Bundle {
 
     class var adParticipesCumCepis: Bundle {
-        Bundle(url: Bundle(for: MainViewController.self)
+        Bundle(url: Bundle(for: BaseAppDelegate.self)
                 .url(forResource: "AdParticipesCumCepis", withExtension: "bundle")!)!
     }
 

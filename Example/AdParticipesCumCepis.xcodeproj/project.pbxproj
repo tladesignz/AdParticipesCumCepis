@@ -8,13 +8,13 @@
 
 /* Begin PBXBuildFile section */
 		0EC110E7391063E8538AEFEC /* Pods_AdParticipesCumCepis_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A68472EDC1000006830183E7 /* Pods_AdParticipesCumCepis_Tests.framework */; };
-		607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD51AFB9204008FA782 /* AppDelegate.swift */; };
 		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
 		607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDE1AFB9204008FA782 /* LaunchScreen.xib */; };
 		607FACEC1AFB9204008FA782 /* Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACEB1AFB9204008FA782 /* Tests.swift */; };
 		A03D69E92716E02200CB810B /* static in Resources */ = {isa = PBXBuildFile; fileRef = A03D69E72716E02200CB810B /* static */; };
 		A03D69EA2716E02200CB810B /* templates in Resources */ = {isa = PBXBuildFile; fileRef = A03D69E82716E02200CB810B /* templates */; };
 		A03D69EC2716F22000CB810B /* WebServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A03D69EB2716F22000CB810B /* WebServer.swift */; };
+		A083CFE4276CE30F004B46A0 /* AdPerticipesCumCepisApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A083CFE3276CE30F004B46A0 /* AdPerticipesCumCepisApp.swift */; };
 		A0CB4BEE270C6EE500A41D1D /* Config.m in Sources */ = {isa = PBXBuildFile; fileRef = A0CB4BEA270C6EB400A41D1D /* Config.m */; };
 		A0CB4BF0270C6EF400A41D1D /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0CB4BEB270C6EB400A41D1D /* Config.swift */; };
 		B15D1154A7189880860FF508 /* Pods_AdParticipesCumCepis_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8F76472286B4A6E5DFDFCC95 /* Pods_AdParticipesCumCepis_Example.framework */; };
@@ -35,7 +35,6 @@
 		3E06C622D70004D0462D914C /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		607FACD01AFB9204008FA782 /* AdParticipesCumCepis_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AdParticipesCumCepis_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACD41AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		607FACD51AFB9204008FA782 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		607FACDC1AFB9204008FA782 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		607FACDF1AFB9204008FA782 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		607FACE51AFB9204008FA782 /* AdParticipesCumCepis_Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AdParticipesCumCepis_Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -46,6 +45,7 @@
 		A03D69E72716E02200CB810B /* static */ = {isa = PBXFileReference; lastKnownFileType = folder; path = static; sourceTree = "<group>"; };
 		A03D69E82716E02200CB810B /* templates */ = {isa = PBXFileReference; lastKnownFileType = folder; path = templates; sourceTree = "<group>"; };
 		A03D69EB2716F22000CB810B /* WebServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebServer.swift; sourceTree = "<group>"; };
+		A083CFE3276CE30F004B46A0 /* AdPerticipesCumCepisApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdPerticipesCumCepisApp.swift; sourceTree = "<group>"; };
 		A0AEAEEE270C73B300E426F0 /* AdParticipesCumCepis-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AdParticipesCumCepis-Bridging-Header.h"; sourceTree = "<group>"; };
 		A0CB4BE5270C6CB600A41D1D /* Podfile.lock */ = {isa = PBXFileReference; lastKnownFileType = text; path = Podfile.lock; sourceTree = "<group>"; };
 		A0CB4BE6270C6CB700A41D1D /* Podfile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
@@ -128,7 +128,7 @@
 		607FACD21AFB9204008FA782 /* Example for AdParticipesCumCepis */ = {
 			isa = PBXGroup;
 			children = (
-				607FACD51AFB9204008FA782 /* AppDelegate.swift */,
+				A083CFE3276CE30F004B46A0 /* AdPerticipesCumCepisApp.swift */,
 				607FACDC1AFB9204008FA782 /* Images.xcassets */,
 				607FACDE1AFB9204008FA782 /* LaunchScreen.xib */,
 				607FACD31AFB9204008FA782 /* Supporting Files */,
@@ -436,7 +436,7 @@
 			files = (
 				A0CB4BF0270C6EF400A41D1D /* Config.swift in Sources */,
 				A0CB4BEE270C6EE500A41D1D /* Config.m in Sources */,
-				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
+				A083CFE4276CE30F004B46A0 /* AdPerticipesCumCepisApp.swift in Sources */,
 				A03D69EC2716F22000CB810B /* WebServer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

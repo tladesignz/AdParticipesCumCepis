@@ -12,6 +12,8 @@ public struct ShareView: View {
 
     @StateObject private var model: ShareModel
 
+    @State private var showingBridgesConf = false
+
     @State private var showingImagePicker = false
 
     @State private var showingDocPicker = false
@@ -54,7 +56,7 @@ public struct ShareView: View {
             }
 
             if !model.items.isEmpty {
-                Drawer(open: $drawerOpen, minHeight: 80, maxHeight: 400) {
+                Drawer(open: $drawerOpen, minHeight: 64, maxHeight: 400) {
                     Status(model.state, model.progress, model.error)
 
                     Divider()
@@ -130,6 +132,7 @@ public struct ShareView: View {
                                 .disabled(model.state != .stopped)
                         }
                         .frame(maxHeight: 240)
+                        .padding(.bottom, 8)
                     }
 
                     switch model.state {
@@ -173,10 +176,21 @@ public struct ShareView: View {
                 }
             }
         }
-        .edgesIgnoringSafeArea(.bottom)
         .navigationBarBackButtonHidden(model.state != .stopped)
         .navigationTitle(model.title)
         .toolbar {
+            ToolbarItemGroup(placement: .navigationBarLeading) {
+                Button(action: {
+                    showingBridgesConf = true
+                }) {
+                    Image(systemName: "network.badge.shield.half.filled")
+                }
+                .sheet(isPresented: $showingBridgesConf) {
+                    BridgesConf()
+                }
+                .disabled(model.state != .stopped)
+            }
+
             ToolbarItemGroup(placement: .navigationBarTrailing) {
                 Button(action: {
                     showingImagePicker = true

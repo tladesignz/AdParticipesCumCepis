@@ -41,7 +41,9 @@ public struct Drawer<Content: View>: View {
     public var body: some View {
         GeometryReader { geometry in
             VStack(spacing: 0) {
-                indicator.padding(8)
+                indicator
+                    .padding(.top, 8)
+                    .padding(.bottom, 4)
 
                 content
             }

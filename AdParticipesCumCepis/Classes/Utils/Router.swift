@@ -12,23 +12,24 @@ import SwiftUI
 open class Router {
 
     public static let bundle: Bundle = {
-        return Bundle(url: Bundle(for: BaseAppDelegate.self).url(forResource: "AdParticipesCumCepis", withExtension: "bundle")!)!
+        return Bundle(url: Bundle(for: BaseAppDelegate.self)
+                        .url(forResource: "AdParticipesCumCepis", withExtension: "bundle")!)!
     }()
 
 
-    open class func main() -> MainViewController {
-        return MainViewController(nibName: String(describing: MainViewController.self), bundle: bundle)
+    open class func main() -> MainView {
+        return MainView()
     }
 
-    open class func share() -> UIHostingController<ShareView> {
-        return UIHostingController(rootView: ShareView(ShareModel()))
+    open class func share() -> ShareView {
+        return ShareView(ShareModel())
     }
 
     open class func showQr() -> ShowQrViewController {
         return ShowQrViewController(nibName: String(describing: ShowQrViewController.self), bundle: bundle)
     }
 
-    open class func host() -> UIHostingController<ShareView> {
-        return UIHostingController(rootView: ShareView(HostModel()))
+    open class func host() -> ShareView {
+        return ShareView(HostModel())
     }
 }
