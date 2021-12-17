@@ -11,8 +11,6 @@ import UserNotifications
 
 open class BaseAppDelegate: UIResponder, UIApplicationDelegate {
 
-    open lazy var window: UIWindow? = UIWindow(frame: UIScreen.main.bounds)
-
     open var webServer: WebServer? = nil
 
     open class var shared: BaseAppDelegate? {
@@ -28,15 +26,12 @@ open class BaseAppDelegate: UIResponder, UIApplicationDelegate {
 
     private var backgroundTaskId = UIBackgroundTaskIdentifier.invalid
 
-    @available(iOS 10.0, *)
     public static let unWarningId = "warning-return-to-app"
 
-    @available(iOS 10.0, *)
     private var unCenter: UNUserNotificationCenter {
         UNUserNotificationCenter.current()
     }
 
-    @available(iOS 10.0, *)
     open lazy var warningNotificationContent: UNMutableNotificationContent = {
         let content = UNMutableNotificationContent()
 
@@ -56,13 +51,7 @@ open class BaseAppDelegate: UIResponder, UIApplicationDelegate {
 
     open func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool
     {
-        window?.rootViewController = UINavigationController(rootViewController: Router.main())
-
-        window?.makeKeyAndVisible()
-
-        if #available(iOS 10.0, *) {
-            askNotifications()
-        }
+        askNotifications()
 
         return true
     }
@@ -92,9 +81,7 @@ open class BaseAppDelegate: UIResponder, UIApplicationDelegate {
                 return
             }
 
-            if #available(iOS 10.0, *) {
-                self?.notifyUserBeforeEnd()
-            }
+            self?.notifyUserBeforeEnd()
         }
     }
 
@@ -130,10 +117,8 @@ open class BaseAppDelegate: UIResponder, UIApplicationDelegate {
             return
         }
 
-        if #available(iOS 10.0, *) {
-            unCenter.removeDeliveredNotifications(withIdentifiers: [Self.unWarningId])
-            unCenter.removePendingNotificationRequests(withIdentifiers: [Self.unWarningId])
-        }
+        unCenter.removeDeliveredNotifications(withIdentifiers: [Self.unWarningId])
+        unCenter.removePendingNotificationRequests(withIdentifiers: [Self.unWarningId])
 
         UIApplication.shared.endBackgroundTask(backgroundTaskId)
         backgroundTaskId = .invalid
@@ -142,14 +127,11 @@ open class BaseAppDelegate: UIResponder, UIApplicationDelegate {
     /**
      Ask the user for permission to show notifications after a delay of 2 seconds.
      */
-    @available(iOS 10.0, *)
     private func askNotifications() {
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
             var options: UNAuthorizationOptions = [.alert, .sound]
 
-            if #available(iOS 12.0, *) {
-                options.update(with: .criticalAlert)
-            }
+            options.update(with: .criticalAlert)
 
             self?.unCenter.requestAuthorization(options: options) { granted, error in
                 print("[\(String(describing: type(of: self)))] UNUserNotificationCenter#requestAuthorization granted=\(granted), error=\(String(describing: error))")
@@ -160,13 +142,9 @@ open class BaseAppDelegate: UIResponder, UIApplicationDelegate {
     /**
      Notify the user that they should return to the app immediately.
      */
-    @available(iOS 10.0, *)
     private func notifyUserBeforeEnd() {
         let content = warningNotificationContent
-
-        if #available(iOS 12.0, *) {
-            content.sound = .defaultCritical
-        }
+        content.sound = .defaultCritical
 
         if #available(iOS 15.0, *) {
             content.relevanceScore = 1

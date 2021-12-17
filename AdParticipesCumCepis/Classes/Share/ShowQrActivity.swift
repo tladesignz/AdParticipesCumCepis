@@ -29,7 +29,7 @@ public class ShowQrActivity: UIActivity {
 
     public override var activityImage: UIImage? {
         get {
-            return UIImage(named: "qrcode", in: Bundle(for: type(of: self)), compatibleWith: nil)
+            return UIImage(systemName: "qrcode")
         }
     }
     
