@@ -18,29 +18,33 @@ open class ShareModel: ObservableObject, WebServerDelegate {
     }
 
 
-    public var title: String {
+    open var title: String {
         NSLocalizedString("Share", comment: "")
     }
 
-    public var addressLbTextWithPrivateKey: String {
+    open var emptyBackgroundImage: String? {
+        nil
+    }
+
+    open var addressLbTextWithPrivateKey: String {
         NSLocalizedString(
             "Anyone with this address and private key can download your files using the Tor Browser:",
             comment: "")
     }
 
-    public var addressLbTextNoPrivateKey: String {
+    open var addressLbTextNoPrivateKey: String {
         NSLocalizedString(
             "Anyone with this address can download your files using the Tor Browser:",
             comment: "")
     }
 
-    public var stopSharingAfterSendLb: String {
+    open var stopSharingAfterSendLb: String {
         NSLocalizedString(
             "Stop sharing after files have been sent (uncheck to allow downloading individual files)",
             comment: "")
     }
 
-    public var stopSharingAfterSendInitialValue: Bool {
+    open var stopSharingAfterSendInitialValue: Bool {
         true
     }
 

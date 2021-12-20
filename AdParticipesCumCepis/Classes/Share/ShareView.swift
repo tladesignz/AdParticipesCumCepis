@@ -55,7 +55,28 @@ public struct ShareView: View {
                 }
             }
 
-            if !model.items.isEmpty {
+            if model.items.isEmpty {
+                VStack(alignment: .center) {
+                    if let name = model.emptyBackgroundImage {
+                        Image(name)
+                            .padding()
+                    }
+
+                    Text(NSLocalizedString("Nothing here yet.", comment: ""))
+                        .foregroundColor(.secondary)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+
+                    Button(action: {
+                        showingDocPicker = true
+                    }) {
+                        Text(NSLocalizedString("Add Files", comment: ""))
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                    }
+                }
+            }
+            else {
                 Drawer(open: $drawerOpen, minHeight: 64, maxHeight: 400) {
                     Status(model.state, model.progress, model.error)
 
@@ -216,6 +237,7 @@ public struct ShareView: View {
                     DocPicker {
                         model.items += $0
                     }
+                    .padding(0)
                     .frame(width: 360, height: 560)
                 }
                 .disabled(model.state != .stopped)
@@ -224,7 +246,7 @@ public struct ShareView: View {
     }
 
 
-    init(_ model: ShareModel) {
+    public init(_ model: ShareModel) {
         _model = StateObject(wrappedValue: model)
 
         _stopSharingAfterSend = State(wrappedValue: model.stopSharingAfterSendInitialValue)
