@@ -11,25 +11,25 @@ public struct MainView: View {
 
     public var body: some View {
         // TODO: Fix UI bug, where stuff is shining through after drawer open/closing.
-        TabView {
+//        TabView {
             NavigationView {
                 ShareView(ShareModel())
             }
             .navigationViewStyle(.stack)
-            .tabItem {
-                Image(systemName: "paperplane")
-                Text(NSLocalizedString("Share", comment: ""))
-            }
-
-            NavigationView {
-                ShareView(HostModel())
-            }
-            .navigationViewStyle(.stack)
-            .tabItem {
-                Image(systemName: "globe")
-                Text(NSLocalizedString("Website", comment: ""))
-            }
-        }
+//            .tabItem {
+//                Image(systemName: "paperplane")
+//                Text(NSLocalizedString("Share", comment: ""))
+//            }
+//
+//            NavigationView {
+//                ShareView(HostModel())
+//            }
+//            .navigationViewStyle(.stack)
+//            .tabItem {
+//                Image(systemName: "globe")
+//                Text(NSLocalizedString("Website", comment: ""))
+//            }
+//        }
     }
 
     public init() {
