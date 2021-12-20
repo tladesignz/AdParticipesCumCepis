@@ -53,6 +53,7 @@ public struct ShareView: View {
 
                     model.items.remove(atOffsets: offsets)
                 }
+                .deleteDisabled(model.state != .stopped)
             }
 
             if model.items.isEmpty {
