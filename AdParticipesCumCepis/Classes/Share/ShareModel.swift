@@ -83,8 +83,8 @@ open class ShareModel: ObservableObject, WebServerDelegate {
         self.customTitle = customTitle
 
         do {
-            Router.webServer?.delegate = self
-            try Router.webServer?.start()
+            WebServer.shared?.delegate = self
+            try WebServer.shared?.start()
         }
         catch {
             return stop(error)
@@ -158,11 +158,11 @@ open class ShareModel: ObservableObject, WebServerDelegate {
     public func stop(_ error: Error? = nil) {
         TorManager.shared.stop()
 
-        if Router.webServer?.running ?? false {
-            Router.webServer?.stop()
+        if WebServer.shared?.running ?? false {
+            WebServer.shared?.stop()
         }
 
-        Router.webServer?.delegate = nil
+        WebServer.shared?.delegate = nil
 
         state = .stopped
         progress = 0

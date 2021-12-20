@@ -49,7 +49,7 @@ open class BaseAppDelegate: UIResponder, UIApplicationDelegate {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
         // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
 
-        guard Router.webServer?.running ?? false else {
+        guard WebServer.shared?.running ?? false else {
             return
         }
 
@@ -90,7 +90,7 @@ open class BaseAppDelegate: UIResponder, UIApplicationDelegate {
 
         endBackgroundTask()
 
-        if Router.webServer?.running ?? false {
+        if WebServer.shared?.running ?? false {
             Dimmer.shared.start()
         }
     }

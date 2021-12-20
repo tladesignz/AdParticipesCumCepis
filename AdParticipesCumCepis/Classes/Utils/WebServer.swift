@@ -32,6 +32,8 @@ open class WebServer: NSObject, GCDWebServerDelegate {
         case host
     }
 
+    public static var shared: WebServer?
+
     public var staticPath: String {
         return randomizedStaticPath
     }

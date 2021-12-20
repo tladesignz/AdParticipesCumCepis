@@ -13,7 +13,7 @@ public struct MainView: View {
         // TODO: Fix UI bug, where stuff is shining through after drawer open/closing.
         TabView {
             NavigationView {
-                Router.share()
+                ShareView(ShareModel())
             }
             .navigationViewStyle(.stack)
             .tabItem {
@@ -22,7 +22,7 @@ public struct MainView: View {
             }
 
             NavigationView {
-                Router.host()
+                ShareView(HostModel())
             }
             .navigationViewStyle(.stack)
             .tabItem {

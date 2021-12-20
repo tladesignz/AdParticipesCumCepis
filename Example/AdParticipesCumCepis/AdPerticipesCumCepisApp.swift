@@ -14,7 +14,7 @@ struct AdPerticipesCumCepisApp: App {
 
     var body: some Scene {
         WindowGroup {
-            Router.main()
+            MainView()
         }
     }
 
@@ -23,7 +23,7 @@ struct AdPerticipesCumCepisApp: App {
 
 
     init() {
-        Router.webServer = WebServer()
+        WebServer.shared = WebServer()
 
         print("[\(String(describing: type(of: self)))] cacheDir=\(FileManager.default.cacheDir?.path ?? "nil")")
 

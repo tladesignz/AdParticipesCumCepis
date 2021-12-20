@@ -35,7 +35,7 @@ public class ShowQrActivity: UIActivity {
     
     public override var activityViewController: UIViewController? {
         get {
-            let vc = Router.showQr()
+            let vc = ShowQrViewController(nibName: String(describing: ShowQrViewController.self), bundle: Bundle.adParticipesCumCepis)
             vc.qrCode = qrCode ?? ""
 
             let navC = UINavigationController(rootViewController: vc)
