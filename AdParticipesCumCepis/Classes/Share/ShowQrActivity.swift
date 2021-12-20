@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SwiftUI
 
 /**
  Activity for `UIActivityViewController` to display a string as QR code.
@@ -35,11 +36,14 @@ public class ShowQrActivity: UIActivity {
     
     public override var activityViewController: UIViewController? {
         get {
-            let vc = ShowQrViewController(nibName: String(describing: ShowQrViewController.self), bundle: Bundle.adParticipesCumCepis)
-            vc.qrCode = qrCode ?? ""
+            let vc = UIHostingController(rootView: QrView(qrCode: qrCode ?? ""))
 
             let navC = UINavigationController(rootViewController: vc)
             navC.modalPresentationStyle = .formSheet
+
+            vc.rootView.dismiss = { [weak navC] in
+                navC?.dismiss(animated: true)
+            }
 
             return navC
         }

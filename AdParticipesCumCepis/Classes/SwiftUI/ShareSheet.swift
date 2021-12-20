@@ -12,7 +12,7 @@ public struct ShareSheet: UIViewControllerRepresentable {
 
     public let activityItems: [Any]
 
-    public let completion: () -> ()
+    public let completion: () -> Void
 
 
     public func makeUIViewController(context: Context) -> some UIViewController {
@@ -33,9 +33,9 @@ public struct ShareSheet: UIViewControllerRepresentable {
 
     open class Coordinator: NSObject, UIAdaptivePresentationControllerDelegate {
 
-        public let completion: () -> ()
+        public let completion: () -> Void
 
-        public init(_ completion: @escaping () -> ()) {
+        public init(_ completion: @escaping () -> Void) {
             self.completion = completion
 
             super.init()
