@@ -15,6 +15,7 @@ public struct MainView: View {
             NavigationView {
                 Router.share()
             }
+            .navigationViewStyle(.stack)
             .tabItem {
                 Image(systemName: "paperplane")
                 Text(NSLocalizedString("Share", comment: ""))
@@ -23,6 +24,7 @@ public struct MainView: View {
             NavigationView {
                 Router.host()
             }
+            .navigationViewStyle(.stack)
             .tabItem {
                 Image(systemName: "globe")
                 Text(NSLocalizedString("Website", comment: ""))

@@ -11,31 +11,33 @@ import UniformTypeIdentifiers
 
 public struct DocPicker: UIViewControllerRepresentable {
 
-    public let vc = UIDocumentPickerViewController(forOpeningContentTypes: [UTType.item], asCopy: true)
-
     public let add: ([File]) -> Void
 
+
     public func makeUIViewController(context: Context) -> some UIViewController {
-        vc
+        let vc = UIDocumentPickerViewController(forOpeningContentTypes: [UTType.item], asCopy: true)
+        vc.delegate = context.coordinator
+
+        return vc
     }
 
     public func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {
+        (uiViewController as? UIDocumentPickerViewController)?.delegate = context.coordinator
     }
 
     public func makeCoordinator() -> Coordinator {
-        Coordinator(vc, add)
+        Coordinator(add)
     }
 
-    public class Coordinator: NSObject, UIDocumentPickerDelegate {
+
+    open class Coordinator: NSObject, UIDocumentPickerDelegate {
 
         let add: ([File]) -> Void
 
-        init(_ vc: UIDocumentPickerViewController, _ add: @escaping ([File]) -> Void) {
+        init(_ add: @escaping ([File]) -> Void) {
             self.add = add
 
             super.init()
-
-            vc.delegate = self
         }
 
         public func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {

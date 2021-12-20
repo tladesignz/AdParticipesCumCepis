@@ -11,32 +11,31 @@ import TLPhotoPicker
 
 public struct ImagePicker: UIViewControllerRepresentable {
 
-    public let vc = TLPhotosPickerViewController()
-
-//    public let sourceView: some View
-
     public let add: ([Asset]) -> Void
 
+
     public func makeUIViewController(context: Context) -> some UIViewController {
-        vc
+        let vc = TLPhotosPickerViewController()
+        vc.delegate = context.coordinator
+
+        return vc
     }
 
     public func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {
+        (uiViewController as? TLPhotosPickerViewController)?.delegate = context.coordinator
     }
 
     public func makeCoordinator() -> Coordinator {
-        Coordinator(vc, add)
+        Coordinator(add)
     }
 
-    public class Coordinator: TLPhotosPickerViewControllerDelegate {
+
+    open class Coordinator: TLPhotosPickerViewControllerDelegate {
 
         let add: ([Asset]) -> Void
 
-        init(_ vc: TLPhotosPickerViewController, _ add: @escaping ([Asset]) -> Void) {
+        init(_ add: @escaping ([Asset]) -> Void) {
             self.add = add
-
-            vc.delegate = self
-//            vc.popoverPresentationController?.sourceRect = sourceView
         }
 
         public func shouldDismissPhotoPicker(withTLPHAssets: [TLPHAsset]) -> Bool {

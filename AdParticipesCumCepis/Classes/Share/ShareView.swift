@@ -77,16 +77,16 @@ public struct ShareView: View {
                                 } label: {
                                     Image(systemName: "square.and.arrow.up")
                                 }
+                                .popover(isPresented: $presentAddressShareSheet) {
+                                    ShareSheet(activityItems: shareItems()) {
+                                        // User returned from the share sheet. Need to start the dimmer again.
+                                        if model.state != .stopped {
+                                            Dimmer.shared.start()
+                                        }
+                                    }
+                                }
                             }
                             .padding(.bottom, 8)
-                            .sheet(isPresented: $presentAddressShareSheet, onDismiss: {
-                                // User returned from the share sheet. Need to start the dimmer again.
-                                if model.state != .stopped {
-                                    Dimmer.shared.start()
-                                }
-                            }) {
-                                ShareSheet(activityItems: shareItems())
-                            }
 
                             if let key = model.key, !key.isEmpty {
                                 Text(NSLocalizedString("Private Key:", comment: ""))
@@ -103,14 +103,14 @@ public struct ShareView: View {
                                     } label: {
                                         Image(systemName: "square.and.arrow.up")
                                     }
-                                }
-                                .sheet(isPresented: $presentKeyShareSheet, onDismiss: {
-                                    // User returned from the share sheet. Need to start the dimmer again.
-                                    if model.state != .stopped {
-                                        Dimmer.shared.start()
+                                    .popover(isPresented: $presentKeyShareSheet) {
+                                        ShareSheet(activityItems: shareItems(reversed: true)) {
+                                            // User returned from the share sheet. Need to start the dimmer again.
+                                            if model.state != .stopped {
+                                                Dimmer.shared.start()
+                                            }
+                                        }
                                     }
-                                }) {
-                                    ShareSheet(activityItems: shareItems(reversed: true))
                                 }
                             }
                         }
@@ -185,8 +185,10 @@ public struct ShareView: View {
                 }) {
                     Image(systemName: "network.badge.shield.half.filled")
                 }
-                .sheet(isPresented: $showingBridgesConf) {
+                .popover(isPresented: $showingBridgesConf) {
                     BridgesConf()
+                        .background(Color(.secondarySystemBackground).padding(-80))
+                        .frame(width: 360, height: 560)
                 }
                 .disabled(model.state != .stopped)
             }
@@ -197,10 +199,11 @@ public struct ShareView: View {
                 }) {
                     Image(systemName: "photo")
                 }
-                .sheet(isPresented: $showingImagePicker) {
+                .popover(isPresented: $showingImagePicker) {
                     ImagePicker {
                         model.items += $0
                     }
+                    .frame(width: 360, height: 560)
                 }
                 .disabled(model.state != .stopped)
 
@@ -209,10 +212,11 @@ public struct ShareView: View {
                 }) {
                     Image(systemName: "doc")
                 }
-                .sheet(isPresented: $showingDocPicker) {
+                .popover(isPresented: $showingDocPicker) {
                     DocPicker {
                         model.items += $0
                     }
+                    .frame(width: 360, height: 560)
                 }
                 .disabled(model.state != .stopped)
             }
