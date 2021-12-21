@@ -11,11 +11,22 @@ import TLPhotoPicker
 
 public struct ImagePicker: UIViewControllerRepresentable {
 
+    public static var configuration: TLPhotosPickerConfigure = {
+        var conf = TLPhotosPickerConfigure()
+        conf.cancelTitle = NSLocalizedString("Cancel", comment: "")
+        conf.doneTitle = NSLocalizedString("Done", comment: "")
+        conf.emptyMessage = NSLocalizedString("No albums", comment: "")
+        conf.tapHereToChange = NSLocalizedString("Tap here to change", comment: "")
+
+        return conf
+    }()
+
     public let add: ([Asset]) -> Void
 
 
     public func makeUIViewController(context: Context) -> some UIViewController {
         let vc = TLPhotosPickerViewController()
+        vc.configure = Self.configuration
         vc.delegate = context.coordinator
 
         return vc
