@@ -24,14 +24,8 @@ open class BaseAppDelegate: UIResponder, UIApplicationDelegate {
     open lazy var warningNotificationContent: UNMutableNotificationContent = {
         let content = UNMutableNotificationContent()
 
-        content.title = String(
-            format: NSLocalizedString("%@ will be stopped shortly", comment: ""),
-            Bundle.main.displayName)
-
-        content.body = String(
-            format: NSLocalizedString("Please return to %@ immediately to continue sharing your content!", comment: ""),
-            Bundle.main.displayName)
-
+        content.title = Bundle.main.displayName
+        content.body = NSLocalizedString("The app needs to be open to work.", comment: "")
         content.sound = .default
 
         return content
