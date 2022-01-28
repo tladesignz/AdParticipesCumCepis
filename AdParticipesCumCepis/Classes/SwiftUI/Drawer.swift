@@ -19,10 +19,6 @@ public struct Drawer<Content: View>: View {
     public let snapDistance: CGFloat = 48
     public let content: Content
 
-    private var offset: CGFloat {
-        open ? 0 : maxHeight - minHeight
-    }
-
     private var indicator: some View {
         RoundedRectangle(cornerRadius: 8)
             .fill(Color.secondary)
@@ -40,6 +36,8 @@ public struct Drawer<Content: View>: View {
 
     public var body: some View {
         GeometryReader { geometry in
+            let maxHeight = min(maxHeight, geometry.size.height)
+
             VStack(spacing: 0) {
                 indicator
                     .padding(.top, 8)
@@ -51,7 +49,7 @@ public struct Drawer<Content: View>: View {
             .background(Color(.secondarySystemBackground))
             .cornerRadius(8)
             .frame(height: geometry.size.height, alignment: .bottom)
-            .offset(y: offset + translation)
+            .offset(y: offset(maxHeight) + translation)
             .animation(.interactiveSpring())
             .gesture(DragGesture().updating($translation, body: { value, state, _ in
                 state = value.translation.height
@@ -64,5 +62,9 @@ public struct Drawer<Content: View>: View {
             }))
         }
         .shadow(color: .secondary, radius: 4, x: 0, y: -4)
+    }
+
+    private func offset(_ maxHeight: CGFloat) -> CGFloat {
+        return open ? 0 : maxHeight - minHeight
     }
 }

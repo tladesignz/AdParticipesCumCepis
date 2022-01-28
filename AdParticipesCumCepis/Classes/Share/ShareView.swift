@@ -140,21 +140,30 @@ public struct ShareView: View {
                         .padding()
                     }
                     else {
-                        List() {
+                        VStack {
                             Toggle(model.stopSharingAfterSendLb,
                                    isOn: $stopSharingAfterSend)
                                 .disabled(model.state != .stopped)
+                                .padding([.leading, .trailing], 8)
+
+                            Divider()
 
                             Toggle(NSLocalizedString(
                                 "This is a public service (disables private key)", comment: ""),
                                    isOn: $publicService)
                                 .disabled(model.state != .stopped)
+                                .padding([.leading, .trailing], 8)
+
+                            Divider()
 
                             TextField(NSLocalizedString("Custom title", comment: ""), text: $customTitle)
                                 .disabled(model.state != .stopped)
+                                .padding(8)
                         }
-                        .frame(maxHeight: 240)
-                        .padding(.bottom, 8)
+                        .padding(8)
+                        .background(Color(UIColor.systemBackground))
+                        .cornerRadius(8)
+                        .padding(8)
                     }
 
                     switch model.state {
