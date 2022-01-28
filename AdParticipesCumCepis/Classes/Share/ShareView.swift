@@ -207,10 +207,9 @@ public struct ShareView: View {
                 }) {
                     Image(systemName: "network.badge.shield.half.filled")
                 }
-                .popover(isPresented: $showingBridgesConf) {
+                .sheet(isPresented: $showingBridgesConf) {
                     BridgesConf()
                         .background(Color(.secondarySystemBackground).padding(-80))
-                        .frame(width: 360, height: 560)
                 }
                 .disabled(model.state != .stopped)
             }
@@ -221,11 +220,10 @@ public struct ShareView: View {
                 }) {
                     Image(systemName: "photo")
                 }
-                .popover(isPresented: $showingImagePicker) {
+                .sheet(isPresented: $showingImagePicker) {
                     ImagePicker {
                         model.items += $0
                     }
-                    .frame(width: 360, height: 560)
                 }
                 .disabled(model.state != .stopped)
 
@@ -234,12 +232,11 @@ public struct ShareView: View {
                 }) {
                     Image(systemName: "doc")
                 }
-                .popover(isPresented: $showingDocPicker) {
+                .sheet(isPresented: $showingDocPicker) {
                     DocPicker {
                         model.items += $0
                     }
                     .padding(0)
-                    .frame(width: 360, height: 560)
                 }
                 .disabled(model.state != .stopped)
             }
