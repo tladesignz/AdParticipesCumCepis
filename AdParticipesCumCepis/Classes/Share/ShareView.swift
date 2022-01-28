@@ -163,7 +163,7 @@ public struct ShareView: View {
                         .padding(8)
                         .background(Color(UIColor.systemBackground))
                         .cornerRadius(8)
-                        .padding(8)
+                        .padding()
                     }
 
                     switch model.state {
