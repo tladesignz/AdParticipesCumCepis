@@ -86,14 +86,6 @@ open class ShareModel: ObservableObject, WebServerDelegate {
         self.stopSharingAfterSend = stopSharingAfterSend
         self.customTitle = customTitle
 
-        do {
-            WebServer.shared?.delegate = self
-            try WebServer.shared?.start()
-        }
-        catch {
-            return stop(error)
-        }
-
         // Remove all existing keys.
         for i in (0 ..< (TorManager.shared.onionAuth?.keys.count ?? 0)).reversed() {
             TorManager.shared.onionAuth?.removeKey(at: i)
@@ -143,17 +135,27 @@ open class ShareModel: ObservableObject, WebServerDelegate {
                 self.state = .running
                 self.progress = 1
 
-                let url = TorManager.shared.serviceUrl
+                guard let url = TorManager.shared.serviceUrl,
+                      let host = url.host
+                else {
+                    return self.stop(nil)
+                }
                 self.address = url
 
                 if let privateKey = privateKey {
                     // After successful start, we should now have a domain.
                     // Time to store the private key for later reuse.
-                    if let url = url {
-                        TorManager.shared.onionAuth?.set(TorAuthKey(private: privateKey, forDomain: url))
-                    }
+                    TorManager.shared.onionAuth?.set(TorAuthKey(private: privateKey, forDomain: url))
 
                     self.key = privateKey
+                }
+
+                do {
+                    WebServer.shared?.addDelegate(for: host, delegate: self)
+                    try WebServer.shared?.start()
+                }
+                catch {
+                    return self.stop(error)
                 }
             }
         }
@@ -166,7 +168,9 @@ open class ShareModel: ObservableObject, WebServerDelegate {
             WebServer.shared?.stop()
         }
 
-        WebServer.shared?.delegate = nil
+        if let host = address?.host {
+            WebServer.shared?.removeDelegate(for: host)
+        }
 
         state = .stopped
         progress = 0

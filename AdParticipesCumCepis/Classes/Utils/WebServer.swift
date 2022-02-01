@@ -46,7 +46,7 @@ open class WebServer: NSObject, GCDWebServerDelegate {
         return webServer.isRunning
     }
 
-    var delegate: WebServerDelegate? = nil
+    private var delegates = [String: WebServerDelegate]()
 
 
     private lazy var webServer: GCDWebServer = {
@@ -62,7 +62,7 @@ open class WebServer: NSObject, GCDWebServerDelegate {
 
     private let localStaticPath: String
 
-    private var downloadStarted = false
+    private var downloadingDelegates = [WebServerDelegate]()
 
 
     public init(localStaticPath: String) {
@@ -72,127 +72,31 @@ open class WebServer: NSObject, GCDWebServerDelegate {
 
     // MARK: Public Methods
 
+    open func addDelegate(for host: String, delegate: WebServerDelegate) {
+        delegates[host] = delegate
+    }
+
+    open func removeDelegate(for host: String) {
+        delegates[host] = nil
+    }
+
     open func start() throws {
         webServer.removeAllHandlers()
 
         // Items provided by the view controller.
-        webServer.addHandler(forMethod: "GET", pathRegex: "^/.*$", request: GCDWebServerRequest.self) { req, completion in
-            var pc = req.url.pathComponents
-            let gzip = req.acceptsGzipContentEncoding
-
-            // First component is the root ("/"). Remove.
-            pc.removeFirst()
-
-            var items = self.delegate?.items
-
-            // Render root.
-            if pc.isEmpty {
-                // If we're in host mode and there's and index.html file,
-                // render that for the root folder. Else render the template
-                // as defined by the delegate.
-                if self.delegate?.mode == .host, let index = items?.first(where: { $0.basename == "index.html" }) {
-                    return self.render(index, gzip: gzip, completion)
-                }
-                else {
-                    return self.renderTemplate(for: nil, gzip: gzip, completion)
-                }
-            }
-
-            repeat {
-                guard let item = items?.first(where: { $0.basename == pc.first }) else {
-                    return self.error(404, gzip: gzip, completion)
-                }
-
-                if item.isDir {
-                    if pc.count > 1 {
-                        items = item.children()
-                        pc.removeFirst()
-                    }
-                    else {
-                        // If we're in host mode and there's and index.html file,
-                        // render that for the folder. Else render the template
-                        // as defined by the delegate.
-                        if self.delegate?.mode == .host, let index = item.children().first(where: { $0.basename == "index.html" }) {
-                            return self.render(index, gzip: gzip, completion)
-                        }
-                        else {
-                            return self.renderTemplate(for: item, gzip: gzip, completion)
-                        }
-                    }
-                }
-                else {
-                    return self.render(item, gzip: gzip, completion)
-                }
-            } while (true)
-        }
+        webServer.addHandler(
+            forMethod: "GET", pathRegex: "^/.*$", request: GCDWebServerRequest.self,
+            asyncProcessBlock: processItems)
 
         // Built-in static files.
-        webServer.addHandler(forMethod: "GET", pathRegex: "^\(staticPath).*$", request: GCDWebServerRequest.self) { req, completion in
-            var pc = req.url.pathComponents
-            let gzip = req.acceptsGzipContentEncoding
+        webServer.addHandler(
+            forMethod: "GET", pathRegex: "^\(staticPath).*$", request: GCDWebServerRequest.self,
+            asyncProcessBlock: processStatic)
 
-            // First component is the root ("/"). Remove.
-            pc.removeFirst()
-
-            // Second component is `staticPath`. Remove that, too.
-            pc.removeFirst()
-
-            var url = URL(fileURLWithPath: self.localStaticPath)
-
-            // Put rest of the path onto our internal file-system path.
-            pc.forEach { url.appendPathComponent($0) }
-
-            // Clean the path.
-            url = URL(fileURLWithPath: GCDWebServerNormalizePath(url.path))
-
-            guard FileManager.default.isReadableFile(atPath: url.path) else {
-                return self.error(404, gzip: gzip, completion)
-            }
-
-            let res = self.respond(file: url, gzip: gzip)
-            res.cacheControlMaxAge = 12 * 60 * 60
-
-            completion(res)
-        }
-
-        if delegate?.mode == .share {
-            // All items as a ZIP file or the single item, if only one.
-            webServer.addHandler(forMethod: "GET", path: downloadPath, request: GCDWebServerRequest.self) { req, completion in
-                let gzip = req.acceptsGzipContentEncoding
-
-                self.downloadStarted = true
-
-                guard let items = self.delegate?.items,
-                      items.count > 0
-                else {
-                    return self.error(404, gzip: gzip, completion)
-                }
-
-                if items.count == 1 && !items.first!.isDir {
-                    return self.render(items[0], gzip: gzip, completion)
-                }
-
-                guard let archive = Archive(accessMode: .create) else {
-                    return self.error(500, gzip: gzip, completion)
-                }
-
-                let group = DispatchGroup()
-
-                self.add(items, to: archive, in: group)
-
-                group.notify(queue: .global(qos: .userInitiated)) {
-                    guard let data = archive.data else {
-                        return self.error(500, gzip: gzip, completion)
-                    }
-
-                    let res = self.respond(data, "application/zip")
-                    res.setValue("attachment; filename=\"\(Bundle.main.displayName).zip\"",
-                                 forAdditionalHeader: "Content-Disposition")
-
-                    completion(res)
-                }
-            }
-        }
+        // All items as a ZIP file or the single item, if only one.
+        webServer.addHandler(
+            forMethod: "GET", path: downloadPath, request: GCDWebServerRequest.self,
+            asyncProcessBlock: processZip)
 
         try webServer.start(options: [
             GCDWebServerOption_AutomaticallySuspendInBackground: false,
@@ -223,10 +127,11 @@ open class WebServer: NSObject, GCDWebServerDelegate {
     }
 
     public func webServerDidDisconnect(_ server: GCDWebServer) {
-        if downloadStarted {
-            delegate?.downloadFinished()
-            downloadStarted = false
+        for delegate in downloadingDelegates {
+            delegate.downloadFinished()
         }
+
+        downloadingDelegates.removeAll()
     }
 
     public func webServerDidStop(_ server: GCDWebServer) {
@@ -237,24 +142,158 @@ open class WebServer: NSObject, GCDWebServerDelegate {
 
     // MARK: Private Methods
 
-    private func renderTemplate(for item: Item?, gzip: Bool, _ completion: GCDWebServerCompletionBlock) {
-        guard let delegate = self.delegate else {
-            return self.error(404, gzip: gzip, completion)
+    private func processItems(req: GCDWebServerRequest, completion: @escaping GCDWebServerCompletionBlock) {
+        var pc = req.url.pathComponents
+        let gzip = req.acceptsGzipContentEncoding
+        let delegate = self.delegate(for: req.headers["host"])
+
+        print(req.url)
+
+
+
+        // First component is the root ("/"). Remove.
+        pc.removeFirst()
+
+        var items = delegate?.items
+
+        // Render root.
+        if pc.isEmpty {
+            // If we're in host mode and there's and index.html file,
+            // render that for the root folder. Else render the template
+            // as defined by the delegate.
+            if delegate?.mode == .host, let index = items?.first(where: { $0.basename == "index.html" }) {
+                return self.render(index, with: delegate, gzip: gzip, completion)
+            }
+            else {
+                return self.renderTemplate(for: nil, with: delegate, gzip: gzip, completion)
+            }
+        }
+
+        repeat {
+            guard let item = items?.first(where: { $0.basename == pc.first }) else {
+                return self.error(404, with: delegate, gzip: gzip, completion)
+            }
+
+            if item.isDir {
+                if pc.count > 1 {
+                    items = item.children()
+                    pc.removeFirst()
+                }
+                else {
+                    // If we're in host mode and there's and index.html file,
+                    // render that for the folder. Else render the template
+                    // as defined by the delegate.
+                    if delegate?.mode == .host, let index = item.children().first(where: { $0.basename == "index.html" }) {
+                        return self.render(index, with: delegate, gzip: gzip, completion)
+                    }
+                    else {
+                        return self.renderTemplate(for: item, with: delegate, gzip: gzip, completion)
+                    }
+                }
+            }
+            else {
+                return self.render(item, with: delegate, gzip: gzip, completion)
+            }
+        } while (true)
+    }
+
+    private func processStatic(req: GCDWebServerRequest, completion: @escaping GCDWebServerCompletionBlock) {
+        var pc = req.url.pathComponents
+        let gzip = req.acceptsGzipContentEncoding
+        let delegate = self.delegate(for: req.headers["host"])
+
+        // First component is the root ("/"). Remove.
+        pc.removeFirst()
+
+        // Second component is `staticPath`. Remove that, too.
+        pc.removeFirst()
+
+        var url = URL(fileURLWithPath: self.localStaticPath)
+
+        // Put rest of the path onto our internal file-system path.
+        pc.forEach { url.appendPathComponent($0) }
+
+        // Clean the path.
+        url = URL(fileURLWithPath: GCDWebServerNormalizePath(url.path))
+
+        guard FileManager.default.isReadableFile(atPath: url.path) else {
+            return self.error(404, with: delegate, gzip: gzip, completion)
+        }
+
+        let res = self.respond(with: delegate, file: url, gzip: gzip)
+        res.cacheControlMaxAge = 12 * 60 * 60
+
+        completion(res)
+    }
+
+    private func processZip(req: GCDWebServerRequest, completion: @escaping GCDWebServerCompletionBlock) {
+        let gzip = req.acceptsGzipContentEncoding
+
+        guard let delegate = self.delegate(for: req.headers["host"]),
+              delegate.mode == .share
+        else {
+            return self.processItems(req: req, completion: completion)
+        }
+
+        self.downloadingDelegates.append(delegate)
+
+        let items = delegate.items
+
+        guard !items.isEmpty else {
+            return self.error(404, with: delegate, gzip: gzip, completion)
+        }
+
+        if items.count == 1 && !items.first!.isDir {
+            return self.render(items[0], with: delegate, gzip: gzip, completion)
+        }
+
+        guard let archive = Archive(accessMode: .create) else {
+            return self.error(500, with: delegate, gzip: gzip, completion)
+        }
+
+        let group = DispatchGroup()
+
+        self.add(items, to: archive, in: group)
+
+        group.notify(queue: .global(qos: .userInitiated)) {
+            guard let data = archive.data else {
+                return self.error(500, with: delegate, gzip: gzip, completion)
+            }
+
+            let res = self.respond(with: delegate, data, "application/zip")
+            res.setValue("attachment; filename=\"\(Bundle.main.displayName).zip\"",
+                         forAdditionalHeader: "Content-Disposition")
+
+            completion(res)
+        }
+    }
+
+    private func delegate(for host: String?) -> WebServerDelegate? {
+        if let host = host, !host.isEmpty {
+            return delegates[host]
+        }
+
+        return delegates.first?.value
+    }
+
+    private func renderTemplate(for item: Item?, with delegate: WebServerDelegate?, gzip: Bool, _ completion: GCDWebServerCompletionBlock) {
+        guard let delegate = delegate else {
+            return self.error(404, with: nil, gzip: gzip, completion)
         }
 
         do {
             let html = try self.renderTemplate(name: delegate.templateName, context: delegate.context(for: item))
 
-            return completion(self.respond(html: html, gzip: gzip))
+            return completion(self.respond(with: delegate, html: html, gzip: gzip))
         }
         catch {
             print("[\(String(describing: type(of: self)))] error: \(error)")
         }
 
-        self.error(500, gzip: gzip, completion)
+        self.error(500, with: delegate, gzip: gzip, completion)
     }
 
-    private func error(_ statusCode: Int, gzip: Bool, _ completion: GCDWebServerCompletionBlock) {
+    private func error(_ statusCode: Int, with delegate: WebServerDelegate?, gzip: Bool, _ completion: GCDWebServerCompletionBlock) {
         var html: String? = nil
 
         do {
@@ -265,28 +304,28 @@ open class WebServer: NSObject, GCDWebServerDelegate {
         }
 
         if let html = html {
-            completion(self.respond(html: html, statusCode: statusCode, gzip: gzip))
+            completion(self.respond(with: delegate, html: html, statusCode: statusCode, gzip: gzip))
         }
         else {
-            completion(self.respond(statusCode: statusCode))
+            completion(self.respond(with: delegate, statusCode: statusCode))
         }
     }
 
-    private func render(_ item: Item, gzip: Bool, _ completion: @escaping GCDWebServerCompletionBlock) {
+    private func render(_ item: Item, with delegate: WebServerDelegate?, gzip: Bool, _ completion: @escaping GCDWebServerCompletionBlock) {
         item.original { file, data, contentType in
             if let file = file {
-                completion(self.respond(file: file, gzip: gzip))
+                completion(self.respond(with: delegate, file: file, gzip: gzip))
             }
             else if let data = data {
-                completion(self.respond(data, contentType ?? "application/octet-stream", gzip: gzip))
+                completion(self.respond(with: delegate, data, contentType ?? "application/octet-stream", gzip: gzip))
             }
             else {
-                self.error(404, gzip: gzip, completion)
+                self.error(404, with: delegate, gzip: gzip, completion)
             }
         }
     }
 
-    private func respond(html: String? = nil,
+    private func respond(with delegate: WebServerDelegate?, html: String? = nil,
                          _ data: Data? = nil, _ contentType: String? = nil,
                          file: URL? = nil, redirect: URL? = nil, statusCode: Int? = nil,
                          gzip: Bool = false)
@@ -381,6 +420,5 @@ open class WebServer: NSObject, GCDWebServerDelegate {
                 group.leave()
             }
         }
-
     }
 }
