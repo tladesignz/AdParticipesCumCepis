@@ -86,47 +86,11 @@ open class ShareModel: ObservableObject, WebServerDelegate {
         self.stopSharingAfterSend = stopSharingAfterSend
         self.customTitle = customTitle
 
-        // Remove all existing keys.
-        for i in (0 ..< (TorManager.shared.onionAuth?.keys.count ?? 0)).reversed() {
-            TorManager.shared.onionAuth?.removeKey(at: i)
-        }
-
-        // Remove the service dir, in order to make Tor create a new service with a new address.
-        if let serviceDir = FileManager.default.serviceDir,
-           FileManager.default.fileExists(atPath: serviceDir.path)
-        {
-            do {
-                try FileManager.default.removeItem(at: serviceDir)
-            }
-            catch {
-                print("[\(String(describing: type(of: self)))] Can't remove service dir: \(error)")
-            }
-        }
-
-
-        // Trigger (re-)creation of directories.
-        _ = FileManager.default.pubKeyDir
-
-        var privateKey: String? = nil
-
-        if !publicService {
-            // Create a new key pair.
-            let keypair = TorX25519KeyPair()
-
-            // Private key needs to be shown to the user.
-            privateKey = keypair.privateKey
-
-            // The public key is needed by the onion service, *before* start.
-            if let publicKey = keypair.getPublicAuthKey(withName: "share") {
-                TorManager.shared.onionAuth?.set(publicKey)
-            }
-        }
-
-        TorManager.shared.start { progress in
+        TorManager.shared.start(for: serviceName, publicService) { progress in
             DispatchQueue.main.async {
                 self.progress = Double(progress) / 100
             }
-        } _: { error, socksAddr in
+        } _: { error, socksAddr, serviceUrl, privateKey in
             DispatchQueue.main.async {
                 if let error = error {
                     return self.stop(error)
@@ -135,20 +99,14 @@ open class ShareModel: ObservableObject, WebServerDelegate {
                 self.state = .running
                 self.progress = 1
 
-                guard let url = TorManager.shared.serviceUrl,
+                guard let url = serviceUrl,
                       let host = url.host
                 else {
                     return self.stop(nil)
                 }
+
                 self.address = url
-
-                if let privateKey = privateKey {
-                    // After successful start, we should now have a domain.
-                    // Time to store the private key for later reuse.
-                    TorManager.shared.onionAuth?.set(TorAuthKey(private: privateKey, forDomain: url))
-
-                    self.key = privateKey
-                }
+                self.key = privateKey
 
                 do {
                     try WebServer.shared?.start(for: host, delegate: self)
@@ -161,7 +119,7 @@ open class ShareModel: ObservableObject, WebServerDelegate {
     }
 
     public func stop(_ error: Error? = nil) {
-        TorManager.shared.stop()
+        TorManager.shared.stop(for: serviceName)
 
         WebServer.shared?.stop(for: address?.host)
 
@@ -177,6 +135,10 @@ open class ShareModel: ObservableObject, WebServerDelegate {
 
     public var mode: WebServer.Mode {
         return .share
+    }
+
+    public var serviceName: String {
+        return "share"
     }
 
     public var templateName: String {

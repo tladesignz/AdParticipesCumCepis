@@ -43,6 +43,10 @@ public class HostModel: ShareModel {
         return .host
     }
 
+    public override var serviceName: String {
+        return "host"
+    }
+
     public override var templateName: String {
         return "listing"
     }

@@ -33,25 +33,6 @@ public extension FileManager {
         return url
     }
 
-    var serviceDir: URL? {
-        torDir?.appendingPathComponent("web", isDirectory: true)
-    }
-
-    var pubKeyDir: URL? {
-        guard let url = serviceDir?.appendingPathComponent("authorized_clients", isDirectory: true) else {
-            return nil
-        }
-
-        // Try to create the public key directory, if it doesn't exist, yet.
-        // Tor will do that on first start, but then we would need to restart
-        // to make it load the key.
-        // However, we need to be careful with access flags, because
-        // otherwise Tor will complain and reject its use.
-        try? createSecureDirIfNotExists(at: url)
-
-        return url
-    }
-
     func createSecureDirIfNotExists(at url: URL) throws {
         // Try to remove it, if it is *not* a directory.
         if fileExists(atPath: url.path) {

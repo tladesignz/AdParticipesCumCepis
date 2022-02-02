@@ -14,6 +14,8 @@ public protocol WebServerDelegate {
 
     var mode: WebServer.Mode { get }
 
+    var serviceName: String { get }
+
     var templateName: String { get }
 
     var items: [Item] { get }
