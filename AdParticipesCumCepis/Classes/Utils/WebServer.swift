@@ -160,11 +160,7 @@ open class WebServer: NSObject, GCDWebServerDelegate {
     private func processItems(req: GCDWebServerRequest, completion: @escaping GCDWebServerCompletionBlock) {
         var pc = req.url.pathComponents
         let gzip = req.acceptsGzipContentEncoding
-        let delegate = self.delegate(for: req.headers["host"])
-
-        print(req.url)
-
-
+        let delegate = self.delegate(for: req)
 
         // First component is the root ("/"). Remove.
         pc.removeFirst()
@@ -215,7 +211,7 @@ open class WebServer: NSObject, GCDWebServerDelegate {
     private func processStatic(req: GCDWebServerRequest, completion: @escaping GCDWebServerCompletionBlock) {
         var pc = req.url.pathComponents
         let gzip = req.acceptsGzipContentEncoding
-        let delegate = self.delegate(for: req.headers["host"])
+        let delegate = self.delegate(for: req)
 
         // First component is the root ("/"). Remove.
         pc.removeFirst()
@@ -244,7 +240,7 @@ open class WebServer: NSObject, GCDWebServerDelegate {
     private func processZip(req: GCDWebServerRequest, completion: @escaping GCDWebServerCompletionBlock) {
         let gzip = req.acceptsGzipContentEncoding
 
-        guard let delegate = self.delegate(for: req.headers["host"]),
+        guard let delegate = self.delegate(for: req),
               delegate.mode == .share
         else {
             return self.processItems(req: req, completion: completion)
@@ -283,7 +279,15 @@ open class WebServer: NSObject, GCDWebServerDelegate {
         }
     }
 
-    private func delegate(for host: String?) -> WebServerDelegate? {
+    private func delegate(for request: GCDWebServerRequest?) -> WebServerDelegate? {
+        var host = request?.url.host
+
+        if host?.isEmpty ?? true {
+            if let hostKey = request?.headers.keys.first(where: { $0.lowercased() == "host" }) {
+                host = request?.headers[hostKey]
+            }
+        }
+
         if let host = host, !host.isEmpty {
             return delegates[host]
         }
