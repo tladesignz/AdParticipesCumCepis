@@ -34,9 +34,9 @@ public struct MainView: View {
             if #available(iOS 15.0, *) {
                 let a = UITabBarAppearance()
                 a.configureWithOpaqueBackground()
+
                 UITabBar.appearance().scrollEdgeAppearance = a
             }
-
         }
     }
 

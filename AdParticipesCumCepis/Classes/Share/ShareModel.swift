@@ -49,17 +49,17 @@ open class ShareModel: ObservableObject, WebServerDelegate {
     }
 
 
-    @Published public var items = [Item]()
+    @Published open var items = [Item]()
 
-    @Published public var state = State.stopped
+    @Published open var state = State.stopped
 
-    @Published public var progress: Double = 0
+    @Published open var progress: Double = 0
 
-    @Published public var error: Error?
+    @Published open var error: Error?
 
-    @Published public var address: URL?
+    @Published open var address: URL?
 
-    @Published public var key: String?
+    @Published open var key: String?
 
     public private(set) var stopSharingAfterSend = true
 
@@ -76,7 +76,7 @@ open class ShareModel: ObservableObject, WebServerDelegate {
     }
 
 
-    public func start(_ publicService: Bool, _ stopSharingAfterSend: Bool, _ customTitle: String) {
+    open func start(_ publicService: Bool, _ stopSharingAfterSend: Bool, _ customTitle: String) {
         state = .starting
         progress = 0
         error = nil
@@ -118,7 +118,7 @@ open class ShareModel: ObservableObject, WebServerDelegate {
         }
     }
 
-    public func stop(_ error: Error? = nil) {
+    open func stop(_ error: Error? = nil) {
         TorManager.shared.stop(for: mode.serviceName)
 
         WebServer.shared?.stop(for: address?.host)
@@ -133,19 +133,19 @@ open class ShareModel: ObservableObject, WebServerDelegate {
 
     // MARK: WebServerDelegate
 
-    public var mode: WebServer.Mode {
+    open var mode: WebServer.Mode {
         return .share
     }
 
-    public var templateName: String {
+    open var templateName: String {
         return "send"
     }
 
-    public var useCsp: Bool {
+    open var useCsp: Bool {
         return true
     }
 
-    public func context(for item: Item?) -> [String : Any] {
+    open func context(for item: Item?) -> [String : Any] {
         var items = items
         var breadcrumbs = [[String]]()
         var breadcrumbs_leaf = "/"
@@ -177,7 +177,7 @@ open class ShareModel: ObservableObject, WebServerDelegate {
         ]
     }
 
-    public func downloadFinished() {
+    open func downloadFinished() {
         if stopSharingAfterSend {
             stop()
         }
