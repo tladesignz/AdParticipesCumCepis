@@ -34,28 +34,7 @@ public struct ShareView: View {
 
 
     public var body: some View {
-        GeometryReader { geometry in
-            List {
-                ForEach(model.items) { item in
-                    HStack {
-                        AsyncImage(item)
-                            .frame(minWidth: 64, idealWidth: 64, maxWidth: 64, maxHeight: 64)
-
-                        Text(item.basename ?? item.id.debugDescription)
-                    }
-                }
-                .onDelete { offsets in
-                    for i in offsets {
-                        if let file = model.items[i] as? File {
-                            try? FileManager.default.removeItem(at: file.url)
-                        }
-                    }
-
-                    model.items.remove(atOffsets: offsets)
-                }
-                .deleteDisabled(model.state != .stopped)
-            }
-
+        GeometryReader { _ in
             if model.items.isEmpty {
                 VStack(alignment: .center) {
                     if let name = model.emptyBackgroundImage {
@@ -78,6 +57,27 @@ public struct ShareView: View {
                 }
             }
             else {
+                List {
+                    ForEach(model.items) { item in
+                        HStack {
+                            AsyncImage(item)
+                                .frame(minWidth: 64, idealWidth: 64, maxWidth: 64, maxHeight: 64)
+
+                            Text(item.basename ?? item.id.debugDescription)
+                        }
+                    }
+                    .onDelete { offsets in
+                        for i in offsets {
+                            if let file = model.items[i] as? File {
+                                try? FileManager.default.removeItem(at: file.url)
+                            }
+                        }
+
+                        model.items.remove(atOffsets: offsets)
+                    }
+                    .deleteDisabled(model.state != .stopped)
+                }
+
                 Drawer(open: $drawerOpen, minHeight: 64, maxHeight: 400) {
                     Status(model.state, model.progress, model.error)
 

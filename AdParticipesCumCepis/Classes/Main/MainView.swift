@@ -11,26 +11,33 @@ import SwiftUI
 public struct MainView: View {
 
     public var body: some View {
-        // TODO: Fix UI bug, where stuff is shining through after drawer open/closing.
-//        TabView {
+        TabView {
             NavigationView {
                 ShareView(ShareModel())
             }
             .navigationViewStyle(.stack)
-//            .tabItem {
-//                Image(systemName: "paperplane")
-//                Text(NSLocalizedString("Share", comment: ""))
-//            }
-//
-//            NavigationView {
-//                ShareView(HostModel())
-//            }
-//            .navigationViewStyle(.stack)
-//            .tabItem {
-//                Image(systemName: "globe")
-//                Text(NSLocalizedString("Website", comment: ""))
-//            }
-//        }
+            .tabItem {
+                Image(systemName: "paperplane")
+                Text(NSLocalizedString("Share", comment: ""))
+            }
+
+            NavigationView {
+                ShareView(HostModel())
+            }
+            .navigationViewStyle(.stack)
+            .tabItem {
+                Image(systemName: "globe")
+                Text(NSLocalizedString("Website", comment: ""))
+            }
+        }
+        .onAppear {
+            if #available(iOS 15.0, *) {
+                let a = UITabBarAppearance()
+                a.configureWithOpaqueBackground()
+                UITabBar.appearance().scrollEdgeAppearance = a
+            }
+
+        }
     }
 
     public init() {
