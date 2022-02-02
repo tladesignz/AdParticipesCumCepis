@@ -14,11 +14,10 @@ open class TorManager {
 
     /**
      - parameter error: If an error happend, all other values will be `nil`.
-     - parameter socksAddr: The SOCKS5 address Tor is listen on.
      - parameter serviceUrl: The URL of the freshly started service.
      - parameter privateKey: The generated private key, if `isPublic` was set to false.
      */
-    public typealias Completion = (_ error: Error?, _ socksAddr: String?, _ serviceUrl: URL?, _ privateKey: String?) -> Void
+    public typealias Completion = (_ error: Error?, _ serviceUrl: URL?, _ privateKey: String?) -> Void
 
     private enum Errors: Error {
         case cookieUnreadable
@@ -31,7 +30,7 @@ open class TorManager {
 
     public static let webServerPort: UInt = 8080
 
-    public var running: Bool {
+    public var connected: Bool {
         (torThread?.isExecuting ?? false)
         && (torConf?.isLocked ?? false)
         && (torController?.isConnected ?? false)
@@ -55,7 +54,7 @@ open class TorManager {
         IpSupport.shared.start({ [weak self] status in
             self?.ipStatus = status
 
-            if (self?.running ?? false) && (self?.torController?.isConnected ?? false) {
+            if (self?.connected ?? false) && (self?.torController?.isConnected ?? false) {
                 self?.torController?.setConfs(status.torConf(Settings.transport, Transport.asConf))
                 { success, error in
                     if let error = error {
@@ -111,10 +110,10 @@ open class TorManager {
         }
 
         // If Tor is already running, just reconfigure services.
-        if running {
+        if connected {
             torController?.setConfs(serviceConf(Transport.asConf)) { [weak self] _, error in
                 if let error = error {
-                    return completion(error, nil, nil, nil)
+                    return completion(error, nil, nil)
                 }
 
                 self?.complete(for: name, privateKey, completion)
@@ -145,17 +144,17 @@ open class TorManager {
                     try self?.torController?.connect()
                 }
                 catch let error {
-                    return completion(error, nil, nil, nil)
+                    return completion(error, nil, nil)
                 }
             }
 
             guard let cookie = self?.torConf?.cookie else {
-                return completion(Errors.cookieUnreadable, nil, nil, nil)
+                return completion(Errors.cookieUnreadable, nil, nil)
             }
 
             self?.torController?.authenticate(with: cookie) { success, error in
                 if let error = error {
-                    return completion(error, nil, nil, nil)
+                    return completion(error, nil, nil)
                 }
 
                 var progressObs: Any?
@@ -236,7 +235,7 @@ open class TorManager {
      ATTENTION: If Tor is currently starting up, nothing will change.
      */
     open func reconfigureBridges() {
-        guard running else {
+        guard connected else {
             return // Nothing can be done. Will get configured on (next) start.
         }
 
@@ -285,7 +284,7 @@ open class TorManager {
                     var conf = Settings.transport.torConf(Transport.asConf)
                     conf.append(Transport.asConf(key: "UseBridges", value: "1"))
 
-                    self?.log(conf.debugDescription)
+//                    self?.log(conf.debugDescription)
 
                     self?.torController?.setConfs(conf)
                 }
@@ -367,7 +366,7 @@ open class TorManager {
             }
         }
 
-        log(conf.debugDescription)
+//        log(conf.debugDescription)
 
         return conf
     }
@@ -387,21 +386,15 @@ open class TorManager {
     }
 
     private func complete(for name: String, _ privateKey: String?, _ completion: @escaping Completion) {
-        torController?.getInfoForKeys(["net/listeners/socks"]) { response in
-            guard let socksAddr = response.first, !socksAddr.isEmpty else {
-                return completion(Errors.noSocksAddr, nil, nil, nil)
-            }
+        let serviceUrl = self.serviceUrl(for: name)
 
-            let serviceUrl = self.serviceUrl(for: name)
-
-            if let privateKey = privateKey, let serviceUrl = serviceUrl {
-                // After successful start, we should now have a domain.
-                // Time to store the private key for debugging or later reuse.
-                self.onionAuth(for: name)?.set(TorAuthKey(private: privateKey, forDomain: serviceUrl))
-            }
-
-            completion(nil, socksAddr, serviceUrl, privateKey)
+        if let privateKey = privateKey, let serviceUrl = serviceUrl {
+            // After successful start, we should now have a domain.
+            // Time to store the private key for debugging or later reuse.
+            self.onionAuth(for: name)?.set(TorAuthKey(private: privateKey, forDomain: serviceUrl))
         }
+
+        completion(nil, serviceUrl, privateKey)
     }
 
     /**

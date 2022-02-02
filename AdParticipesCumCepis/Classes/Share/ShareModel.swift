@@ -90,7 +90,7 @@ open class ShareModel: ObservableObject, WebServerDelegate {
             DispatchQueue.main.async {
                 self.progress = Double(progress) / 100
             }
-        } _: { error, socksAddr, serviceUrl, privateKey in
+        } _: { error, serviceUrl, privateKey in
             DispatchQueue.main.async {
                 if let error = error {
                     return self.stop(error)
