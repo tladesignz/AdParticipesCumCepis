@@ -220,7 +220,6 @@ public struct ShareView: View {
                     BridgesConf()
                         .background(Color(.secondarySystemBackground).padding(-80))
                 }
-                .disabled(model.state != .stopped)
             }
 
             ToolbarItemGroup(placement: .navigationBarTrailing) {

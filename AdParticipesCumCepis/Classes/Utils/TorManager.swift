@@ -129,7 +129,7 @@ open class TorManager {
 
         // Create fresh - transport ports may have changed.
         torConf = createTorConf()
-        log(torConf!.compile().debugDescription)
+//        log(torConf!.compile().debugDescription)
 
         torThread?.cancel()
         torThread = TorThread(configuration: torConf)
@@ -228,6 +228,69 @@ open class TorManager {
         torThread = nil
 
         removeServiceDir(for: name)
+    }
+
+    /**
+     Will reconfigure Tor with changed bridge configuration, if it is already running.
+
+     ATTENTION: If Tor is currently starting up, nothing will change.
+     */
+    open func reconfigureBridges() {
+        guard running else {
+            return // Nothing can be done. Will get configured on (next) start.
+        }
+
+        torController?.resetConf(forKey: "UseBridges")
+        { [weak self] _, error in
+            if let error = error {
+                self?.log(error.localizedDescription)
+
+                return
+            }
+
+            self?.torController?.resetConf(forKey: "ClientTransportPlugin")
+            { _, error in
+                if let error = error {
+                    self?.log(error.localizedDescription)
+
+                    return
+                }
+
+                self?.torController?.resetConf(forKey: "Bridge")
+                { _, error in
+                    if let error = error {
+                        self?.log(error.localizedDescription)
+
+                        return
+                    }
+
+                    switch Settings.transport {
+                    case .obfs4, .custom:
+                        Transport.snowflake.stop()
+
+                    case .snowflake, .snowflakeAmp:
+                        Transport.obfs4.stop()
+
+                    default:
+                        Transport.obfs4.stop()
+                        Transport.snowflake.stop()
+                    }
+
+                    guard Settings.transport != .none else {
+                        return
+                    }
+
+                    Settings.transport.start()
+
+                    var conf = Settings.transport.torConf(Transport.asConf)
+                    conf.append(Transport.asConf(key: "UseBridges", value: "1"))
+
+                    self?.log(conf.debugDescription)
+
+                    self?.torController?.setConfs(conf)
+                }
+            }
+        }
     }
 
     open func getCircuits(_ completion: @escaping ([TorCircuit]) -> Void) {

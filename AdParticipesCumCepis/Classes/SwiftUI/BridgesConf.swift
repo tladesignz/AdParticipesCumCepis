@@ -52,7 +52,7 @@ public struct BridgesConf: UIViewControllerRepresentable {
         }
 
         open func save() {
-            // Nothing to do. No Tor currently running here and config already stored.
+            TorManager.shared.reconfigureBridges()
         }
     }
 }
