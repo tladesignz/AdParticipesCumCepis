@@ -86,7 +86,7 @@ open class ShareModel: ObservableObject, WebServerDelegate {
         self.stopSharingAfterSend = stopSharingAfterSend
         self.customTitle = customTitle
 
-        TorManager.shared.start(for: serviceName, publicService) { progress in
+        TorManager.shared.start(for: mode.serviceName, publicService) { progress in
             DispatchQueue.main.async {
                 self.progress = Double(progress) / 100
             }
@@ -119,7 +119,7 @@ open class ShareModel: ObservableObject, WebServerDelegate {
     }
 
     public func stop(_ error: Error? = nil) {
-        TorManager.shared.stop(for: serviceName)
+        TorManager.shared.stop(for: mode.serviceName)
 
         WebServer.shared?.stop(for: address?.host)
 
@@ -135,10 +135,6 @@ open class ShareModel: ObservableObject, WebServerDelegate {
 
     public var mode: WebServer.Mode {
         return .share
-    }
-
-    public var serviceName: String {
-        return "share"
     }
 
     public var templateName: String {

@@ -14,8 +14,6 @@ public protocol WebServerDelegate {
 
     var mode: WebServer.Mode { get }
 
-    var serviceName: String { get }
-
     var templateName: String { get }
 
     var items: [Item] { get }
@@ -32,6 +30,16 @@ open class WebServer: NSObject, GCDWebServerDelegate {
     public enum Mode {
         case share
         case host
+
+        public var serviceName: String {
+            switch self {
+            case .share:
+                return "share"
+
+            case .host:
+                return "host"
+            }
+        }
     }
 
     public static var shared: WebServer?
