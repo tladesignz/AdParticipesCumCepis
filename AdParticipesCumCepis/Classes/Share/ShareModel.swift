@@ -151,8 +151,7 @@ open class ShareModel: ObservableObject, WebServerDelegate {
                 }
 
                 do {
-                    WebServer.shared?.addDelegate(for: host, delegate: self)
-                    try WebServer.shared?.start()
+                    try WebServer.shared?.start(for: host, delegate: self)
                 }
                 catch {
                     return self.stop(error)
@@ -164,13 +163,7 @@ open class ShareModel: ObservableObject, WebServerDelegate {
     public func stop(_ error: Error? = nil) {
         TorManager.shared.stop()
 
-        if WebServer.shared?.running ?? false {
-            WebServer.shared?.stop()
-        }
-
-        if let host = address?.host {
-            WebServer.shared?.removeDelegate(for: host)
-        }
+        WebServer.shared?.stop(for: address?.host)
 
         state = .stopped
         progress = 0

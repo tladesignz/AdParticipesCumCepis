@@ -72,15 +72,13 @@ open class WebServer: NSObject, GCDWebServerDelegate {
 
     // MARK: Public Methods
 
-    open func addDelegate(for host: String, delegate: WebServerDelegate) {
+    open func start(for host: String, delegate: WebServerDelegate) throws {
         delegates[host] = delegate
-    }
 
-    open func removeDelegate(for host: String) {
-        delegates[host] = nil
-    }
+        if webServer.isRunning {
+            return
+        }
 
-    open func start() throws {
         webServer.removeAllHandlers()
 
         // Items provided by the view controller.
@@ -108,7 +106,22 @@ open class WebServer: NSObject, GCDWebServerDelegate {
         Dimmer.shared.start()
     }
 
+    open func stop(for host: String?) {
+
+        if let host = host {
+            delegates[host] = nil
+        }
+
+        if !delegates.isEmpty {
+            return
+        }
+
+        stop()
+    }
+
     open func stop() {
+        delegates.removeAll()
+
         webServer.stop()
 
         Dimmer.shared.stop()
