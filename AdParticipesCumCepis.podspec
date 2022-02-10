@@ -38,6 +38,6 @@ Pod::Spec.new do |s|
   s.dependency 'Tor', '~> 406.9'
   s.dependency 'GCDWebServer', '~> 3.5'
   s.dependency 'ZIPFoundation', '~> 0.9'
-  s.dependency 'IPtProxyUI', '~> 1.6'
+  s.dependency 'IPtProxyUI', '~> 1.7'
 
 end
