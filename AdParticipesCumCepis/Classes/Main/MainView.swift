@@ -10,6 +10,9 @@ import SwiftUI
 
 public struct MainView: View {
 
+    @Environment(\.scenePhase)
+    var scenePhase
+
     public var body: some View {
         TabView {
             NavigationView {
@@ -37,6 +40,9 @@ public struct MainView: View {
 
                 UITabBar.appearance().scrollEdgeAppearance = a
             }
+        }
+        .onChange(of: scenePhase) { newPhase in
+            BaseAppDelegate.shared?.changeOf(scenePhase: newPhase)
         }
     }
 

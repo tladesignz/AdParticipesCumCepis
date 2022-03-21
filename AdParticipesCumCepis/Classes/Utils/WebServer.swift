@@ -132,7 +132,10 @@ open class WebServer: NSObject, GCDWebServerDelegate {
     open func stop() {
         delegates.removeAll()
 
-        webServer.stop()
+        // This might get called on start and will crash then, if never run before, so check first.
+        if webServer.isRunning {
+            webServer.stop()
+        }
 
         Dimmer.shared.stop()
     }

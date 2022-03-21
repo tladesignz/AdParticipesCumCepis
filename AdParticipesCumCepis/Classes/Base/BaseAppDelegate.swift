@@ -6,10 +6,12 @@
 //  Copyright © 2021 Guardian Project. All rights reserved.
 //
 
-import UIKit
+import SwiftUI
 import UserNotifications
 
 open class BaseAppDelegate: UIResponder, UIApplicationDelegate {
+
+    public static weak var shared: BaseAppDelegate?
 
     public static let unWarningId = "warning-return-to-app"
 
@@ -20,6 +22,7 @@ open class BaseAppDelegate: UIResponder, UIApplicationDelegate {
         UNUserNotificationCenter.current()
     }
 
+    private var oldPhase = ScenePhase.inactive
 
     open lazy var warningNotificationContent: UNMutableNotificationContent = {
         let content = UNMutableNotificationContent()
@@ -34,6 +37,8 @@ open class BaseAppDelegate: UIResponder, UIApplicationDelegate {
 
     open func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool
     {
+        Self.shared = self
+
         askNotifications()
 
         return true
@@ -93,6 +98,48 @@ open class BaseAppDelegate: UIResponder, UIApplicationDelegate {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 
         endBackgroundTask()
+    }
+
+    /**
+     Keep old-school lifecycle callbacks with this workaround for SwiftUI 2.
+     */
+    open func changeOf(scenePhase newPhase: ScenePhase) {
+        switch newPhase {
+        case .background:
+            switch oldPhase {
+            case .inactive, .active:
+                applicationDidEnterBackground(UIApplication.shared)
+
+            default:
+                break
+            }
+
+        case .inactive:
+            switch oldPhase {
+            case .background:
+                applicationWillEnterForeground(UIApplication.shared)
+
+            case .active:
+                applicationWillResignActive(UIApplication.shared)
+
+            default:
+                break
+            }
+
+        case .active:
+            switch oldPhase {
+            case .background, .inactive:
+                applicationDidBecomeActive(UIApplication.shared)
+
+            default:
+                break
+            }
+
+        @unknown default:
+            print("[\(String(describing: type(of: self)))] onChange(of: scenePhase), newPhase=unknown default")
+        }
+
+        oldPhase = newPhase
     }
 
     private func endBackgroundTask() {
