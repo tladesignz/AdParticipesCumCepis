@@ -28,7 +28,7 @@ open class Dimmer {
 
         UIDevice.current.isProximityMonitoringEnabled = true
 
-        if let rootVc = UIApplication.shared.delegate?.window??.rootViewController {
+        if let rootVc = UIApplication.shared.rootViewController {
             view = (rootVc as? UINavigationController)?.topViewController?.view ?? rootVc.view
         }
 
