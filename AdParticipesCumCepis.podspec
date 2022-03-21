@@ -35,7 +35,7 @@ Pod::Spec.new do |s|
    }
 
   s.dependency 'TLPhotoPicker', '~> 2.1'
-  s.dependency 'Tor', '~> 406.9'
+  s.dependency 'Tor', '~> 406.10'
   s.dependency 'GCDWebServer', '~> 3.5'
   s.dependency 'ZIPFoundation', '~> 0.9'
   s.dependency 'IPtProxyUI', '~> 1.7'
