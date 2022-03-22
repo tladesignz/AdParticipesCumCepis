@@ -23,6 +23,14 @@ public struct ImagePicker: UIViewControllerRepresentable {
 
     public let add: ([Asset]) -> Void
 
+    public let completion: (() -> Void)?
+
+    
+    public init(_ add: @escaping ([Asset]) -> Void, _ completion: (() -> Void)? = nil) {
+        self.add = add
+        self.completion = completion
+    }
+
 
     public func makeUIViewController(context: Context) -> some UIViewController {
         let vc = TLPhotosPickerViewController()
@@ -37,7 +45,7 @@ public struct ImagePicker: UIViewControllerRepresentable {
     }
 
     public func makeCoordinator() -> Coordinator {
-        Coordinator(add)
+        Coordinator(add, completion)
     }
 
 
@@ -45,14 +53,24 @@ public struct ImagePicker: UIViewControllerRepresentable {
 
         let add: ([Asset]) -> Void
 
-        init(_ add: @escaping ([Asset]) -> Void) {
+        public let completion: (() -> Void)?
+
+
+        init(_ add: @escaping ([Asset]) -> Void, _ completion: (() -> Void)?) {
             self.add = add
+            self.completion = completion
         }
+
 
         public func shouldDismissPhotoPicker(withTLPHAssets: [TLPHAsset]) -> Bool {
             add(withTLPHAssets.map({ Asset($0) }))
 
             return true
+        }
+
+
+        deinit {
+            completion?()
         }
     }
 }

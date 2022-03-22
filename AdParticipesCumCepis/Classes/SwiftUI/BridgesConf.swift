@@ -13,6 +13,14 @@ public struct BridgesConf: UIViewControllerRepresentable {
 
     public let vc = BridgesConfViewController()
 
+    public let completion: (() -> Void)?
+
+
+    public init(_ completion: (() -> Void)? = nil) {
+        self.completion = completion
+    }
+
+
     public func makeUIViewController(context: Context) -> some UIViewController {
         UINavigationController(rootViewController: vc)
     }
@@ -21,12 +29,17 @@ public struct BridgesConf: UIViewControllerRepresentable {
     }
 
     public func makeCoordinator() -> Coordinator {
-        Coordinator(vc)
+        Coordinator(vc, completion)
     }
 
     public class Coordinator: BridgesConfDelegate {
 
-        init(_ vc: BridgesConfViewController) {
+        public let completion: (() -> Void)?
+
+
+        init(_ vc: BridgesConfViewController, _ completion: (() -> Void)?) {
+            self.completion = completion
+
             vc.delegate = self
         }
 
@@ -53,6 +66,11 @@ public struct BridgesConf: UIViewControllerRepresentable {
 
         open func save() {
             TorManager.shared.reconfigureBridges()
+        }
+
+
+        deinit {
+            completion?()
         }
     }
 }

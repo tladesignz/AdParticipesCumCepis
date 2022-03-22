@@ -100,12 +100,7 @@ public struct ShareView: View {
                                     Image(systemName: "square.and.arrow.up")
                                 }
                                 .popover(isPresented: $presentAddressShareSheet) {
-                                    ShareSheet(activityItems: shareItems()) {
-                                        // User returned from the share sheet. Need to start the dimmer again.
-                                        if model.state != .stopped {
-                                            Dimmer.shared.start()
-                                        }
-                                    }
+                                    ShareSheet(shareItems(), restartDimmer)
                                 }
                             }
                             .padding(.bottom, 8)
@@ -126,12 +121,7 @@ public struct ShareView: View {
                                         Image(systemName: "square.and.arrow.up")
                                     }
                                     .popover(isPresented: $presentKeyShareSheet) {
-                                        ShareSheet(activityItems: shareItems(reversed: true)) {
-                                            // User returned from the share sheet. Need to start the dimmer again.
-                                            if model.state != .stopped {
-                                                Dimmer.shared.start()
-                                            }
-                                        }
+                                        ShareSheet(shareItems(reversed: true), restartDimmer)
                                     }
                                 }
                             }
@@ -212,38 +202,44 @@ public struct ShareView: View {
         .toolbar {
             ToolbarItemGroup(placement: .navigationBarLeading) {
                 Button(action: {
+                    Dimmer.shared.stop()
+
                     showingBridgesConf = true
                 }) {
                     Image(systemName: "network.badge.shield.half.filled")
                 }
                 .sheet(isPresented: $showingBridgesConf) {
-                    BridgesConf()
+                    BridgesConf(restartDimmer)
                         .background(Color(.secondarySystemBackground).padding(-80))
                 }
             }
 
             ToolbarItemGroup(placement: .navigationBarTrailing) {
                 Button(action: {
+                    Dimmer.shared.stop()
+
                     showingImagePicker = true
                 }) {
                     Image(systemName: "photo")
                 }
                 .sheet(isPresented: $showingImagePicker) {
-                    ImagePicker {
+                    ImagePicker({
                         model.items += $0
-                    }
+                    }, restartDimmer)
                 }
                 .disabled(model.state != .stopped)
 
                 Button(action: {
+                    Dimmer.shared.stop()
+
                     showingDocPicker = true
                 }) {
                     Image(systemName: "doc")
                 }
                 .sheet(isPresented: $showingDocPicker) {
-                    DocPicker {
+                    DocPicker({
                         model.items += $0
-                    }
+                    }, restartDimmer)
                     .padding(0)
                 }
                 .disabled(model.state != .stopped)
@@ -273,6 +269,15 @@ public struct ShareView: View {
         }
 
         return reversed ? items.reversed() : items
+    }
+
+    /**
+     User returned from a subview. Might need to start the dimmer again.
+     */
+    private func restartDimmer() {
+        if WebServer.shared?.running ?? false {
+            Dimmer.shared.start()
+        }
     }
 }
 

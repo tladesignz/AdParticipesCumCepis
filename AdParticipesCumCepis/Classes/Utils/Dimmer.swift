@@ -7,14 +7,14 @@
 
 import UIKit
 
-open class Dimmer {
+open class Dimmer: NSObject, UIGestureRecognizerDelegate {
 
     public static let timeout: TimeInterval = 30
 
     public static let shared = Dimmer()
 
 
-    private lazy var tapRec = UITapGestureRecognizer(target: self, action: #selector(reset))
+    private lazy var tapRec = UITapGestureRecognizer(target: self, action: #selector(tapped))
 
     private var oldBrightness: CGFloat?
 
@@ -32,6 +32,8 @@ open class Dimmer {
             view = (rootVc as? UINavigationController)?.topViewController?.view ?? rootVc.view
         }
 
+        tapRec.delegate = self
+
         view?.addGestureRecognizer(tapRec)
         view?.isUserInteractionEnabled = true
     }
@@ -39,6 +41,7 @@ open class Dimmer {
     open func stop(animated: Bool = true) {
         view?.removeGestureRecognizer(tapRec)
         view = nil
+        tapRec.delegate = nil
 
         reset(animated: animated)
 
@@ -67,5 +70,22 @@ open class Dimmer {
             UIScreen.main.setBrightness(oldBrightness, animated: animated)
             self.oldBrightness = nil
         }
+    }
+
+
+    // MARK: UIGestureRecognizerDelegate
+
+    @IBAction
+    open func tapped(_ sender: UIGestureRecognizer) {
+        // Ignored. Logic in #gestureRecognizer:shouldReceive instead, so the
+        // tap can propagate to other receivers higher up in the UI hierarchy.
+    }
+
+    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer,
+                                  shouldReceive touch: UITouch) -> Bool
+    {
+        reset()
+
+        return false
     }
 }

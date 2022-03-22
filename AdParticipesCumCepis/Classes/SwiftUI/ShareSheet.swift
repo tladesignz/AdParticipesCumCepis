@@ -12,7 +12,13 @@ public struct ShareSheet: UIViewControllerRepresentable {
 
     public let activityItems: [Any]
 
-    public let completion: () -> Void
+    public let completion: (() -> Void)?
+
+
+    public init(_ activityItems: [Any], _ completion: (() -> Void)? = nil) {
+        self.activityItems = activityItems
+        self.completion = completion
+    }
 
 
     public func makeUIViewController(context: Context) -> some UIViewController {
@@ -33,20 +39,22 @@ public struct ShareSheet: UIViewControllerRepresentable {
 
     open class Coordinator: NSObject, UIAdaptivePresentationControllerDelegate {
 
-        public let completion: () -> Void
+        public let completion: (() -> Void)?
 
-        public init(_ completion: @escaping () -> Void) {
+
+        public init(_ completion: (() -> Void)?) {
             self.completion = completion
 
             super.init()
         }
+
 
         deinit {
             // All the callbacks won't be called, because the coordinator will
             // get disconnected too early.
             // But it must get deinited, so we can achieve this anyway!
 
-            completion()
+            completion?()
         }
     }
 }
