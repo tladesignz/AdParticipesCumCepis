@@ -14,7 +14,7 @@ extension Config {
         return __extBundleId as String
     }
 
-    class var groupId: String {
-        return __groupId as String
+    class var appGroupId: String {
+        return __appGroupId as String
     }
 }

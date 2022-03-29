@@ -16,3 +16,7 @@ target 'AdParticipesCumCepis_Example' do
     pod 'Nimble', '~> 9.2.1'
   end
 end
+
+target 'ActionExtension' do
+  pod 'AdParticipesCumCepis/Extension', :path => '../'
+end

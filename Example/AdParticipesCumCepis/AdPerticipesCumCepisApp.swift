@@ -23,6 +23,8 @@ struct AdPerticipesCumCepisApp: App {
 
 
     init() {
+        BaseAppDelegate.appGroupId = Config.appGroupId
+
         WebServer.shared = WebServer()
 
         print("[\(String(describing: type(of: self)))] cacheDir=\(FileManager.default.cacheDir?.path ?? "nil")")

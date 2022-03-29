@@ -51,7 +51,11 @@ public extension FileManager {
     }
 
     func size(of url: URL) -> Int64? {
-        return (try? attributesOfItem(atPath: url.path))?[.size] as? Int64
+        guard let size = try? url.resourceValues(forKeys: [.fileSizeKey]).fileSize else {
+            return nil
+        }
+
+        return Int64(size)
     }
 
     func contentsOfDirectory(at url: URL?) -> [URL] {
@@ -62,5 +66,13 @@ public extension FileManager {
         return (try? contentsOfDirectory(
             at: url, includingPropertiesForKeys: nil,
             options: .skipsHiddenFiles)) ?? []
+    }
+
+    func shareDir(of appGroupId: String?) -> URL? {
+        guard let appGroupId = appGroupId else {
+            return nil
+        }
+
+        return containerURL(forSecurityApplicationGroupIdentifier: appGroupId)
     }
 }

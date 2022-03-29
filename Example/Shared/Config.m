@@ -17,7 +17,7 @@
     return MACRO_STRING(EXT_BUNDLE_ID);
 }
 
-+ (NSString *) groupId {
++ (NSString *) appGroupId {
     return MACRO_STRING(APP_GROUP);
 }
 

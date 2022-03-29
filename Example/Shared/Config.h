@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (class, nonatomic, assign, readonly, nonnull) NSString *extBundleId NS_REFINED_FOR_SWIFT;
 
-@property (class, nonatomic, assign, readonly, nonnull) NSString *groupId NS_REFINED_FOR_SWIFT;
+@property (class, nonatomic, assign, readonly, nonnull) NSString *appGroupId NS_REFINED_FOR_SWIFT;
 
 @end
 

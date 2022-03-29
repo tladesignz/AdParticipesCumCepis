@@ -33,10 +33,12 @@ open class File: Item {
 
 
     public init(_ url: URL, relativeTo base: URL? = nil) {
+        let url = url.resolvingSymlinksInPath()
+
         let name = url.lastPathComponent
         let relativePath: String?
 
-        if let base = base {
+        if let base = base?.resolvingSymlinksInPath() {
             self.base = base
 
             let path = url.path

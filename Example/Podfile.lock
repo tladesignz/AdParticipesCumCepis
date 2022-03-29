@@ -1,10 +1,17 @@
 PODS:
   - AdParticipesCumCepis (0.1.0):
+    - AdParticipesCumCepis/App (= 0.1.0)
+  - AdParticipesCumCepis/App (0.1.0):
+    - AdParticipesCumCepis/Shared
     - GCDWebServer (~> 3.5)
     - IPtProxyUI (~> 1.7)
     - TLPhotoPicker (~> 2.1)
     - Tor (~> 406.10)
     - ZIPFoundation (~> 0.9)
+  - AdParticipesCumCepis/Extension (0.1.0):
+    - AdParticipesCumCepis/Shared
+    - MBProgressHUD (~> 1.2)
+  - AdParticipesCumCepis/Shared (0.1.0)
   - Eureka (5.3.5)
   - GCDWebServer (3.5.4):
     - GCDWebServer/Core (= 3.5.4)
@@ -12,7 +19,7 @@ PODS:
   - ImageRow (4.0.0):
     - Eureka (~> 5.0)
   - IPtProxy (1.5.1)
-  - IPtProxyUI (1.7.3):
+  - IPtProxyUI (1.7.4):
     - Eureka (~> 5.3)
     - ImageRow (~> 4.0)
     - IPtProxy (~> 1.5)
@@ -33,6 +40,7 @@ PODS:
 
 DEPENDENCIES:
   - AdParticipesCumCepis (from `../`)
+  - AdParticipesCumCepis/Extension (from `../`)
   - Nimble (~> 9.2.1)
   - Quick (~> 4.0.0)
   - Stencil (~> 0.14)
@@ -59,12 +67,12 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  AdParticipesCumCepis: 931c6031fd214d23136839c8e0675d2048621e37
+  AdParticipesCumCepis: 2fbfdb091a426fccceb904103e67da6f784b6707
   Eureka: 7b39a479d074620d43028a0e2bfc3e0d667724df
   GCDWebServer: 2c156a56c8226e2d5c0c3f208a3621ccffbe3ce4
   ImageRow: e65b2e1a33f89062bf2a553a2aad61d975eb7428
   IPtProxy: f9a94b705cdea8474d7fb995a43a2771aa1b7076
-  IPtProxyUI: 49ac019b70912a7bd460a4955611711e9726095d
+  IPtProxyUI: 89f51ce6c2f37271ebbea975ffcec55d757f551c
   MBProgressHUD: 3ee5efcc380f6a79a7cc9b363dd669c5e1ae7406
   Nimble: e7e615c0335ee4bf5b0d786685451e62746117d5
   PathKit: 83b97c9c61b62e61ecafd598b33b2782575c33e4
@@ -75,6 +83,6 @@ SPEC CHECKSUMS:
   Tor: d68f73a29612bc5b9d79f15853eccebb60c8ef86
   ZIPFoundation: ae5b4b813d216d3bf0a148773267fff14bd51d37
 
-PODFILE CHECKSUM: c7be78ae8eb529a161ec7a8d172cfd7e3ebebf52
+PODFILE CHECKSUM: 594c075b712f7a526ce095edb7c1557624fc21b0
 
-COCOAPODS: 1.11.2
+COCOAPODS: 1.11.3

@@ -11,6 +11,8 @@ import UserNotifications
 
 open class BaseAppDelegate: UIResponder, UIApplicationDelegate {
 
+    public static var appGroupId: String?
+
     public static weak var shared: BaseAppDelegate?
 
     public static let unWarningId = "warning-return-to-app"
@@ -40,6 +42,20 @@ open class BaseAppDelegate: UIResponder, UIApplicationDelegate {
         Self.shared = self
 
         askNotifications()
+
+        // Move new stuff from action extension.
+        let fm = FileManager.default
+
+        if let docsDir = fm.docsDir {
+            for file in fm.contentsOfDirectory(at: fm.shareDir(of: Self.appGroupId)) {
+                do {
+                    try fm.moveItem(at: file, to: docsDir.appendingPathComponent(file.lastPathComponent))
+                }
+                catch {
+                    print("[\(String(describing: type(of: self)))] Error while moving file from \"\(file.path)\" to \"\(docsDir.path)\": \(error.localizedDescription)")
+                }
+            }
+        }
 
         return true
     }
