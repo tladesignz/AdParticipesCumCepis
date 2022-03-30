@@ -36,43 +36,51 @@ public struct ShareView: View {
 
 
     public var body: some View {
-        GeometryReader { _ in
+        GeometryReader { geometry in
             if model.items.isEmpty {
-                VStack(alignment: .center) {
-                    if let name = model.emptyBackgroundImage {
-                        Image(name)
-                            .padding()
-                    }
+                VStack {
+                    VStack(alignment: .center) {
+                        if let name = model.emptyBackgroundImage {
+                            let size = min(geometry.size.width, geometry.size.height) * 0.7
 
-                    Text(NSLocalizedString("Nothing here yet.", comment: ""))
-                        .foregroundColor(.secondary)
-                        .frame(maxWidth: .infinity)
-                        .padding()
+                            Image(name)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: size, height: size, alignment: .center)
+                        }
 
-                    Button {
-                        showingImagePicker = true
-                    } label: {
-                        Text(NSLocalizedString("Add Photos", comment: ""))
+                        Text(NSLocalizedString("Nothing here yet.", comment: ""))
+                            .foregroundColor(.secondary)
                             .frame(maxWidth: .infinity)
-                            .padding()
-                    }
+                            .padding(8)
 
-                    Button {
-                        showingDocPicker = true
-                    } label: {
-                        Text(NSLocalizedString("Add Files", comment: ""))
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                    }
+                        Button {
+                            showingImagePicker = true
+                        } label: {
+                            Text(NSLocalizedString("Add Photos", comment: ""))
+                                .frame(maxWidth: .infinity)
+                                .padding(8)
+                        }
 
-                    Button {
-                        showingFolderPicker = true
-                    } label: {
-                        Text(NSLocalizedString("Add Folder", comment: ""))
-                            .frame(maxWidth: .infinity)
-                            .padding()
+                        Button {
+                            showingDocPicker = true
+                        } label: {
+                            Text(NSLocalizedString("Add Files", comment: ""))
+                                .frame(maxWidth: .infinity)
+                                .padding(8)
+                        }
+
+                        Button {
+                            showingFolderPicker = true
+                        } label: {
+                            Text(NSLocalizedString("Add Folder", comment: ""))
+                                .frame(maxWidth: .infinity)
+                                .padding(8)
+                        }
                     }
                 }
+                .frame(height: geometry.size.height, alignment: .center)
+                .offset(x: 0, y: -40)
             }
             else {
                 List {
