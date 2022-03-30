@@ -47,9 +47,17 @@ public struct ShareView: View {
                         .frame(maxWidth: .infinity)
                         .padding()
 
-                    Button(action: {
+                    Button {
+                        showingImagePicker = true
+                    } label: {
+                        Text(NSLocalizedString("Add Photos", comment: ""))
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                    }
+
+                    Button {
                         showingDocPicker = true
-                    }) {
+                    } label: {
                         Text(NSLocalizedString("Add Files", comment: ""))
                             .frame(maxWidth: .infinity)
                             .padding()
@@ -158,9 +166,9 @@ public struct ShareView: View {
 
                     switch model.state {
                     case .stopped:
-                        Button(action: {
+                        Button {
                             model.start(publicService, stopSharingAfterSend, customTitle)
-                        }) {
+                        } label: {
                             Text(NSLocalizedString("Start Sharing", comment: ""))
                                 .fontWeight(.bold)
                                 .padding()
@@ -170,9 +178,9 @@ public struct ShareView: View {
                         }
 
                     case .starting:
-                        Button(action: {
+                        Button {
                             model.stop()
-                        }) {
+                        } label: {
                             Text(NSLocalizedString("Starting…", comment: ""))
                                 .fontWeight(.bold)
                                 .font(.body.italic())
@@ -184,9 +192,9 @@ public struct ShareView: View {
                         .disabled(true)
 
                     case .running:
-                        Button(action: {
+                        Button {
                             model.stop()
-                        }) {
+                        } label: {
                             Text(NSLocalizedString("Stop Sharing", comment: ""))
                                 .padding()
                                 .background(Color.white)
@@ -200,41 +208,45 @@ public struct ShareView: View {
         .navigationBarBackButtonHidden(model.state != .stopped)
         .navigationTitle(model.title)
         .toolbar {
-            ToolbarItemGroup(placement: .navigationBarLeading) {
-                Button(action: {
-                    Dimmer.shared.stop()
-
-                    showingBridgesConf = true
-                }) {
-                    Image(systemName: "network.badge.shield.half.filled")
-                }
-                .sheet(isPresented: $showingBridgesConf) {
-                    BridgesConf(restartDimmer)
-                        .background(Color(.secondarySystemBackground).padding(-80))
-                }
-            }
-
             ToolbarItemGroup(placement: .navigationBarTrailing) {
-                Button(action: {
-                    Dimmer.shared.stop()
+                Menu {
+                    Section {
+                        Button {
+                            Dimmer.shared.stop()
 
-                    showingImagePicker = true
-                }) {
-                    Image(systemName: "photo")
+                            showingImagePicker = true
+                        } label: {
+                            Label(NSLocalizedString("Add Photos", comment: ""), systemImage: "photo")
+                        }
+                        .disabled(model.state != .stopped)
+
+                        Button {
+                            Dimmer.shared.stop()
+
+                            showingDocPicker = true
+                        } label: {
+                            Label(NSLocalizedString("Add Files", comment: ""), systemImage: "doc")
+                        }
+                        .disabled(model.state != .stopped)
+                    }
+
+                    Section {
+                        Button {
+                            Dimmer.shared.stop()
+
+                            showingBridgesConf = true
+                        } label: {
+                            Label(NSLocalizedString("Use Bridges", comment: ""), systemImage: "network.badge.shield.half.filled")
+                        }
+                    }
+                }
+                label: {
+                    Label(NSLocalizedString("Menu", comment: ""), systemImage: "ellipsis.circle")
                 }
                 .sheet(isPresented: $showingImagePicker) {
                     ImagePicker({
                         model.items += $0
                     }, restartDimmer)
-                }
-                .disabled(model.state != .stopped)
-
-                Button(action: {
-                    Dimmer.shared.stop()
-
-                    showingDocPicker = true
-                }) {
-                    Image(systemName: "doc")
                 }
                 .sheet(isPresented: $showingDocPicker) {
                     DocPicker({
@@ -242,7 +254,10 @@ public struct ShareView: View {
                     }, restartDimmer)
                     .padding(0)
                 }
-                .disabled(model.state != .stopped)
+                .sheet(isPresented: $showingBridgesConf) {
+                    BridgesConf(restartDimmer)
+                        .background(Color(.secondarySystemBackground).padding(-80))
+                }
             }
         }
     }
