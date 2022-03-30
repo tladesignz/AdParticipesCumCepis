@@ -35,7 +35,9 @@ open class Item: Identifiable {
         return false
     }
 
-    lazy var fm = FileManager.default
+    var fm: FileManager {
+        FileManager.default
+    }
 
 
     public init(name: String?, relativePath: String? = nil) {
@@ -52,7 +54,7 @@ open class Item: Identifiable {
     }
 
 
-    open func getThumbnail(_ resultHandler: @escaping (UIImage?, [AnyHashable: Any]?) -> Void) {
+    open func getThumbnail(_ resultHandler: @escaping (_ image: UIImage?, _ info: [AnyHashable: Any]?) -> Void) {
         preconditionFailure("Implement in subclass!")
     }
 
@@ -66,6 +68,10 @@ open class Item: Identifiable {
      You only need to implement this, if `isDir` can be `true`!
      */
     open func children() -> [Item] {
+        preconditionFailure("Implement in subclass!")
+    }
+
+    open func remove() throws {
         preconditionFailure("Implement in subclass!")
     }
 }

@@ -404,7 +404,7 @@ open class TorManager {
      */
     private func removeServiceDir(for name: String) {
         if let serviceDir = serviceDir(for: name),
-           FileManager.default.fileExists(atPath: serviceDir.path)
+           FileManager.default.fileExists(at: serviceDir)
         {
             do {
                 try FileManager.default.removeItem(at: serviceDir)

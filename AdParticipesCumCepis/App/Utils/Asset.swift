@@ -74,7 +74,7 @@ open class Asset: Item {
         }
 
         // Store in subfolder, otherwise collisions might happen.
-        if !fm.fileExists(atPath: dir.path) {
+        if !fm.fileExists(at: dir) {
             try? fm.createDirectory(at: dir, withIntermediateDirectories: true)
         }
 
@@ -91,7 +91,7 @@ open class Asset: Item {
         super.init(name: asset.originalFileName)
 
         if asset.type == .video {
-            if let tempFile = tempFile, fm.fileExists(atPath: tempFile.path) {
+            if let tempFile = tempFile, fm.fileExists(at: tempFile) {
                 size = fm.size(of: tempFile)
             }
 
@@ -133,7 +133,7 @@ open class Asset: Item {
                 return resultHandler(nil, nil, nil)
             }
 
-            if fm.fileExists(atPath: tempFile.path) {
+            if fm.fileExists(at: tempFile) {
                 return resultHandler(tempFile, nil, nil)
             }
 
@@ -198,6 +198,13 @@ open class Asset: Item {
 
                 resultHandler(nil, imageData, (uti ?? UTType.image).preferredMIMEType)
             }
+        }
+    }
+
+    open override func remove() throws {
+        // Only remove temp file used in video export, if it exists.
+        if let tempFile = tempFile, fm.fileExists(at: tempFile) {
+            try fm.removeItem(at: tempFile)
         }
     }
 }

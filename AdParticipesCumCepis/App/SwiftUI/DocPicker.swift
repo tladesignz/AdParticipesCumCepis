@@ -11,19 +11,22 @@ import UniformTypeIdentifiers
 
 public struct DocPicker: UIViewControllerRepresentable {
 
+    public let type: UTType
+
     public let add: ([File]) -> Void
 
     public let completion: (() -> Void)?
 
 
-    public init(_ add: @escaping ([File]) -> Void, _ completion: (() -> Void)? = nil) {
+    public init(type: UTType, _ add: @escaping ([File]) -> Void, _ completion: (() -> Void)? = nil) {
+        self.type = type
         self.add = add
         self.completion = completion
     }
 
 
     public func makeUIViewController(context: Context) -> some UIViewController {
-        UIDocumentPickerViewController(forOpeningContentTypes: [UTType.item], asCopy: true)
+        UIDocumentPickerViewController(forOpeningContentTypes: [type], asCopy: false)
     }
 
     public func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {
@@ -60,7 +63,7 @@ public struct DocPicker: UIViewControllerRepresentable {
                 return
             }
 
-            add(urls.map({ File($0) }))
+            add(urls.map({ Document($0) }))
         }
 
 

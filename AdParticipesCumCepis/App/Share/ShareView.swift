@@ -18,6 +18,8 @@ public struct ShareView: View {
 
     @State private var showingDocPicker = false
 
+    @State private var showingFolderPicker = false
+
     @State private var heights: [CGFloat] = [100, 340]
 
     @State private var drawerOpen = false
@@ -76,9 +78,7 @@ public struct ShareView: View {
                     }
                     .onDelete { offsets in
                         for i in offsets {
-                            if let file = model.items[i] as? File {
-                                try? FileManager.default.removeItem(at: file.url)
-                            }
+                            try? model.items[i].remove()
                         }
 
                         model.items.remove(atOffsets: offsets)
@@ -225,7 +225,16 @@ public struct ShareView: View {
 
                             showingDocPicker = true
                         } label: {
-                            Label(NSLocalizedString("Add Files", comment: ""), systemImage: "doc")
+                            Label(NSLocalizedString("Add Files", comment: ""), systemImage: "doc.badge.plus")
+                        }
+                        .disabled(model.state != .stopped)
+
+                        Button {
+                            Dimmer.shared.stop()
+
+                            showingFolderPicker = true
+                        } label: {
+                            Label(NSLocalizedString("Add Folders", comment: ""), systemImage: "folder.badge.plus")
                         }
                         .disabled(model.state != .stopped)
                     }
@@ -249,7 +258,13 @@ public struct ShareView: View {
                     }, restartDimmer)
                 }
                 .sheet(isPresented: $showingDocPicker) {
-                    DocPicker({
+                    DocPicker(type: .item, {
+                        model.items += $0
+                    }, restartDimmer)
+                    .padding(0)
+                }
+                .sheet(isPresented: $showingFolderPicker) {
+                    DocPicker(type: .folder, {
                         model.items += $0
                     }, restartDimmer)
                     .padding(0)

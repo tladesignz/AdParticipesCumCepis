@@ -35,7 +35,7 @@ public extension FileManager {
 
     func createSecureDirIfNotExists(at url: URL) throws {
         // Try to remove it, if it is *not* a directory.
-        if fileExists(atPath: url.path) {
+        if fileExists(at: url) {
             if !((try? url.resourceValues(forKeys: [.isDirectoryKey]))?.isDirectory ?? false) {
                 try removeItem(at: url)
             }
@@ -43,11 +43,15 @@ public extension FileManager {
 
         // Try to create it, and all its intermediate directories, if it doesn't
         // exist. Create with secure permissions.
-        if !fileExists(atPath: url.path) {
+        if !fileExists(at: url) {
             try createDirectory(
                 at: url, withIntermediateDirectories: true,
                 attributes: [.posixPermissions: NSNumber(value: 0o700)])
         }
+    }
+
+    func fileExists(at url: URL) -> Bool {
+        return url.isFileURL && fileExists(atPath: url.path)
     }
 
     func size(of url: URL) -> Int64? {
