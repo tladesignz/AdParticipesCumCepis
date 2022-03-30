@@ -68,7 +68,7 @@ open class ActionViewController: UIViewController {
                         return self.onCompletion(error)
                     }
 
-                    let error = NSLocalizedString("Couldn't import item!", comment: "")
+                    let error = NSLocalizedString("Couldn't add item!", comment: "")
 
                     let fm = FileManager.default
 
