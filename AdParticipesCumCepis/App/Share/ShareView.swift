@@ -64,6 +64,14 @@ public struct ShareView: View {
                             .frame(maxWidth: .infinity)
                             .padding()
                     }
+
+                    Button {
+                        showingFolderPicker = true
+                    } label: {
+                        Text(NSLocalizedString("Add Folder", comment: ""))
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                    }
                 }
             }
             else {
@@ -234,7 +242,7 @@ public struct ShareView: View {
 
                             showingFolderPicker = true
                         } label: {
-                            Label(NSLocalizedString("Add Folders", comment: ""), systemImage: "folder.badge.plus")
+                            Label(NSLocalizedString("Add Folder", comment: ""), systemImage: "folder.badge.plus")
                         }
                         .disabled(model.state != .stopped)
                     }
@@ -265,7 +273,12 @@ public struct ShareView: View {
                 }
                 .sheet(isPresented: $showingFolderPicker) {
                     DocPicker(type: .folder, {
-                        model.items += $0
+                        if $0.count == 1 {
+                            model.items += $0[0].children()
+                        }
+                        else {
+                            model.items += $0
+                        }
                     }, restartDimmer)
                     .padding(0)
                 }
