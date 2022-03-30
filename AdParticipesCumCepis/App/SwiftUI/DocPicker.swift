@@ -23,14 +23,16 @@ public struct DocPicker: UIViewControllerRepresentable {
 
 
     public func makeUIViewController(context: Context) -> some UIViewController {
-        let vc = UIDocumentPickerViewController(forOpeningContentTypes: [UTType.item], asCopy: true)
-        vc.delegate = context.coordinator
-
-        return vc
+        UIDocumentPickerViewController(forOpeningContentTypes: [UTType.item], asCopy: true)
     }
 
     public func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {
-        (uiViewController as? UIDocumentPickerViewController)?.delegate = context.coordinator
+        guard let vc = uiViewController as? UIDocumentPickerViewController else {
+            return
+        }
+
+        vc.delegate = context.coordinator
+        vc.allowsMultipleSelection = true
     }
 
     public func makeCoordinator() -> Coordinator {
