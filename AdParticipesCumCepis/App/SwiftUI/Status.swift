@@ -26,12 +26,8 @@ public struct Status: View {
                 text = NSLocalizedString("Ready", comment: "")
 
             case .starting:
-                let nf = NumberFormatter()
-                nf.numberStyle = .percent
-                nf.maximumFractionDigits = 0
-
                 color = .orange
-                text = String(format: NSLocalizedString("Starting… %@", comment: ""), nf.string(for: progress) ?? "0 %")
+                text = String(format: NSLocalizedString("Starting… %@", comment: ""), Formatter.format(percent: progress))
 
             case .running:
                 color = .green
@@ -51,6 +47,7 @@ public struct Status: View {
                 .fontWeight(.bold)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding()
+        .padding([.leading, .trailing, .bottom])
+        .padding(.top, 8)
     }
 }

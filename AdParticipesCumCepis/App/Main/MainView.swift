@@ -40,6 +40,8 @@ public struct MainView: View {
 
                 UITabBar.appearance().scrollEdgeAppearance = a
             }
+
+            UITableView.appearance().backgroundColor = .systemBackground
         }
         .onChange(of: scenePhase) { newPhase in
             BaseAppDelegate.shared?.changeOf(scenePhase: newPhase)

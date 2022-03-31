@@ -19,15 +19,17 @@ open class Item: Identifiable {
     open var size: Int64? {
         didSet {
             if let size = size {
-                size_human = ByteCountFormatter.string(fromByteCount: size, countStyle: .file)
+                sizeHuman = Formatter.format(filesize: size)
             }
             else {
-                size_human = nil
+                sizeHuman = nil
             }
         }
     }
 
-    open var size_human: String?
+    open var sizeHuman: String?
+
+    open var lastModified: Date?
 
     public private(set) var link: String?
 

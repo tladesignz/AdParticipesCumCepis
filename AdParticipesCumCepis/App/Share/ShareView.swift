@@ -89,8 +89,17 @@ public struct ShareView: View {
                             AsyncImage(item)
                                 .frame(minWidth: 64, idealWidth: 64, maxWidth: 64, maxHeight: 64)
 
-                            Text(item.basename ?? item.id.debugDescription)
+                            VStack(alignment: .leading) {
+                                Text(item.basename ?? item.id.debugDescription)
+
+                                Text([Formatter.format(item.lastModified), item.sizeHuman]
+                                    .compactMap({ $0 })
+                                    .joined(separator: " – "))
+                                    .font(.system(size: 12))
+                                    .foregroundColor(Color(.secondaryLabel))
+                            }
                         }
+                        .listRowInsets(EdgeInsets(top: 8, leading: 0, bottom: 8, trailing: 0))
                     }
                     .onDelete { offsets in
                         for i in offsets {
@@ -101,6 +110,17 @@ public struct ShareView: View {
                     }
                     .deleteDisabled(model.state != .stopped)
                 }
+                .frame(maxHeight: max(0, geometry.size.height - 116))
+
+                Text([
+                    String.localizedStringWithFormat(NSLocalizedString("%u item(s)", comment: ""), model.items.count),
+                    Formatter.format(filesize: model.items.reduce(0, { $0 + ($1.size ?? 0) }))]
+                    .compactMap({ $0 }).joined(separator: ", "))
+                .fontWeight(.bold)
+                .padding()
+                .frame(maxWidth: .infinity)
+                .background(Color(.systemBackground))
+                .offset(y: geometry.size.height - 116)
 
                 Drawer(open: $drawerOpen, minHeight: 64, maxHeight: 400) {
                     Status(model.state, model.progress, model.error, model.runningText)

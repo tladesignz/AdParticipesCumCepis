@@ -62,6 +62,10 @@ public extension FileManager {
         return Int64(size)
     }
 
+    func lastModified(of url: URL) -> Date? {
+        return try? url.resourceValues(forKeys: [.contentModificationDateKey]).contentModificationDate
+    }
+
     func contentsOfDirectory(at url: URL?) -> [URL] {
         guard let url = url else {
             return []

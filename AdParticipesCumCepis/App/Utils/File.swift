@@ -65,6 +65,8 @@ open class File: Item {
                 size = fm.size(of: url)
             }
         }
+
+        lastModified = fm.lastModified(of: url)
     }
 
 

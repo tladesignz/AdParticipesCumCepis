@@ -183,8 +183,7 @@ open class ShareModel: ObservableObject, WebServerDelegate {
             "breadcrumbs_leaf": breadcrumbs_leaf,
             "download_individual_files": !stopSharingAfterSend,
             // Always show the total size of *all* files, because *all* files end up in the ZIP file!
-            "filesize_human": ByteCountFormatter.string(
-                fromByteCount: self.items.reduce(0, { $0 + ($1.size ?? 0) }), countStyle: .file),
+            "filesize_human": Formatter.format(filesize: self.items.reduce(0, { $0 + ($1.size ?? 0) })),
             "dirs": items.filter({ $0.isDir }),
             "files": items.filter({ !$0.isDir }),
             "title": customTitle
