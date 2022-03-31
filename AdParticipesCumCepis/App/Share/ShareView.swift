@@ -113,7 +113,7 @@ public struct ShareView: View {
                 .frame(maxHeight: max(0, geometry.size.height - 116))
 
                 Text([
-                    String.localizedStringWithFormat(NSLocalizedString("%u item(s)", comment: ""), model.items.count),
+                    String.localizedStringWithFormat(NSLocalizedString("%u item(s)", comment: "#bc-ignore!"), model.items.count),
                     Formatter.format(filesize: model.items.reduce(0, { $0 + ($1.size ?? 0) }))]
                     .compactMap({ $0 }).joined(separator: ", "))
                 .fontWeight(.bold)
