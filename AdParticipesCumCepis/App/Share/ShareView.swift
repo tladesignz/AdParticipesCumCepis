@@ -108,7 +108,7 @@ public struct ShareView: View {
                     Divider()
 
                     if model.state == .running {
-                        VStack(alignment: HorizontalAlignment.leading) {
+                        VStack(alignment: .leading) {
                             Text((model.key?.isEmpty ?? true) ? model.addressLbTextNoPrivateKey : model.addressLbTextWithPrivateKey)
                                 .padding(.bottom, 4)
 
@@ -122,6 +122,9 @@ public struct ShareView: View {
                                     presentAddressShareSheet = true
                                 } label: {
                                     Image(systemName: "square.and.arrow.up")
+                                        .frame(width: 48, height: 48)
+                                        .background(Color(.secondarySystemBackground))
+                                        .clipShape(Circle())
                                 }
                                 .popover(isPresented: $presentAddressShareSheet) {
                                     ShareSheet(shareItems(), restartDimmer)
@@ -130,7 +133,8 @@ public struct ShareView: View {
                             .padding(.bottom, 8)
 
                             if let key = model.key, !key.isEmpty {
-                                Text(NSLocalizedString("Private Key:", comment: ""))
+                                Text(NSLocalizedString("Private Key", comment: ""))
+                                    .fontWeight(.bold)
                                     .padding(.bottom, 4)
 
                                 HStack {
@@ -143,6 +147,9 @@ public struct ShareView: View {
                                         presentKeyShareSheet = true
                                     } label: {
                                         Image(systemName: "square.and.arrow.up")
+                                            .frame(width: 48, height: 48)
+                                            .background(Color(.secondarySystemBackground))
+                                            .clipShape(Circle())
                                     }
                                     .popover(isPresented: $presentKeyShareSheet) {
                                         ShareSheet(shareItems(reversed: true), restartDimmer)
@@ -151,6 +158,7 @@ public struct ShareView: View {
                             }
                         }
                         .font(.system(size: 15))
+                        .frame(maxWidth: .infinity, alignment: .leading)
                         .padding()
                     }
                     else {
@@ -183,7 +191,7 @@ public struct ShareView: View {
                             Text(NSLocalizedString("Start Sharing", comment: ""))
                                 .frame(maxWidth: .infinity)
                                 .padding()
-                                .background(Color.blue)
+                                .background(.blue)
                                 .foregroundColor(.white)
                                 .cornerRadius(8)
                         }
@@ -197,7 +205,7 @@ public struct ShareView: View {
                                 .font(.body.italic())
                                 .frame(maxWidth: .infinity)
                                 .padding()
-                                .background(Color.blue)
+                                .background(.blue)
                                 .foregroundColor(.white)
                                 .cornerRadius(8)
                         }
@@ -211,7 +219,7 @@ public struct ShareView: View {
                             Text(NSLocalizedString("Stop Sharing", comment: ""))
                                 .frame(maxWidth: .infinity)
                                 .padding()
-                                .background(Color.white)
+                                .background(Color(.secondarySystemBackground))
                                 .foregroundColor(.red)
                                 .cornerRadius(8)
                         }

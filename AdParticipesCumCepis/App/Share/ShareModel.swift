@@ -26,16 +26,18 @@ open class ShareModel: ObservableObject, WebServerDelegate {
         nil
     }
 
-    open var addressLbTextWithPrivateKey: String {
-        NSLocalizedString(
-            "Anyone with this address and private key can download your files using the Tor Browser:",
-            comment: "")
+    open var addressLbTextWithPrivateKey: AttributedString {
+        String(format: NSLocalizedString(
+            "%1$@Anyone%1$@ with this address and private key can %1$@download%1$@ your files using the %1$@Tor Browser%1$@:",
+            comment: "%1$@ == '**' (Markdown!)"), "**")
+        .attributedMarkdownString
     }
 
-    open var addressLbTextNoPrivateKey: String {
-        NSLocalizedString(
-            "Anyone with this address can download your files using the Tor Browser:",
-            comment: "")
+    open var addressLbTextNoPrivateKey: AttributedString {
+        String(format: NSLocalizedString(
+            "%1$@Anyone%1$@ with this address can %1$@download%1$@ your files using the %1$@Tor Browser%1$@:",
+            comment: "%1$@ == '**' (Markdown!)"), "**")
+        .attributedMarkdownString
     }
 
     open var stopSharingAfterSendLb: String {
