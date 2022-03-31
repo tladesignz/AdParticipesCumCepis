@@ -46,7 +46,7 @@ public struct Drawer<Content: View>: View {
                 content
             }
             .frame(width: geometry.size.width, height: maxHeight, alignment: .top)
-            .background(Color(.secondarySystemBackground))
+            .background(Color(.systemBackground))
             .cornerRadius(8)
             .frame(height: geometry.size.height, alignment: .bottom)
             .offset(y: offset(maxHeight) + translation)
@@ -61,7 +61,7 @@ public struct Drawer<Content: View>: View {
                 open = value.translation.height < 0
             }))
         }
-        .shadow(color: .secondary, radius: 4, x: 0, y: -4)
+        .shadow(color: .init("Shadow", bundle: .adParticipesCumCepis), radius: 12, x: 0, y: -12)
     }
 
     private func offset(_ maxHeight: CGFloat) -> CGFloat {

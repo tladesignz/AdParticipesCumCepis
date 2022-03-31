@@ -47,6 +47,8 @@ public struct Status: View {
                 .foregroundColor(color)
 
             Text(text)
+                .font(.system(size: 22))
+                .fontWeight(.bold)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding()

@@ -158,7 +158,6 @@ public struct ShareView: View {
                             Toggle(model.stopSharingAfterSendLb,
                                    isOn: $stopSharingAfterSend)
                                 .disabled(model.state != .stopped)
-                                .padding([.leading, .trailing], 8)
 
                             Divider()
 
@@ -166,17 +165,13 @@ public struct ShareView: View {
                                 "This is a public service (disables private key)", comment: ""),
                                    isOn: $publicService)
                                 .disabled(model.state != .stopped)
-                                .padding([.leading, .trailing], 8)
 
                             Divider()
 
                             TextField(NSLocalizedString("Custom title", comment: ""), text: $customTitle)
                                 .disabled(model.state != .stopped)
-                                .padding(8)
+                                .padding([.top, .bottom], 8)
                         }
-                        .padding(8)
-                        .background(Color(UIColor.systemBackground))
-                        .cornerRadius(8)
                         .padding()
                     }
 
@@ -186,25 +181,27 @@ public struct ShareView: View {
                             model.start(publicService, stopSharingAfterSend, customTitle)
                         } label: {
                             Text(NSLocalizedString("Start Sharing", comment: ""))
-                                .fontWeight(.bold)
+                                .frame(maxWidth: .infinity)
                                 .padding()
                                 .background(Color.blue)
                                 .foregroundColor(.white)
                                 .cornerRadius(8)
                         }
+                        .padding([.leading, .trailing])
 
                     case .starting:
                         Button {
                             model.stop()
                         } label: {
                             Text(NSLocalizedString("Starting…", comment: ""))
-                                .fontWeight(.bold)
                                 .font(.body.italic())
+                                .frame(maxWidth: .infinity)
                                 .padding()
                                 .background(Color.blue)
                                 .foregroundColor(.white)
                                 .cornerRadius(8)
                         }
+                        .padding([.leading, .trailing])
                         .disabled(true)
 
                     case .running:
@@ -212,11 +209,13 @@ public struct ShareView: View {
                             model.stop()
                         } label: {
                             Text(NSLocalizedString("Stop Sharing", comment: ""))
+                                .frame(maxWidth: .infinity)
                                 .padding()
                                 .background(Color.white)
                                 .foregroundColor(.red)
                                 .cornerRadius(8)
                         }
+                        .padding([.leading, .trailing])
                     }
                 }
             }

@@ -33,7 +33,7 @@ Pod::Spec.new do |m|
   end
 
   m.subspec 'App' do |s|
-    s.source_files = 'AdParticipesCumCepis/App/**/*'
+    s.source_files = 'AdParticipesCumCepis/App/**/*.swift'
 
     s.dependency 'AdParticipesCumCepis/Shared'
     s.dependency 'TLPhotoPicker', '~> 2.1'
@@ -41,6 +41,10 @@ Pod::Spec.new do |m|
     s.dependency 'GCDWebServer', '~> 3.5'
     s.dependency 'ZIPFoundation', '~> 0.9'
     s.dependency 'IPtProxyUI', '~> 1.7'
+
+    s.resource_bundles = {
+      'AdParticipesCumCepis' => ['AdParticipesCumCepis/App/Assets/**/*']
+    }
   end
 
   m.subspec 'Extension' do |s|
