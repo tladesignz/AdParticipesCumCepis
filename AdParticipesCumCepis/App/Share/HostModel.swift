@@ -11,7 +11,7 @@ import UIKit
 open class HostModel: ShareModel {
 
     open override var title: String {
-        NSLocalizedString("Website", comment: "")
+        NSLocalizedString("Host", comment: "")
     }
 
     open override var addressLbTextWithPrivateKey: String {
