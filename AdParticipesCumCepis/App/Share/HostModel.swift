@@ -10,25 +10,29 @@ import UIKit
 
 open class HostModel: ShareModel {
 
-    open override var title: String {
+    open override var titleText: String {
         NSLocalizedString("Host", comment: "")
     }
 
-    open override var addressLbTextWithPrivateKey: AttributedString {
+    open override var runningText: String {
+        NSLocalizedString("Hosting", comment: "")
+    }
+
+    open override var addressLbTextWithPrivateText: AttributedString {
         String(format: NSLocalizedString(
             "%1$@Anyone%1$@ with this address and private key can %1$@visit your website%1$@ using the %1$@Tor Browser%1$@:",
             comment: "%1$@ == '**' (Markdown!)"), "**")
         .attributedMarkdownString
     }
 
-    open override var addressLbTextNoPrivateKey: AttributedString {
+    open override var addressLbTextNoPrivateText: AttributedString {
         String(format: NSLocalizedString(
             "%1$@Anyone%1$@ with this address can %1$@visit your website%1$@ using the %1$@Tor Browser%1$@:",
             comment: "%1$@ == '**' (Markdown!)"), "**")
         .attributedMarkdownString
     }
 
-    open override var stopSharingAfterSendLb: String {
+    open override var stopSharingAfterSendText: String {
         NSLocalizedString(
             "Don't send Content Security Policy header (allows your website to use third-party resources)",
             comment: "")
@@ -36,6 +40,14 @@ open class HostModel: ShareModel {
 
     open override var stopSharingAfterSendInitialValue: Bool {
         false
+    }
+
+    open override var startButtonText: String {
+        NSLocalizedString("Start Hosting", comment: "")
+    }
+
+    open override var stopButtonText: String {
+        NSLocalizedString("Stop Hosting", comment: "")
     }
 
 

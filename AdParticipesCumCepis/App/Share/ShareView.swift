@@ -103,13 +103,13 @@ public struct ShareView: View {
                 }
 
                 Drawer(open: $drawerOpen, minHeight: 64, maxHeight: 400) {
-                    Status(model.state, model.progress, model.error)
+                    Status(model.state, model.progress, model.error, model.runningText)
 
                     Divider()
 
                     if model.state == .running {
                         VStack(alignment: .leading) {
-                            Text((model.key?.isEmpty ?? true) ? model.addressLbTextNoPrivateKey : model.addressLbTextWithPrivateKey)
+                            Text((model.key?.isEmpty ?? true) ? model.addressLbTextNoPrivateText : model.addressLbTextWithPrivateText)
                                 .padding(.bottom, 4)
 
                             HStack {
@@ -163,7 +163,7 @@ public struct ShareView: View {
                     }
                     else {
                         VStack {
-                            Toggle(model.stopSharingAfterSendLb,
+                            Toggle(model.stopSharingAfterSendText,
                                    isOn: $stopSharingAfterSend)
                                 .disabled(model.state != .stopped)
 
@@ -188,7 +188,7 @@ public struct ShareView: View {
                         Button {
                             model.start(publicService, stopSharingAfterSend, customTitle)
                         } label: {
-                            Text(NSLocalizedString("Start Sharing", comment: ""))
+                            Text(model.startButtonText)
                                 .frame(maxWidth: .infinity)
                                 .padding()
                                 .background(.blue)
@@ -216,7 +216,7 @@ public struct ShareView: View {
                         Button {
                             model.stop()
                         } label: {
-                            Text(NSLocalizedString("Stop Sharing", comment: ""))
+                            Text(model.stopButtonText)
                                 .frame(maxWidth: .infinity)
                                 .padding()
                                 .background(Color(.secondarySystemBackground))
@@ -229,7 +229,7 @@ public struct ShareView: View {
             }
         }
         .navigationBarBackButtonHidden(model.state != .stopped)
-        .navigationTitle(model.title)
+        .navigationTitle(model.titleText)
         .toolbar {
             ToolbarItemGroup(placement: .navigationBarTrailing) {
                 Menu {

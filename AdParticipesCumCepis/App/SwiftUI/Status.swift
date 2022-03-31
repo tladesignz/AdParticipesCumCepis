@@ -14,7 +14,7 @@ public struct Status: View {
 
     let text: String
 
-    public init(_ state: ShareModel.State, _ progress: Double, _ error: Error?) {
+    public init(_ state: ShareModel.State, _ progress: Double, _ error: Error?, _ runningText: String) {
         if let error = error {
             color = .red
             text = error.localizedDescription
@@ -35,7 +35,7 @@ public struct Status: View {
 
             case .running:
                 color = .green
-                text = NSLocalizedString("Sharing", comment: "")
+                text = runningText
             }
         }
     }

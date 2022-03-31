@@ -18,7 +18,7 @@ open class ShareModel: ObservableObject, WebServerDelegate {
     }
 
 
-    open var title: String {
+    open var titleText: String {
         NSLocalizedString("Share", comment: "")
     }
 
@@ -26,24 +26,36 @@ open class ShareModel: ObservableObject, WebServerDelegate {
         nil
     }
 
-    open var addressLbTextWithPrivateKey: AttributedString {
+    open var runningText: String {
+        NSLocalizedString("Sharing", comment: "")
+    }
+
+    open var addressLbTextWithPrivateText: AttributedString {
         String(format: NSLocalizedString(
             "%1$@Anyone%1$@ with this address and private key can %1$@download%1$@ your files using the %1$@Tor Browser%1$@:",
             comment: "%1$@ == '**' (Markdown!)"), "**")
         .attributedMarkdownString
     }
 
-    open var addressLbTextNoPrivateKey: AttributedString {
+    open var addressLbTextNoPrivateText: AttributedString {
         String(format: NSLocalizedString(
             "%1$@Anyone%1$@ with this address can %1$@download%1$@ your files using the %1$@Tor Browser%1$@:",
             comment: "%1$@ == '**' (Markdown!)"), "**")
         .attributedMarkdownString
     }
 
-    open var stopSharingAfterSendLb: String {
+    open var stopSharingAfterSendText: String {
         NSLocalizedString(
             "Stop sharing after files have been sent (uncheck to allow downloading individual files)",
             comment: "")
+    }
+
+    open var startButtonText: String {
+        NSLocalizedString("Start Sharing", comment: "")
+    }
+
+    open var stopButtonText: String {
+        NSLocalizedString("Stop Sharing", comment: "")
     }
 
     open var stopSharingAfterSendInitialValue: Bool {
