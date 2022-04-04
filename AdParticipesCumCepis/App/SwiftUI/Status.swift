@@ -14,40 +14,59 @@ public struct Status: View {
 
     let text: String
 
+    let progress: Double?
+
     public init(_ state: ShareModel.State, _ progress: Double, _ error: Error?, _ runningText: String) {
         if let error = error {
             color = .red
             text = error.localizedDescription
+            self.progress = nil
         }
         else {
             switch state {
             case .stopped:
                 color = .gray
                 text = NSLocalizedString("Ready", comment: "")
+                self.progress = nil
 
             case .starting:
                 color = .orange
-                text = String(format: NSLocalizedString("Starting… %@", comment: ""), Formatter.format(percent: progress))
+                text = NSLocalizedString("Starting…", comment: "")
+                self.progress = progress
 
             case .running:
                 color = .green
                 text = runningText
+                self.progress = nil
             }
         }
     }
 
     public var body: some View {
-        HStack {
-            Circle()
-                .frame(width: 16, height: 16)
-                .foregroundColor(color)
+        VStack(alignment: .leading) {
+            HStack {
+                Circle()
+                    .frame(width: 16, height: 16)
+                    .foregroundColor(color)
 
-            Text(text)
-                .font(.system(size: 22))
-                .fontWeight(.bold)
+                Text(text)
+                    .font(.system(size: 22))
+                    .fontWeight(.bold)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding([.leading, .trailing])
+            .padding(.top, 8)
+            .padding(.bottom, 4)
+
+            if let progress = progress {
+                ProgressView(value: progress, total: 1)
+                    .progressViewStyle(.linear)
+                    .scaleEffect(x: 1, y: 0.25, anchor: .center)
+            }
+            else {
+                Divider()
+                    .padding(.top, 4)
+            }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding([.leading, .trailing, .bottom])
-        .padding(.top, 8)
     }
 }

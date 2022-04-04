@@ -125,8 +125,6 @@ public struct ShareView: View {
                 Drawer(open: $drawerOpen, minHeight: 64, maxHeight: 400) {
                     Status(model.state, model.progress, model.error, model.runningText)
 
-                    Divider()
-
                     if model.state == .running {
                         VStack(alignment: .leading) {
                             Text((model.key?.isEmpty ?? true) ? model.addressLbTextNoPrivateText : model.addressLbTextWithPrivateText)
