@@ -18,5 +18,5 @@ target 'AdParticipesCumCepis_Example' do
 end
 
 target 'ActionExtension' do
-  pod 'AdParticipesCumCepis/Extension', :path => '../'
+  pod 'AdParticipesCumCepisExtension', :path => '../'
 end

@@ -78,6 +78,7 @@
 		A03D69E72716E02200CB810B /* static */ = {isa = PBXFileReference; lastKnownFileType = folder; path = static; sourceTree = "<group>"; };
 		A03D69E82716E02200CB810B /* templates */ = {isa = PBXFileReference; lastKnownFileType = folder; path = templates; sourceTree = "<group>"; };
 		A03D69EB2716F22000CB810B /* WebServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebServer.swift; sourceTree = "<group>"; };
+		A07B4A7E27FB2DA9006DE842 /* AdParticipesCumCepisExtension.podspec */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = text; name = AdParticipesCumCepisExtension.podspec; path = ../AdParticipesCumCepisExtension.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		A083CFE3276CE30F004B46A0 /* AdPerticipesCumCepisApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdPerticipesCumCepisApp.swift; sourceTree = "<group>"; };
 		A0AEAEEE270C73B300E426F0 /* AdParticipesCumCepis-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AdParticipesCumCepis-Bridging-Header.h"; sourceTree = "<group>"; };
 		A0CB4BE5270C6CB600A41D1D /* Podfile.lock */ = {isa = PBXFileReference; lastKnownFileType = text; path = Podfile.lock; sourceTree = "<group>"; };
@@ -209,6 +210,7 @@
 			isa = PBXGroup;
 			children = (
 				CFC0E532E8DB0F0E1D62F57D /* AdParticipesCumCepis.podspec */,
+				A07B4A7E27FB2DA9006DE842 /* AdParticipesCumCepisExtension.podspec */,
 				3E06C622D70004D0462D914C /* README.md */,
 				B85DF1A954F6CCD9D56225CC /* LICENSE */,
 				A0CB4BE6270C6CB700A41D1D /* Podfile */,
@@ -457,7 +459,7 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-AdParticipesCumCepis_Example/Pods-AdParticipesCumCepis_Example-resources.sh",
-				"${PODS_CONFIGURATION_BUILD_DIR}/AdParticipesCumCepis.default-Shared/AdParticipesCumCepis.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/AdParticipesCumCepis/AdParticipesCumCepis.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/IPtProxyUI/IPtProxyUI.bundle",
 			);
 			name = "[CP] Copy Pods Resources";

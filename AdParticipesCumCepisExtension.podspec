@@ -1,5 +1,5 @@
 #
-# Be sure to run `pod lib lint AdParticipesCumCepis.podspec' to ensure this is a
+# Be sure to run `pod lib lint AdParticipesCumCepisExtension.podspec' to ensure this is a
 # valid spec before submitting.
 #
 # Any lines starting with a # are optional, but their use is encouraged
@@ -7,13 +7,13 @@
 #
 
 Pod::Spec.new do |m|
-  m.name             = 'AdParticipesCumCepis'
+  m.name             = 'AdParticipesCumCepisExtension'
   m.version          = '0.1.0'
-  m.summary          = 'A short description of AdParticipesCumCepis.'
+  m.summary          = 'A short description of AdParticipesCumCepisExtension.'
 
   m.description      = <<-DESC
-    Library to create an app which can share data on the device with others via
-    a transient onion service.
+    Action Extension library to create an app which can share data on the device
+    with others via a transient onion service.
                        DESC
 
   m.homepage         = 'https://github.com/tladesignz/AdParticipesCumCepis'
@@ -28,15 +28,7 @@ Pod::Spec.new do |m|
 
   m.static_framework = true
 
-  m.source_files = 'AdParticipesCumCepis/Shared/**/*', 'AdParticipesCumCepis/App/**/*.swift'
+  m.source_files = 'AdParticipesCumCepis/Shared/**/*', 'AdParticipesCumCepis/Extension/**/*'
 
-  m.dependency 'TLPhotoPicker', '~> 2.1'
-  m.dependency 'Tor', '~> 406.10'
-  m.dependency 'GCDWebServer', '~> 3.5'
-  m.dependency 'ZIPFoundation', '~> 0.9'
-  m.dependency 'IPtProxyUI', '~> 1.7'
-
-  m.resource_bundles = {
-    'AdParticipesCumCepis' => ['AdParticipesCumCepis/App/Assets/**/*']
-  }
+  m.dependency 'MBProgressHUD', '~> 1.2'
 end

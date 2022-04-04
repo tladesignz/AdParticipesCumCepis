@@ -6,9 +6,9 @@
 //  Copyright © 2022 CocoaPods. All rights reserved.
 //
 
-import AdParticipesCumCepis
+import AdParticipesCumCepisExtension
 
-class ActionViewController: AdParticipesCumCepis.ActionViewController {
+class ActionViewController: AdParticipesCumCepisExtension.ActionViewController {
 
     class override var appGroupId: String {
         return Config.appGroupId
