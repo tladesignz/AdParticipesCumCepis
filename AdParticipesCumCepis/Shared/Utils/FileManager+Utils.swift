@@ -83,4 +83,36 @@ public extension FileManager {
 
         return containerURL(forSecurityApplicationGroupIdentifier: appGroupId)
     }
+
+    func fileExists(at url: URL?) -> Bool {
+        guard let url = url else {
+            return false
+        }
+
+        return fileExists(at: url)
+    }
+
+    func createDirectory(at url: URL?) throws {
+        guard let url = url else {
+            return
+        }
+
+        try createDirectory(at: url, withIntermediateDirectories: true)
+    }
+
+    func moveItem(at srcURL: URL?, to dstURL: URL?) throws {
+        guard let srcURL = srcURL, let dstURL = dstURL else {
+            return
+        }
+
+        try moveItem(at: srcURL, to: dstURL)
+    }
+
+    func linkItem(at srcURL: URL?, to dstURL: URL?) throws {
+        guard let srcURL = srcURL, let dstURL = dstURL else {
+            return
+        }
+
+        try linkItem(at: srcURL, to: dstURL)
+    }
 }

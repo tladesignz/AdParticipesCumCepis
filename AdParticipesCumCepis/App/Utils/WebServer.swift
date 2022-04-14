@@ -27,7 +27,7 @@ public protocol WebServerDelegate {
 
 open class WebServer: NSObject, GCDWebServerDelegate {
 
-    public enum Mode {
+    public enum Mode: CaseIterable {
         case share
         case host
 
@@ -39,6 +39,11 @@ open class WebServer: NSObject, GCDWebServerDelegate {
             case .host:
                 return "host"
             }
+        }
+
+        public var rootFolder: URL? {
+            FileManager.default.docsDir?
+                .appendingPathComponent(serviceName, isDirectory: true)
         }
     }
 

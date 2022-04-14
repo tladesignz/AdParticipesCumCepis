@@ -43,19 +43,7 @@ open class BaseAppDelegate: UIResponder, UIApplicationDelegate {
 
         askNotifications()
 
-        // Move new stuff from action extension.
-        let fm = FileManager.default
-
-        if let docsDir = fm.docsDir {
-            for file in fm.contentsOfDirectory(at: fm.shareDir(of: Self.appGroupId)) {
-                do {
-                    try fm.moveItem(at: file, to: docsDir.appendingPathComponent(file.lastPathComponent))
-                }
-                catch {
-                    print("[\(String(describing: type(of: self)))] Error while moving file from \"\(file.path)\" to \"\(docsDir.path)\": \(error.localizedDescription)")
-                }
-            }
-        }
+        moveSharedFiles()
 
         return true
     }
@@ -98,6 +86,8 @@ open class BaseAppDelegate: UIResponder, UIApplicationDelegate {
         // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
 
         endBackgroundTask()
+
+        moveSharedFiles()
     }
 
     open func applicationDidBecomeActive(_ application: UIApplication) {
@@ -157,6 +147,89 @@ open class BaseAppDelegate: UIResponder, UIApplicationDelegate {
 
         oldPhase = newPhase
     }
+
+
+    open func moveSharedFiles() {
+        // Move new stuff from action extension.
+        let fm = FileManager.default
+
+        // Make sure, root folders exist.
+        for mode in WebServer.Mode.allCases {
+            if !fm.fileExists(at: mode.rootFolder) {
+                do {
+                    try fm.createDirectory(at: mode.rootFolder)
+                }
+                catch {
+                    print("[\(String(describing: type(of: self)))] Error while creating dir \"\(mode.rootFolder!.path)\": \(error.localizedDescription)")
+                }
+            }
+        }
+
+        var needsUpdate = false
+
+        // Move shared files, if any.
+        for file in fm.contentsOfDirectory(at: fm.shareDir(of: Self.appGroupId)) {
+            var dst1: URL?
+
+            // Find one root folder to move this file to. Maybe the first already contains a file
+            // with this name so try all of them until we find a place.
+            for mode in WebServer.Mode.allCases {
+                dst1 = mode.rootFolder?
+                    .appendingPathComponent(file.lastPathComponent)
+
+                do {
+                    try fm.moveItem(at: file, to: dst1)
+                    needsUpdate = true
+                    break
+                }
+                catch {
+                    print("[\(String(describing: type(of: self)))] Error while moving file from \"\(file.path)\" to \"\(dst1!.path)\": \(error.localizedDescription)")
+
+                    dst1 = nil
+                }
+            }
+
+            // Couldn't find a place to move this file to. Try to delete it in its limbo
+            // place and continue with the next.
+            if dst1 == nil {
+                do {
+                    try fm.removeItem(at: file)
+                }
+                catch {
+                    print("[\(String(describing: type(of: self)))] Error while deleting file \"\(file.path)\": \(error.localizedDescription)")
+                }
+
+                continue
+            }
+
+
+            // Hard link all others, so we don't do physical copies but each mode gets
+            // its own "copy" to play with as the user pleases.
+            for mode in WebServer.Mode.allCases {
+                let dst2 = mode.rootFolder?
+                    .appendingPathComponent(file.lastPathComponent)
+
+                // Don't hardlink on itself.
+                if dst1 == dst2 {
+                    continue
+                }
+
+                do {
+                    try fm.linkItem(at: dst1, to: dst2)
+                }
+                catch {
+                    print("[\(String(describing: type(of: self)))] Error while hard linking file \"\(dst1!.path)\" to \"\(dst2!.path)\": \(error.localizedDescription)")
+                }
+            }
+        }
+
+        if needsUpdate {
+            NotificationCenter.default.post(name: .reloadFromDisk, object: nil)
+        }
+    }
+
+
+    // MARK: Private Methods
 
     private func endBackgroundTask() {
         guard backgroundTaskId != .invalid else {

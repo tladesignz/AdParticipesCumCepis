@@ -75,18 +75,25 @@ open class ShareModel: ObservableObject, WebServerDelegate {
 
     @Published open var key: String?
 
+    @Published open var changedWhileRunning = false
+
     public private(set) var stopSharingAfterSend = true
 
     private var customTitle = ""
 
 
     public init() {
-        let fm = FileManager.default
-        items += fm.contentsOfDirectory(at: fm.docsDir).map { File($0, relativeTo: fm.docsDir) }
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(reloadFromDisk),
+            name: .reloadFromDisk, object: nil)
+
+        reloadFromDisk()
     }
 
     deinit {
         stop()
+
+        NotificationCenter.default.removeObserver(self)
     }
 
 
@@ -142,6 +149,18 @@ open class ShareModel: ObservableObject, WebServerDelegate {
         self.error = error
         address = nil
         key = nil
+    }
+
+    @objc
+    open func reloadFromDisk(_ notification: Notification? = nil) {
+        items.removeAll { $0 is File }
+
+        let fm = FileManager.default
+        items += fm.contentsOfDirectory(at: mode.rootFolder).map { File($0, relativeTo: mode.rootFolder) }
+
+        if notification != nil && state == .running {
+            changedWhileRunning = true
+        }
     }
 
 

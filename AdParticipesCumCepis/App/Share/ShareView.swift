@@ -319,6 +319,17 @@ public struct ShareView: View {
                     BridgesConf(restartDimmer)
                         .background(Color(.secondarySystemBackground).padding(-80))
                 }
+                .alert(isPresented: $model.changedWhileRunning) {
+                    Alert(
+                        title: Text(NSLocalizedString("New files while running", comment: "")),
+                        message: Text(
+                            NSLocalizedString("You added files from outside while the server is running.", comment: "")
+                            + "\n\n"
+                            + NSLocalizedString("Please note, that this will only take effect, after you restart.", comment: "")),
+                        dismissButton: .default(Text(NSLocalizedString("OK", bundle: Bundle.iPtProxyUI, comment: "#bc-ignore!")), action: {
+                            model.changedWhileRunning = false
+                        }))
+                }
             }
         }
     }
