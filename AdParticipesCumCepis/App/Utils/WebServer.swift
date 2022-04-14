@@ -271,7 +271,8 @@ open class WebServer: NSObject, GCDWebServerDelegate {
         }
 
         if items.count == 1 && !items.first!.isDir {
-            return self.render(items[0], with: delegate, gzip: gzip, completion)
+            return self.render(items[0], with: delegate, gzip: gzip,
+                               asAttachment: items[0].basename, completion)
         }
 
         guard let archive = Archive(accessMode: .create) else {
@@ -287,11 +288,8 @@ open class WebServer: NSObject, GCDWebServerDelegate {
                 return self.error(500, with: delegate, gzip: gzip, completion)
             }
 
-            let res = self.respond(with: delegate, data, "application/zip")
-            res.setValue("attachment; filename=\"\(Bundle.main.displayName).zip\"",
-                         forAdditionalHeader: "Content-Disposition")
-
-            completion(res)
+            completion(self.respond(with: delegate, data, "application/zip",
+                                    asAttachment: "\(Bundle.main.displayName).zip"))
         }
     }
 
@@ -346,13 +344,15 @@ open class WebServer: NSObject, GCDWebServerDelegate {
         }
     }
 
-    private func render(_ item: Item, with delegate: WebServerDelegate?, gzip: Bool, _ completion: @escaping GCDWebServerCompletionBlock) {
+    private func render(_ item: Item, with delegate: WebServerDelegate?, gzip: Bool,
+                        asAttachment filename: String? = nil, _ completion: @escaping GCDWebServerCompletionBlock)
+    {
         item.original { file, data, contentType in
             if let file = file {
-                completion(self.respond(with: delegate, file: file, gzip: gzip))
+                completion(self.respond(with: delegate, file: file, gzip: gzip, asAttachment: filename))
             }
             else if let data = data {
-                completion(self.respond(with: delegate, data, contentType ?? "application/octet-stream", gzip: gzip))
+                completion(self.respond(with: delegate, data, contentType ?? "application/octet-stream", gzip: gzip, asAttachment: filename))
             }
             else {
                 self.error(404, with: delegate, gzip: gzip, completion)
@@ -363,7 +363,7 @@ open class WebServer: NSObject, GCDWebServerDelegate {
     private func respond(with delegate: WebServerDelegate?, html: String? = nil,
                          _ data: Data? = nil, _ contentType: String? = nil,
                          file: URL? = nil, redirect: URL? = nil, statusCode: Int? = nil,
-                         gzip: Bool = false)
+                         gzip: Bool = false, asAttachment filename: String? = nil)
     -> GCDWebServerResponse
     {
         let res: GCDWebServerResponse
@@ -403,6 +403,10 @@ open class WebServer: NSObject, GCDWebServerDelegate {
         res.setValue("DENY", forAdditionalHeader: "X-Frame-Options")
 
         res.setValue("1; mode=block", forAdditionalHeader: "X-Xss-Protection")
+
+        if let filename = filename {
+            res.setValue("attachment; filename=\"\(filename)\"", forAdditionalHeader: "Content-Disposition")
+        }
 
 
         return res
