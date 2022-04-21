@@ -14,7 +14,6 @@ public struct Drawer<Content: View>: View {
 
     @Binding public var open: Bool
 
-    public let maxHeight: CGFloat
     public let minHeight: CGFloat
     public let snapDistance: CGFloat = 48
     public let content: Content
@@ -27,29 +26,28 @@ public struct Drawer<Content: View>: View {
 
     @GestureState private var translation: CGFloat = 0
 
-    init(open: Binding<Bool>, minHeight: CGFloat, maxHeight: CGFloat, @ViewBuilder content: () -> Content) {
+    @State private var contentSize = CGSize.zero
+
+    init(open: Binding<Bool>, minHeight: CGFloat, @ViewBuilder content: () -> Content) {
         _open = open
         self.minHeight = minHeight
-        self.maxHeight = maxHeight
         self.content = content()
     }
 
     public var body: some View {
         GeometryReader { geometry in
-            let maxHeight = min(maxHeight, geometry.size.height)
-
             VStack(spacing: 0) {
                 indicator
                     .padding(.top, 8)
                     .padding(.bottom, 4)
 
                 content
+                    .padding(.bottom, 16)
             }
-            .frame(width: geometry.size.width, height: maxHeight, alignment: .top)
+            .measureSize { contentSize = $0 }
             .background(Color(.systemBackground))
             .cornerRadius(8)
-            .frame(height: geometry.size.height, alignment: .bottom)
-            .offset(y: offset(maxHeight) + translation)
+            .offset(y: geometry.size.height - (open ? contentSize.height : minHeight) + translation)
             .animation(.interactiveSpring())
             .gesture(DragGesture().updating($translation, body: { value, state, _ in
                 state = value.translation.height
@@ -62,9 +60,5 @@ public struct Drawer<Content: View>: View {
             }))
         }
         .shadow(color: .init("Shadow", bundle: .adParticipesCumCepis), radius: 12, x: 0, y: -12)
-    }
-
-    private func offset(_ maxHeight: CGFloat) -> CGFloat {
-        return open ? 0 : maxHeight - minHeight
     }
 }

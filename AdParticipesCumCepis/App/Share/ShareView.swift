@@ -122,7 +122,7 @@ public struct ShareView: View {
                 .background(Color(.systemBackground))
                 .offset(y: geometry.size.height - 116)
 
-                Drawer(open: $drawerOpen, minHeight: 64, maxHeight: 400) {
+                Drawer(open: $drawerOpen, minHeight: 64) {
                     Status(model.state, model.progress, model.error, model.runningText)
 
                     if model.state == .running {
