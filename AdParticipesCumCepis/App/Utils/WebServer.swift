@@ -176,7 +176,7 @@ open class WebServer: NSObject, GCDWebServerDelegate {
     private func processItems(req: GCDWebServerRequest, completion: @escaping GCDWebServerCompletionBlock) {
         var pc = req.url.pathComponents
         let gzip = req.acceptsGzipContentEncoding
-        let delegate = self.delegate(for: req)
+        let delegate = delegate(for: req)
 
         // First component is the root ("/"). Remove.
         pc.removeFirst()
@@ -189,16 +189,16 @@ open class WebServer: NSObject, GCDWebServerDelegate {
             // render that for the root folder. Else render the template
             // as defined by the delegate.
             if delegate?.mode == .host, let index = items?.first(where: { $0.basename == "index.html" }) {
-                return self.render(index, with: delegate, gzip: gzip, completion)
+                return render(index, with: delegate, gzip: gzip, completion)
             }
             else {
-                return self.renderTemplate(for: nil, with: delegate, gzip: gzip, completion)
+                return renderTemplate(for: nil, with: delegate, gzip: gzip, completion)
             }
         }
 
         repeat {
             guard let item = items?.first(where: { $0.basename == pc.first }) else {
-                return self.error(404, with: delegate, gzip: gzip, completion)
+                return error(404, with: delegate, gzip: gzip, completion)
             }
 
             if item.isDir {
@@ -211,15 +211,15 @@ open class WebServer: NSObject, GCDWebServerDelegate {
                     // render that for the folder. Else render the template
                     // as defined by the delegate.
                     if delegate?.mode == .host, let index = item.children().first(where: { $0.basename == "index.html" }) {
-                        return self.render(index, with: delegate, gzip: gzip, completion)
+                        return render(index, with: delegate, gzip: gzip, completion)
                     }
                     else {
-                        return self.renderTemplate(for: item, with: delegate, gzip: gzip, completion)
+                        return renderTemplate(for: item, with: delegate, gzip: gzip, completion)
                     }
                 }
             }
             else {
-                return self.render(item, with: delegate, gzip: gzip, completion)
+                return render(item, with: delegate, gzip: gzip, completion)
             }
         } while (true)
     }
@@ -227,7 +227,7 @@ open class WebServer: NSObject, GCDWebServerDelegate {
     private func processStatic(req: GCDWebServerRequest, completion: @escaping GCDWebServerCompletionBlock) {
         var pc = req.url.pathComponents
         let gzip = req.acceptsGzipContentEncoding
-        let delegate = self.delegate(for: req)
+        let delegate = delegate(for: req)
 
         // First component is the root ("/"). Remove.
         pc.removeFirst()
@@ -235,7 +235,7 @@ open class WebServer: NSObject, GCDWebServerDelegate {
         // Second component is `staticPath`. Remove that, too.
         pc.removeFirst()
 
-        var url = URL(fileURLWithPath: self.localStaticPath)
+        var url = URL(fileURLWithPath: localStaticPath)
 
         // Put rest of the path onto our internal file-system path.
         pc.forEach { url.appendPathComponent($0) }
@@ -244,10 +244,10 @@ open class WebServer: NSObject, GCDWebServerDelegate {
         url = URL(fileURLWithPath: GCDWebServerNormalizePath(url.path))
 
         guard FileManager.default.isReadableFile(atPath: url.path) else {
-            return self.error(404, with: delegate, gzip: gzip, completion)
+            return error(404, with: delegate, gzip: gzip, completion)
         }
 
-        let res = self.respond(with: delegate, file: url, gzip: gzip)
+        let res = respond(with: delegate, file: url, gzip: gzip)
         res.cacheControlMaxAge = 12 * 60 * 60
 
         completion(res)
@@ -256,32 +256,32 @@ open class WebServer: NSObject, GCDWebServerDelegate {
     private func processZip(req: GCDWebServerRequest, completion: @escaping GCDWebServerCompletionBlock) {
         let gzip = req.acceptsGzipContentEncoding
 
-        guard let delegate = self.delegate(for: req),
+        guard let delegate = delegate(for: req),
               delegate.mode == .share
         else {
-            return self.processItems(req: req, completion: completion)
+            return processItems(req: req, completion: completion)
         }
 
-        self.downloadingDelegates.append(delegate)
+        downloadingDelegates.append(delegate)
 
         let items = delegate.items
 
         guard !items.isEmpty else {
-            return self.error(404, with: delegate, gzip: gzip, completion)
+            return error(404, with: delegate, gzip: gzip, completion)
         }
 
         if items.count == 1 && !items.first!.isDir {
-            return self.render(items[0], with: delegate, gzip: gzip,
+            return render(items[0], with: delegate, gzip: gzip,
                                asAttachment: items[0].basename, completion)
         }
 
         guard let archive = Archive(accessMode: .create) else {
-            return self.error(500, with: delegate, gzip: gzip, completion)
+            return error(500, with: delegate, gzip: gzip, completion)
         }
 
         let group = DispatchGroup()
 
-        self.add(items, to: archive, in: group)
+        add(items, to: archive, in: group)
 
         group.notify(queue: .global(qos: .userInitiated)) {
             guard let data = archive.data else {
@@ -311,36 +311,36 @@ open class WebServer: NSObject, GCDWebServerDelegate {
 
     private func renderTemplate(for item: Item?, with delegate: WebServerDelegate?, gzip: Bool, _ completion: GCDWebServerCompletionBlock) {
         guard let delegate = delegate else {
-            return self.error(404, with: nil, gzip: gzip, completion)
+            return error(404, with: nil, gzip: gzip, completion)
         }
 
         do {
-            let html = try self.renderTemplate(name: delegate.templateName, context: delegate.context(for: item))
+            let html = try renderTemplate(name: delegate.templateName, context: delegate.context(for: item))
 
-            return completion(self.respond(with: delegate, html: html, gzip: gzip))
+            return completion(respond(with: delegate, html: html, gzip: gzip))
         }
         catch {
             print("[\(String(describing: type(of: self)))] error: \(error)")
         }
 
-        self.error(500, with: delegate, gzip: gzip, completion)
+        error(500, with: delegate, gzip: gzip, completion)
     }
 
     private func error(_ statusCode: Int, with delegate: WebServerDelegate?, gzip: Bool, _ completion: GCDWebServerCompletionBlock) {
         var html: String? = nil
 
         do {
-            html = try self.renderTemplate(name: String(statusCode), context: [:])
+            html = try renderTemplate(name: String(statusCode), context: [:])
         }
         catch {
             print("[\(String(describing: type(of: self)))] error: \(error.localizedDescription)")
         }
 
         if let html = html {
-            completion(self.respond(with: delegate, html: html, statusCode: statusCode, gzip: gzip))
+            completion(respond(with: delegate, html: html, statusCode: statusCode, gzip: gzip))
         }
         else {
-            completion(self.respond(with: delegate, statusCode: statusCode))
+            completion(respond(with: delegate, statusCode: statusCode))
         }
     }
 
