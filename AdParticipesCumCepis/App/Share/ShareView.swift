@@ -87,7 +87,7 @@ public struct ShareView: View {
                     ForEach(model.items) { item in
                         HStack {
                             AsyncImage(item)
-                                .frame(minWidth: 64, idealWidth: 64, maxWidth: 64, maxHeight: 64)
+                                .frame(minWidth: 48, idealWidth: 48, maxWidth: 48, maxHeight: 48)
 
                             VStack(alignment: .leading) {
                                 Text(item.basename ?? item.id.debugDescription)
