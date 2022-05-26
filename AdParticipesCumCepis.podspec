@@ -31,7 +31,7 @@ Pod::Spec.new do |m|
   m.source_files = 'AdParticipesCumCepis/Shared/**/*', 'AdParticipesCumCepis/App/**/*.swift'
 
   m.dependency 'TLPhotoPicker', '~> 2.1'
-  m.dependency 'Tor', '~> 406.10'
+  m.dependency 'Tor', '~> 407.7'
   m.dependency 'GCDWebServer', '~> 3.5'
   m.dependency 'ZIPFoundation', '~> 0.9'
   m.dependency 'IPtProxyUI', '~> 1.7'
