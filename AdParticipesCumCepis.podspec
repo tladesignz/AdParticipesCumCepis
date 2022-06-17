@@ -35,6 +35,7 @@ Pod::Spec.new do |m|
   m.dependency 'GCDWebServer', '~> 3.5'
   m.dependency 'ZIPFoundation', '~> 0.9'
   m.dependency 'IPtProxyUI', '~> 1.7'
+  m.dependency 'OrbotKit', '~> 0.1'
 
   m.resource_bundles = {
     'AdParticipesCumCepis' => ['AdParticipesCumCepis/App/Assets/**/*']

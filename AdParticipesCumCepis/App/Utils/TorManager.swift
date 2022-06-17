@@ -19,9 +19,19 @@ open class TorManager {
      */
     public typealias Completion = (_ error: Error?, _ serviceUrl: URL?, _ privateKey: String?) -> Void
 
-    private enum Errors: Error {
+    private enum Errors: LocalizedError {
         case cookieUnreadable
-        case noSocksAddr
+        case noBypassPort
+
+        var errorDescription: String? {
+            switch self {
+            case .cookieUnreadable:
+                return NSLocalizedString("Internal Tor error. Should not happen. Please reinstall!", comment: "")
+
+            case .noBypassPort:
+                return NSLocalizedString("Orbot running, but not allowed to bypass.", comment: "")
+            }
+        }
     }
 
     public static let shared = TorManager()
@@ -109,8 +119,16 @@ open class TorManager {
             }
         }
 
+        if !OrbotManager.shared.start() {
+            return completion(Errors.noBypassPort, nil, nil)
+        }
+
         // If Tor is already running, just reconfigure services.
         if connected {
+            if let error = reconfigureProxy() {
+                return completion(error, nil, nil)
+            }
+
             torController?.setConfs(serviceConf(Transport.asConf)) { [weak self] _, error in
                 if let error = error {
                     return completion(error, nil, nil)
@@ -218,6 +236,8 @@ open class TorManager {
 
         // If not needed anymore, stop Tor.
 
+        OrbotManager.shared.stop()
+
         Settings.transport.stop()
 
         torController?.disconnect()
@@ -300,6 +320,42 @@ open class TorManager {
         torController?.close(circuits, completion: completion)
     }
 
+    @discardableResult
+    open func reconfigureProxy() -> Error? {
+        let group = DispatchGroup()
+        group.enter()
+
+        var error: Error?
+
+        torController?.resetConf(forKey: "Socks5Proxy") { _, e in
+            error = e
+
+            group.leave()
+        }
+
+        group.wait()
+
+        if let error = error {
+            return error
+        }
+
+        if let port = OrbotManager.shared.bypassPort {
+            group.enter()
+
+            torController?.setConfForKey("Socks5Proxy", withValue: "\(Self.localhost):\(port)") { _, e in
+                error = e
+
+                group.leave()
+            }
+
+            group.wait()
+
+            return error
+        }
+
+        return nil
+    }
+
 
     // MARK: Private Methods
 
@@ -324,6 +380,10 @@ open class TorManager {
                         "SafeLogging": "0",
                         "SocksPort": "auto",
                         "UseBridges": transport == .none ? "0" : "1"]
+
+        if let port = OrbotManager.shared.bypassPort {
+            conf.options["Socks5Proxy"] = "\(Self.localhost):\(port)"
+        }
 
         return conf
     }

@@ -46,6 +46,17 @@ public struct MainView: View {
         .onChange(of: scenePhase) { newPhase in
             BaseAppDelegate.shared?.changeOf(scenePhase: newPhase)
         }
+        .onOpenURL { url in
+            guard let urlc = URLComponents(url: url, resolvingAgainstBaseURL: true) else {
+                return
+            }
+
+            if urlc.path == "token-callback" {
+                if let token = urlc.queryItems?.first(where: { $0.name == "token" })?.value {
+                    OrbotManager.shared.received(token: token)
+                }
+            }
+        }
     }
 
     public init() {
