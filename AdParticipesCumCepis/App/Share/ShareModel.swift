@@ -91,8 +91,6 @@ open class ShareModel: ObservableObject, WebServerDelegate {
     }
 
     deinit {
-        stop()
-
         NotificationCenter.default.removeObserver(self)
     }
 
