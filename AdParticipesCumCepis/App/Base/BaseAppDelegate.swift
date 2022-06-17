@@ -169,6 +169,11 @@ open class BaseAppDelegate: UIResponder, UIApplicationDelegate {
 
         // Move shared files, if any.
         for file in fm.contentsOfDirectory(at: fm.shareDir(of: Self.appGroupId)) {
+            // Special folder - ignore.
+            guard file.lastPathComponent != "Library" else {
+                continue
+            }
+
             var dst1: URL?
 
             // Find one root folder to move this file to. Maybe the first already contains a file
