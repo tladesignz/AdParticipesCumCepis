@@ -148,6 +148,17 @@ open class BaseAppDelegate: UIResponder, UIApplicationDelegate {
         oldPhase = newPhase
     }
 
+    open func handle(url: URL) {
+        guard let urlc = URLComponents(url: url, resolvingAgainstBaseURL: true) else {
+            return
+        }
+
+        if urlc.path == "token-callback" {
+            if let token = urlc.queryItems?.first(where: { $0.name == "token" })?.value {
+                OrbotManager.shared.received(token: token)
+            }
+        }
+    }
 
     open func moveSharedFiles() {
         // Move new stuff from action extension.
