@@ -209,7 +209,7 @@ public struct ShareView: View {
                             Text(model.startButtonText)
                                 .frame(maxWidth: .infinity)
                                 .padding()
-                                .background(.blue)
+                                .background(Color.accentColor)
                                 .foregroundColor(.white)
                                 .cornerRadius(8)
                         }
@@ -223,7 +223,7 @@ public struct ShareView: View {
                                 .font(.body.italic())
                                 .frame(maxWidth: .infinity)
                                 .padding()
-                                .background(.blue)
+                                .background(Color.accentColor)
                                 .foregroundColor(.white)
                                 .cornerRadius(8)
                         }
