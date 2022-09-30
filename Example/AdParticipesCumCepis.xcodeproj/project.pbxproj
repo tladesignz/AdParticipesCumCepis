@@ -14,7 +14,7 @@
 		95BFF2F789A0219ED6A312D6 /* Pods_ActionExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 15D85214DDD26D3F810302CF /* Pods_ActionExtension.framework */; };
 		A017A30E27EA30D400867293 /* UniformTypeIdentifiers.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A017A30D27EA30D400867293 /* UniformTypeIdentifiers.framework */; };
 		A017A31327EA30D400867293 /* ActionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A017A31227EA30D400867293 /* ActionViewController.swift */; };
-		A017A31A27EA30D400867293 /* ActionExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = A017A30C27EA30D400867293 /* ActionExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		A017A31A27EA30D400867293 /* ActionExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A017A30C27EA30D400867293 /* ActionExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		A03D69E92716E02200CB810B /* static in Resources */ = {isa = PBXBuildFile; fileRef = A03D69E72716E02200CB810B /* static */; };
 		A03D69EA2716E02200CB810B /* templates in Resources */ = {isa = PBXBuildFile; fileRef = A03D69E82716E02200CB810B /* templates */; };
 		A03D69EC2716F22000CB810B /* WebServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A03D69EB2716F22000CB810B /* WebServer.swift */; };
@@ -44,15 +44,15 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		A017A30427EA26F700867293 /* Embed App Extensions */ = {
+		A017A30427EA26F700867293 /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				A017A31A27EA30D400867293 /* ActionExtension.appex in Embed App Extensions */,
+				A017A31A27EA30D400867293 /* ActionExtension.appex in Embed Foundation Extensions */,
 			);
-			name = "Embed App Extensions";
+			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -265,7 +265,7 @@
 				607FACCE1AFB9204008FA782 /* Resources */,
 				00BEEB5105C4AF6B593D5511 /* [CP] Embed Pods Frameworks */,
 				969F45728BD3A9E0F87345EA /* [CP] Copy Pods Resources */,
-				A017A30427EA26F700867293 /* Embed App Extensions */,
+				A017A30427EA26F700867293 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
@@ -322,7 +322,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1330;
-				LastUpgradeCheck = 1310;
+				LastUpgradeCheck = 1400;
 				ORGANIZATIONNAME = CocoaPods;
 				TargetAttributes = {
 					607FACCF1AFB9204008FA782 = {
