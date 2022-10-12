@@ -323,7 +323,7 @@ public struct ShareView: View {
                     Alert(
                         title: Text(NSLocalizedString("New files while running", comment: "")),
                         message: Text(
-                            NSLocalizedString("You added files from outside while the server is running.", comment: "")
+                            NSLocalizedString("You added files from elsewhere while already sharing.", comment: "")
                             + "\n\n"
                             + NSLocalizedString("Please note, that this will only take effect, after you restart.", comment: "")),
                         dismissButton: .default(Text(NSLocalizedString("OK", bundle: Bundle.iPtProxyUI, comment: "#bc-ignore!")), action: {

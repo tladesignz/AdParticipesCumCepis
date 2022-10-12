@@ -46,7 +46,7 @@ open class ShareModel: ObservableObject, WebServerDelegate {
 
     open var stopSharingAfterSendText: String {
         NSLocalizedString(
-            "Stop sharing after files have been sent (uncheck to allow downloading individual files)",
+            "Stop after files have been sent (disables download of individual files)",
             comment: "")
     }
 

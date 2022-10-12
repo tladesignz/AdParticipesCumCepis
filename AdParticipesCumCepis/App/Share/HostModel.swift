@@ -34,7 +34,7 @@ open class HostModel: ShareModel {
 
     open override var stopSharingAfterSendText: String {
         NSLocalizedString(
-            "Don't send Content Security Policy header (allows your website to use third-party resources)",
+            "Permit third-party resources (don't send Content Security Policy header)",
             comment: "")
     }
 
