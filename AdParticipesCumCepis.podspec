@@ -31,11 +31,11 @@ Pod::Spec.new do |m|
   m.source_files = 'AdParticipesCumCepis/Shared/**/*', 'AdParticipesCumCepis/App/**/*.swift'
 
   m.dependency 'TLPhotoPicker', '~> 2.1'
-  m.dependency 'Tor', '~> 407.8'
+  m.dependency 'Tor', '~> 407.10'
   m.dependency 'GCDWebServer', '~> 3.5'
   m.dependency 'ZIPFoundation', '~> 0.9'
-  m.dependency 'IPtProxyUI', '~> 1.7'
-  m.dependency 'OrbotKit', '~> 0.1'
+  m.dependency 'IPtProxyUI', '~> 1.10'
+  m.dependency 'OrbotKit', '~> 0.2'
 
   m.resource_bundles = {
     'AdParticipesCumCepis' => ['AdParticipesCumCepis/App/Assets/**/*']
