@@ -139,7 +139,10 @@ open class WebServer: NSObject, GCDWebServerDelegate {
 
         // This might get called on start and will crash then, if never run before, so check first.
         if webServer.isRunning {
-            webServer.stop()
+            // Don't let higher priority thread wait on a lower priority thread.
+            DispatchQueue.global(qos: .utility).async { [weak self] in
+                self?.webServer.stop()
+            }
         }
 
         Dimmer.shared.stop()
