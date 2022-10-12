@@ -129,7 +129,7 @@ open class OrbotManager: OrbotStatusChangeListener {
         message(
             String(
                 format: NSLocalizedString(
-                    "You neeed to request API access with Orbot, in order for %@ to work while Orbot is running.",
+                    "You need to request API access with Orbot, in order for %@ to work while Orbot is running.",
                     comment: ""),
                 Bundle.main.displayName),
             NSLocalizedString("Request API Access", comment: ""),
