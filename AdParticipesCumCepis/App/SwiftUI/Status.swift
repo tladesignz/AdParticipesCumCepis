@@ -61,7 +61,7 @@ public struct Status: View {
             if let progress = progress {
                 ProgressView(value: progress, total: 1)
                     .progressViewStyle(.linear)
-                    .scaleEffect(x: 1, y: 0.25, anchor: .center)
+                    .scaleEffect(x: 1, y: 0.5, anchor: .center)
             }
             else {
                 Divider()
