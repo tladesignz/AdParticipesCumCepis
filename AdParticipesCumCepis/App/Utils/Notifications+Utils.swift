@@ -9,5 +9,5 @@ import Foundation
 
 extension Notification.Name {
 
-    static let reloadFromDisk = Notification.Name(rawValue: "reload-from-disk")
+    public static let reloadFromDisk = Notification.Name(rawValue: "reload-from-disk")
 }

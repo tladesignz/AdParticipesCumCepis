@@ -160,12 +160,12 @@ open class BaseAppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
 
-    open func moveSharedFiles() {
+    open func moveSharedFiles(modes: [WebServer.Mode] = WebServer.Mode.allCases) {
         // Move new stuff from action extension.
         let fm = FileManager.default
 
         // Make sure, root folders exist.
-        for mode in WebServer.Mode.allCases {
+        for mode in modes {
             if !fm.fileExists(at: mode.rootFolder) {
                 do {
                     try fm.createDirectory(at: mode.rootFolder)
@@ -189,7 +189,7 @@ open class BaseAppDelegate: UIResponder, UIApplicationDelegate {
 
             // Find one root folder to move this file to. Maybe the first already contains a file
             // with this name so try all of them until we find a place.
-            for mode in WebServer.Mode.allCases {
+            for mode in modes {
                 dst1 = mode.rootFolder?
                     .appendingPathComponent(file.lastPathComponent)
 
@@ -214,14 +214,12 @@ open class BaseAppDelegate: UIResponder, UIApplicationDelegate {
                 catch {
                     print("[\(String(describing: type(of: self)))] Error while deleting file \"\(file.path)\": \(error.localizedDescription)")
                 }
-
-                continue
             }
 
 
             // Hard link all others, so we don't do physical copies but each mode gets
             // its own "copy" to play with as the user pleases.
-            for mode in WebServer.Mode.allCases {
+            for mode in modes {
                 let dst2 = mode.rootFolder?
                     .appendingPathComponent(file.lastPathComponent)
 
