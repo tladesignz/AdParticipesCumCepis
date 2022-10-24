@@ -83,34 +83,13 @@ public struct ShareView: View {
                 .offset(x: 0, y: -40)
             }
             else {
-                List {
-                    ForEach(model.items) { item in
-                        HStack {
-                            AsyncImage(item)
-                                .frame(minWidth: 48, idealWidth: 48, maxWidth: 48, maxHeight: 48)
-
-                            VStack(alignment: .leading) {
-                                Text(item.basename ?? item.id.debugDescription)
-
-                                Text([Formatter.format(item.lastModified), item.sizeHuman]
-                                    .compactMap({ $0 })
-                                    .joined(separator: " – "))
-                                    .font(.system(size: 12))
-                                    .foregroundColor(Color(.secondaryLabel))
-                            }
-                        }
-                        .listRowInsets(EdgeInsets(top: 8, leading: 0, bottom: 8, trailing: 0))
-                    }
-                    .onDelete { offsets in
-                        for i in offsets {
-                            try? model.items[i].remove()
-                        }
-
-                        model.items.remove(atOffsets: offsets)
-                    }
-                    .deleteDisabled(model.state != .stopped)
+                if #available(iOS 16.0, *) {
+                    itemList(geometry)
+                        .scrollContentBackground(.hidden) // Remove list background in iOS 16.
                 }
-                .frame(maxHeight: max(0, geometry.size.height - 116))
+                else {
+                    itemList(geometry)
+                }
 
                 Text([
                     String.localizedStringWithFormat(NSLocalizedString("%u item(s)", comment: "#bc-ignore!"), model.items.count),
@@ -365,6 +344,37 @@ public struct ShareView: View {
         if WebServer.shared?.running ?? false {
             Dimmer.shared.start()
         }
+    }
+
+    private func itemList(_ geometry: GeometryProxy) -> some View {
+        List {
+            ForEach(model.items) { item in
+                HStack {
+                    AsyncImage(item)
+                        .frame(minWidth: 48, idealWidth: 48, maxWidth: 48, maxHeight: 48)
+
+                    VStack(alignment: .leading) {
+                        Text(item.basename ?? item.id.debugDescription)
+
+                        Text([Formatter.format(item.lastModified), item.sizeHuman]
+                            .compactMap({ $0 })
+                            .joined(separator: " – "))
+                        .font(.system(size: 12))
+                        .foregroundColor(Color(.secondaryLabel))
+                    }
+                }
+                .listRowInsets(EdgeInsets(top: 8, leading: 0, bottom: 8, trailing: 0))
+            }
+            .onDelete { offsets in
+                for i in offsets {
+                    try? model.items[i].remove()
+                }
+
+                model.items.remove(atOffsets: offsets)
+            }
+            .deleteDisabled(model.state != .stopped)
+        }
+        .frame(maxHeight: max(0, geometry.size.height - 116))
     }
 }
 
