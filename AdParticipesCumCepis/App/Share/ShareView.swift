@@ -209,10 +209,10 @@ public struct ShareView: View {
                             Text(model.startButtonText)
                                 .frame(maxWidth: .infinity)
                                 .padding()
-                                .background(Color.accentColor)
                                 .foregroundColor(.white)
-                                .cornerRadius(8)
                         }
+                        .background(Color.accentColor)
+                        .cornerRadius(8)
                         .padding([.leading, .trailing])
 
                     case .starting:
@@ -223,12 +223,12 @@ public struct ShareView: View {
                                 .font(.body.italic())
                                 .frame(maxWidth: .infinity)
                                 .padding()
-                                .background(Color.accentColor)
                                 .foregroundColor(.white)
-                                .cornerRadius(8)
                         }
-                        .padding([.leading, .trailing])
                         .disabled(true)
+                        .background(Color.accentColor.opacity(0.5))
+                        .cornerRadius(8)
+                        .padding([.leading, .trailing])
 
                     case .running:
                         Button {
@@ -237,10 +237,10 @@ public struct ShareView: View {
                             Text(model.stopButtonText)
                                 .frame(maxWidth: .infinity)
                                 .padding()
-                                .background(Color(.secondarySystemBackground))
                                 .foregroundColor(.red)
-                                .cornerRadius(8)
                         }
+                        .background(Color(.secondarySystemBackground))
+                        .cornerRadius(8)
                         .padding([.leading, .trailing])
                     }
                 }
