@@ -177,7 +177,7 @@ public struct ShareView: View {
                         }
                         .font(.system(size: 15))
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding()
+                        .padding([.leading, .trailing, .bottom])
                     }
                     else {
                         VStack {
@@ -198,7 +198,7 @@ public struct ShareView: View {
                                 .disabled(model.state != .stopped)
                                 .padding([.top, .bottom], 8)
                         }
-                        .padding()
+                        .padding([.leading, .trailing, .bottom])
                     }
 
                     switch model.state {
