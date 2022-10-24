@@ -59,6 +59,6 @@ public struct Drawer<Content: View>: View {
                 open = value.translation.height < 0
             }))
         }
-        .shadow(color: .init("Shadow", bundle: .adParticipesCumCepis), radius: 12, x: 0, y: -12)
+        .shadow(color: .init("Shadow", bundle: .adParticipesCumCepis), radius: 3, x: 0, y: -3)
     }
 }
