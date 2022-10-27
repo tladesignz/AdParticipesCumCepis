@@ -142,6 +142,8 @@ open class OrbotManager: OrbotStatusChangeListener {
 
                 alert.addAction(AlertHelper.defaultAction() { _ in
                     Settings.orbotApiToken = self?.tokenAlert?.textFields?.first?.text ?? ""
+
+                    NotificationCenter.default.post(name: .bypassAdded, object: nil)
                 })
 
                 vc.present(alert, animated: false)

@@ -10,4 +10,6 @@ import Foundation
 extension Notification.Name {
 
     public static let reloadFromDisk = Notification.Name(rawValue: "reload-from-disk")
+
+    public static let bypassAdded = Notification.Name(rawValue: "bypass-added")
 }

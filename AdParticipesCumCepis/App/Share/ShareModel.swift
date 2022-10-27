@@ -83,9 +83,16 @@ open class ShareModel: ObservableObject, WebServerDelegate {
 
 
     public init() {
-        NotificationCenter.default.addObserver(
-            self, selector: #selector(reloadFromDisk),
-            name: .reloadFromDisk, object: nil)
+        let nc = NotificationCenter.default
+
+        nc.addObserver(self, selector: #selector(reloadFromDisk),
+                       name: .reloadFromDisk, object: nil)
+
+        nc.addObserver(forName: .bypassAdded, object: nil, queue: nil) { [weak self] _ in
+            // Reset error message, after user added an Orbot access token,
+            // so user doesn't get confused about if it worked or not.
+            self?.error = nil
+        }
 
         reloadFromDisk()
     }
