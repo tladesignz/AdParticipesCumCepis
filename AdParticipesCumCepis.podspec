@@ -34,7 +34,7 @@ Pod::Spec.new do |m|
   m.dependency 'Tor', '~> 407.12'
   m.dependency 'GCDWebServer', '~> 3.5'
   m.dependency 'ZIPFoundation', '~> 0.9'
-  m.dependency 'IPtProxyUI', '~> 1.11'
+  m.dependency 'IPtProxyUI', '~> 2.1'
   m.dependency 'OrbotKit', '~> 0.2'
 
   m.resource_bundles = {
