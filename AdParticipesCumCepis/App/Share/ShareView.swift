@@ -259,13 +259,15 @@ public struct ShareView: View {
                         .disabled(model.state != .stopped)
                     }
 
-                    Section {
-                        Button {
-                            Dimmer.shared.stop()
-
-                            showingBridgesConf = true
-                        } label: {
-                            Label(NSLocalizedString("Use Bridges", comment: ""), systemImage: "network.badge.shield.half.filled")
+                    if model.showUseBridgesOption {
+                        Section {
+                            Button {
+                                Dimmer.shared.stop()
+                                
+                                showingBridgesConf = true
+                            } label: {
+                                Label(NSLocalizedString("Use Bridges", comment: ""), systemImage: "network.badge.shield.half.filled")
+                            }
                         }
                     }
                 }

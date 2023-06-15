@@ -62,6 +62,10 @@ open class ShareModel: ObservableObject, WebServerDelegate {
         true
     }
 
+    open var showUseBridgesOption: Bool {
+        true
+    }
+
 
     @Published open var items = [Item]()
 
