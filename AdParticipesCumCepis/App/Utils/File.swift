@@ -14,7 +14,7 @@ open class File: Item {
         kCGImageSourceCreateThumbnailWithTransform: true,
         kCGImageSourceCreateThumbnailFromImageAlways: true,
         kCGImageSourceThumbnailMaxPixelSize: Item.thumbnailSize
-        ] as CFDictionary
+    ] as [CFString : Any] as CFDictionary
 
 
     public let base: URL
