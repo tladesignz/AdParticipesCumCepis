@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import Combine
 
 public struct ShareView: View {
 
@@ -173,7 +174,14 @@ public struct ShareView: View {
 
                             Divider()
 
-                            TextField(NSLocalizedString("Custom title", comment: ""), text: $customTitle)
+                            TextField(String(format: NSLocalizedString("Custom title (%d characters max)", comment: ""), model.maxTitleLength), text: $customTitle)
+                                .onReceive(Just(customTitle), perform: { _ in
+                                    if customTitle.count > model.maxTitleLength {
+                                        customTitle = String(customTitle.prefix(model.maxTitleLength))
+                                    }
+                                })
+                                .disableAutocorrection(true)
+                                .autocapitalization(.none)
                                 .disabled(model.state != .stopped)
                                 .padding([.top, .bottom], 8)
                         }

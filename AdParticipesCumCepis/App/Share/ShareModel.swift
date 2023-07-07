@@ -8,6 +8,7 @@
 
 import Foundation
 import Tor
+import SwiftSoup
 
 open class ShareModel: ObservableObject, WebServerDelegate {
 
@@ -66,6 +67,10 @@ open class ShareModel: ObservableObject, WebServerDelegate {
         true
     }
 
+    open var maxTitleLength: Int {
+        80
+    }
+
 
     @Published open var items = [Item]()
 
@@ -114,7 +119,7 @@ open class ShareModel: ObservableObject, WebServerDelegate {
         key = nil
 
         self.stopSharingAfterSend = stopSharingAfterSend
-        self.customTitle = customTitle
+        self.customTitle = Entities.escape(customTitle, OutputSettings().charset(.utf8).escapeMode(.xhtml))
 
         TorManager.shared.start(for: mode.serviceName, publicService) { progress in
             DispatchQueue.main.async {

@@ -36,6 +36,7 @@ Pod::Spec.new do |m|
   m.dependency 'ZIPFoundation', '~> 0.9'
   m.dependency 'IPtProxyUI', '~> 3.0'
   m.dependency 'OrbotKit', '~> 0.2'
+  m.dependency 'SwiftSoup', '~> 2.6'
 
   m.resource_bundles = {
     'AdParticipesCumCepis' => ['AdParticipesCumCepis/App/Assets/**/*']
