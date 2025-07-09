@@ -142,7 +142,12 @@ open class TorManager {
 
         // If not (fully) started, (re-)try.
 
-        Settings.transport.start()
+        do {
+            try Settings.transport.start()
+        }
+        catch {
+            return completion(error, nil, nil)
+        }
 
         // Create fresh - transport ports may have changed.
         torConf = createTorConf()
@@ -283,23 +288,24 @@ open class TorManager {
                         return
                     }
 
-                    switch Settings.transport {
-                    case .obfs4, .custom:
-                        Transport.snowflake.stop()
+                    var transports = Set(Transport.allCases)
+                    transports.remove(Settings.transport)
 
-                    case .snowflake, .snowflakeAmp:
-                        Transport.obfs4.stop()
-
-                    default:
-                        Transport.obfs4.stop()
-                        Transport.snowflake.stop()
+                    for t in transports {
+                        t.stop()
                     }
 
                     guard Settings.transport != .none else {
                         return
                     }
 
-                    Settings.transport.start()
+                    do {
+                        try Settings.transport.start()
+                    } catch {
+                        self?.log(error.localizedDescription)
+
+                        return
+                    }
 
                     var conf = Settings.transport.torConf(Transport.asConf)
                     conf.append(Transport.asConf(key: "UseBridges", value: "1"))
@@ -369,11 +375,11 @@ open class TorManager {
 
         let transport = Settings.transport
 
-        conf.arguments += transport.torConf(Transport.asArguments).joined()
-
-        conf.arguments += ipStatus.torConf(transport, Transport.asArguments).joined()
-
-        conf.arguments += serviceConf(Transport.asArguments).joined()
+        var arguments = [String]()
+        arguments += transport.torConf(Transport.asArguments).joined()
+        arguments += ipStatus.torConf(transport, Transport.asArguments).joined()
+        arguments += serviceConf(Transport.asArguments).joined()
+        conf.arguments.addObjects(from: arguments)
 
         conf.options = ["Log": "notice stdout",
                         "LogMessageDomains": "1",

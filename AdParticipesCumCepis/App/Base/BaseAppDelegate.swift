@@ -8,7 +8,7 @@
 
 import SwiftUI
 import UserNotifications
-import IPtProxy
+import IPtProxyUI
 
 open class BaseAppDelegate: UIResponder, UIApplicationDelegate {
 
@@ -42,9 +42,9 @@ open class BaseAppDelegate: UIResponder, UIApplicationDelegate {
     {
         Self.shared = self
 
-        if let ptDir = FileManager.default.ptDir?.path
+        if let ptDir = FileManager.default.ptDir
         {
-            IPtProxy.setStateLocation(ptDir)
+            Transport.stateLocation = ptDir
         }
 
         askNotifications()
